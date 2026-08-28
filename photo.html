@@ -118,6 +118,42 @@ header{position:relative;z-index:3;padding:22px 0 0}
   border:1px solid var(--line);border-radius:var(--r-sm);padding:11px 14px;margin:11px 0;word-break:break-all;line-height:1.5}
 .find p{font-size:.9rem;color:var(--ash);line-height:1.55}
 
+/* coordinate magnitude explainer */
+.mag{margin-top:16px;background:var(--void);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px}
+.mag h4{font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.ladder{display:grid;gap:0}
+.rung{display:grid;grid-template-columns:auto 1fr auto;gap:13px;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--line)}
+.rung:last-child{border-bottom:0}
+.rung .bar{width:5px;border-radius:99px;height:26px;flex:none}
+.rung .cv{font-family:'IBM Plex Mono',monospace;font-size:.77rem;color:var(--ash);line-height:1.4;min-width:0;word-break:break-all}
+.rung .cv b{display:block;color:var(--bone);font-size:.72rem;font-weight:500;margin-top:3px;font-family:'IBM Plex Sans',sans-serif}
+.rung .dist{font-family:'IBM Plex Mono',monospace;font-size:.66rem;color:var(--ash-dim);text-align:right;flex:none;letter-spacing:.05em}
+.rung.you{background:linear-gradient(90deg,rgba(224,132,79,.10),transparent 80%);
+  margin:0 -20px;padding-left:20px;padding-right:20px}
+.rung.you .cv{color:var(--alarm)}
+.rung.you .cv b{color:var(--bone)}
+.rung.you .dist{color:var(--alarm)}
+
+/* scale drawing */
+.scale{margin-top:16px;background:var(--void);border:1px solid var(--line);border-radius:var(--r-md);padding:18px 20px}
+.scale h4{font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.scale svg{width:100%;height:auto;display:block;max-width:420px;margin:0 auto}
+.scale .cap{font-size:.82rem;color:var(--ash);line-height:1.5;margin-top:14px;text-align:center}
+
+/* explicit opt-in map */
+.mapout{margin-top:16px;background:linear-gradient(140deg,rgba(224,132,79,.08),transparent 72%);
+  border:1px solid rgba(224,132,79,.28);border-radius:var(--r-md);padding:18px 20px}
+.mapout h4{font-family:'IBM Plex Mono',monospace;font-size:.62rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--alarm);margin-bottom:11px}
+.mapout p{font-size:.87rem;color:var(--ash);line-height:1.55;margin-bottom:14px}
+.mapout a{display:inline-block;background:none;border:1px solid rgba(224,132,79,.45);color:var(--alarm);
+  border-radius:var(--r-sm);font-family:'Archivo',sans-serif;font-weight:700;font-size:.8rem;
+  text-transform:uppercase;letter-spacing:.08em;padding:12px 20px;text-decoration:none;transition:background .18s}
+.mapout a:hover{background:rgba(224,132,79,.12)}
+
 .strip{margin-top:26px;background:linear-gradient(140deg,rgba(107,203,155,.09),rgba(79,195,217,.05));
   border:1px solid rgba(107,203,155,.3);border-radius:var(--r-lg);padding:clamp(20px,4vw,28px)}
 .strip h3{margin-bottom:10px}
@@ -369,6 +405,67 @@ function png(buf){
   return {meta:meta, removed:removed, clean:out, type:'image/png'};
 }
 
+/* ───────── how big is a coordinate, really ───────── */
+// Everything below is computed and drawn locally. No map tiles, no geocoding,
+// no request of any kind — because a map service would need your coordinates
+// to show them to you, and that is the whole thing we are trying to stop.
+function magnitude(lat,lon){
+  var RUNGS=[
+    [1,'11 km','a whole region \u2014 a city and its suburbs'],
+    [2,'1.1 km','a neighbourhood \u2014 a few hundred homes'],
+    [3,'110 m','a city block \u2014 a handful of buildings'],
+    [4,'11 m','a single building \u2014 your house, not your street'],
+    [5,'1.1 m','a single room'],
+    [6,'11 cm','where you were standing']
+  ];
+  // how many decimals does this photo actually carry
+  function dp(v){
+    var t=String(Math.abs(v)).split('.')[1]||''; return Math.min(t.replace(/0+$/,'').length,6);
+  }
+  var have=Math.max(dp(lat),dp(lon));
+  if(have<1) have=1;
+
+  var rows=RUNGS.map(function(r){
+    var d=r[0], mine=(d===have);
+    var c=Math.abs(lat).toFixed(d)+', '+Math.abs(lon).toFixed(d);
+    var t=(d/6);
+    var col=mine?'#E0844F':'rgba('+Math.round(91+(217-91)*t)+','+Math.round(184+(174-184)*t)+','+Math.round(212+(95-212)*t)+',0.85)';
+    return '<div class="rung'+(mine?' you':'')+'"><span class="bar" style="background:'+col+'"></span>'+
+      '<span class="cv">'+c+(mine?'  \u2190 your photo':'')+'<b>'+r[2]+'</b></span>'+
+      '<span class="dist">\u00b1'+r[1]+'</span></div>';
+  }).join('');
+
+  var ladder='<div class="mag"><h4>What that number actually pins down</h4>'+
+    '<div class="ladder">'+rows+'</div></div>';
+
+  // to-scale drawing: precision circle against a house and a street
+  var svg='<div class="scale"><h4>The same thing, drawn to scale</h4>'+
+    '<svg viewBox="0 0 420 190" role="img" aria-label="Diagram comparing GPS precision to the size of a house">'+
+    '<rect x="0" y="112" width="420" height="34" fill="rgba(232,224,206,.05)"/>'+
+    '<line x1="0" y1="129" x2="420" y2="129" stroke="rgba(232,224,206,.22)" stroke-width="1" stroke-dasharray="9 9"/>'+
+    '<text x="8" y="160" fill="#5D6580" font-family="monospace" font-size="9" letter-spacing="1">STREET \u00b7 12 M WIDE</text>'+
+    '<rect x="150" y="52" width="86" height="56" rx="3" fill="rgba(232,224,206,.10)" stroke="rgba(232,224,206,.3)" stroke-width="1.5"/>'+
+    '<path d="M144 52 L193 26 L242 52" fill="none" stroke="rgba(232,224,206,.3)" stroke-width="1.5" stroke-linejoin="round"/>'+
+    '<rect x="184" y="86" width="18" height="22" fill="rgba(217,174,95,.35)"/>'+
+    '<text x="150" y="122" fill="#5D6580" font-family="monospace" font-size="9" letter-spacing="1">A HOUSE \u00b7 11 M</text>'+
+    '<circle cx="193" cy="80" r="24" fill="rgba(224,132,79,.18)" stroke="#E0844F" stroke-width="2"/>'+
+    '<circle cx="193" cy="80" r="3" fill="#E0844F"/>'+
+    '<text x="248" y="76" fill="#E0844F" font-family="monospace" font-size="10" letter-spacing="1">YOUR PHOTO</text>'+
+    '<text x="248" y="90" fill="#8A92AB" font-family="monospace" font-size="9" letter-spacing="1">\u00b1'+(RUNGS[have-1]?RUNGS[have-1][1]:'11 m')+'</text>'+
+    '</svg>'+
+    '<p class="cap">The orange circle is everywhere this photo says you might have been. '+
+    (have>=4?'It fits inside a single house.':'It covers roughly '+(RUNGS[have-1]?RUNGS[have-1][2]:'a block')+'.')+'</p></div>';
+
+  var map='<div class="mapout"><h4>Want to see the actual address?</h4>'+
+    '<p>We have not looked it up, and we will not do it for you automatically \u2014 asking a map service where this is means telling that map service where you live. '+
+    'But it is your location, and whether to look is your call, not ours. The link below opens OpenStreetMap in a new tab and '+
+    '<b>will send these coordinates to openstreetmap.org</b>. Nothing else on this page does anything like that.</p>'+
+    '<a href="https://www.openstreetmap.org/?mlat='+lat.toFixed(6)+'&mlon='+lon.toFixed(6)+'#map=18/'+lat.toFixed(6)+'/'+lon.toFixed(6)+
+    '" target="_blank" rel="noopener noreferrer">Open in OpenStreetMap \u2192</a></div>';
+
+  return ladder+svg+map;
+}
+
 /* ───────── run ───────── */
 function handle(file){
   clearErr(); RES.classList.remove('show');
@@ -409,7 +506,7 @@ function render(file, r, buf){
     hot++;
     F.push({hot:true, tag:'Location', title:'Your exact coordinates are in this file',
       val:lat.toFixed(6)+', '+lon.toFixed(6),
-      body:'That is a specific spot on Earth, accurate to a few metres \u2014 close enough to identify a building, a driveway, a front door. It has travelled inside this file every time you have sent it to anyone. We deliberately do not link this to a map, because that would send your location to a mapping company, which is the exact thing this page exists to prevent.'});
+      body:'That is a specific spot on Earth. It has travelled inside this file every single time you have sent it to anyone \u2014 every text, every email, every upload to a site that does not strip it. Here is exactly how precise it is.' + magnitude(lat,lon)});
   }
 
   var when=m.DateTimeOriginal||m.DateTime||m.DateTimeDigitized;

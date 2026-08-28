@@ -283,6 +283,77 @@ var TOPICS = [
     <li><b>Skip the VPN hype.</b> A VPN moves your traffic's visible origin from your internet provider to the VPN company. That's useful on public wifi and for keeping your home IP out of session logs. It does not make you anonymous, and a free VPN is usually selling exactly what you were trying to protect.</li>
   </ul>` },
 
+{ cat:'Your devices', tag:'free', t:'Turn off location tracking \u2014 exact steps for every device',
+  d:'iPhone, Samsung, Pixel, Windows, Mac. The single highest-value thing on this page.',
+  b:`<div class="key"><b>Do this one first</b>Camera location tagging is why a photo you text a stranger can contain your home address. Every device below has it on by default. It takes under a minute each.</div>
+
+  <p><b>iPhone &amp; iPad</b></p>
+  <ul>
+    <li><b>Stop photos recording location:</b> Settings \u2192 Privacy &amp; Security \u2192 Location Services \u2192 Camera \u2192 <b>Never</b></li>
+    <li><b>Audit every other app:</b> same Location Services screen. Go down the whole list. Anything that doesn't need location \u2192 Never. Anything that does \u2192 While Using. "Always" should be nearly empty.</li>
+    <li><b>Turn off Precise Location</b> per app for anything that only needs your rough area \u2014 weather, news, shopping.</li>
+    <li><b>Significant Locations \u2014 the hidden one:</b> Location Services \u2192 scroll to the bottom \u2192 System Services \u2192 Significant Locations. Your phone has been keeping a history of where you regularly go. Look at it, then Clear History and switch it off.</li>
+    <li><b>Stop ad tracking:</b> Settings \u2192 Privacy &amp; Security \u2192 Tracking \u2192 turn off Allow Apps to Request to Track.</li>
+    <li><b>Rename the device:</b> Settings \u2192 General \u2192 About \u2192 Name. "Mav's iPhone" broadcasts your name to every network, AirDrop, and Bluetooth device nearby.</li>
+    <li><b>Share your location:</b> Settings \u2192 [your name] \u2192 Find My \u2192 check who you're sharing with. People forget these for years.</li>
+  </ul>
+
+  <p><b>Samsung Galaxy</b></p>
+  <ul>
+    <li><b>Stop photos recording location:</b> open the Camera app \u2192 gear icon (Settings) \u2192 <b>Location tags</b> \u2192 off</li>
+    <li><b>Audit app permissions:</b> Settings \u2192 Security and privacy \u2192 Permission manager \u2192 Location. Set each app to Deny or Allow only while using.</li>
+    <li><b>Location history:</b> Settings \u2192 Location \u2192 Location services \u2192 Google Location History \u2192 turn off and delete what's there.</li>
+    <li><b>Reset the ad ID:</b> Settings \u2192 Security and privacy \u2192 More privacy settings \u2192 Ads \u2192 delete the advertising ID.</li>
+    <li><b>Samsung account:</b> Settings \u2192 Samsung account \u2192 Privacy \u2192 turn off Customisation Service, which profiles you across Samsung apps.</li>
+    <li><b>Rename:</b> Settings \u2192 About phone \u2192 Device name.</li>
+  </ul>
+
+  <p><b>Google Pixel &amp; stock Android</b></p>
+  <ul>
+    <li><b>Stop photos recording location:</b> Camera app \u2192 Settings \u2192 More settings \u2192 <b>Save location</b> \u2192 off</li>
+    <li><b>Audit permissions:</b> Settings \u2192 Security &amp; privacy \u2192 Privacy \u2192 Permission manager \u2192 Location.</li>
+    <li><b>Timeline / Location History:</b> Settings \u2192 Location \u2192 Location Services \u2192 Google Location History. On newer Android this lives on-device as "Timeline" \u2014 turn off auto-delete's long window and set it to delete after three months, or turn it off entirely.</li>
+    <li><b>Web &amp; App Activity</b> is separate and often missed. In your Google Account \u2192 Data &amp; privacy \u2192 turn off Web &amp; App Activity and YouTube History, or set auto-delete to 3 months.</li>
+    <li><b>Delete the advertising ID:</b> Settings \u2192 Security &amp; privacy \u2192 Ads \u2192 Delete advertising ID.</li>
+  </ul>
+
+  <p><b>Windows</b></p>
+  <ul>
+    <li>Settings \u2192 Privacy &amp; security \u2192 Location \u2192 turn off Location services, then Clear location history.</li>
+    <li>Settings \u2192 Privacy &amp; security \u2192 General \u2192 turn off the advertising ID.</li>
+    <li>Settings \u2192 Privacy &amp; security \u2192 Diagnostics &amp; feedback \u2192 set to Required only, and turn off Tailored experiences.</li>
+  </ul>
+
+  <p><b>macOS</b></p>
+  <ul>
+    <li>System Settings \u2192 Privacy &amp; Security \u2192 Location Services \u2192 audit the list, and check System Services at the bottom.</li>
+    <li>Inside System Services \u2192 Significant Locations \u2192 clear and turn off.</li>
+    <li>System Settings \u2192 Privacy &amp; Security \u2192 Analytics &amp; Improvements \u2192 turn everything off.</li>
+  </ul>
+
+  <div class="key"><b>Already-taken photos</b>Turning location off protects future photos only. Every picture already in your camera roll still carries what it carried. Run one through <a href="/photo">The Photo Check</a> to see, and to get a clean copy.</div>` },
+
+{ cat:'Your devices', tag:'', t:'VPNs \u2014 what they actually do, and choosing one',
+  d:'Useful and oversold in roughly equal measure.',
+  b:`<div class="key"><b>You can always use SOVRAN behind a VPN</b>We will never block you, throttle you, challenge you, or treat you as suspicious for how you connect \u2014 VPN, Tor, borrowed wifi, any of it. That is Article VII of our Charter. Most sites punish exactly the people being most careful. We won't.</div>
+
+  <p><b>What a VPN actually does:</b> it moves the visible origin of your traffic from your internet provider to the VPN company. Your provider stops seeing which sites you visit. Websites stop seeing your home IP address.</p>
+
+  <p><b>What it does not do:</b> make you anonymous. You are still logged into your accounts. Your browser is still fingerprintable. Your phone still has an advertising ID. A VPN solves one specific problem, not the general one \u2014 and the marketing rarely says so.</p>
+
+  <p><b>The tradeoff nobody mentions:</b> you are not removing an observer, you are choosing a different one. Your provider can no longer see your traffic, but the VPN company now can. That makes <i>which</i> company you choose the entire question.</p>
+
+  <p><b>How to choose:</b></p>
+  <ul>
+    <li><b>Independently audited no-logs policy.</b> Not a claim on a homepage \u2014 a published audit by an outside firm, with a date on it.</li>
+    <li><b>Funded by subscriptions, not advertising.</b> If it's free, you are the product. Free VPNs have repeatedly been caught selling exactly the traffic data you installed them to protect.</li>
+    <li><b>As little account information as possible.</b> The best ones let you sign up without an email address at all, and take cash. If they don't need to know who you are, they can't be made to tell anyone.</li>
+    <li><b>A track record under legal pressure.</b> The meaningful signal is a company that has been subpoenaed and had nothing to hand over.</li>
+    <li><b>Jurisdiction matters less than people say</b>, but it isn't nothing. What matters far more is whether there is data to seize at all.</li>
+  </ul>
+
+  <p><b>When it genuinely helps:</b> public wifi, keeping your home IP out of the session logs of every service you use, and stopping your internet provider from building a browsing profile to sell. Those are real. "Total anonymity" is not.</p>` },
+
 { cat:'Where you live', tag:'', t:'The cameras and plate readers around you',
   d:'What they are, what they keep, and how to find out.',
   b:`<p>Automated licence plate readers photograph every passing car, log the plate, and timestamp the location. Over 120,000 have been mapped across the United States by volunteers. Most are on ordinary streets and most drivers have never been told they exist.</p>
@@ -311,6 +382,7 @@ var TOPICS = [
     <li><b>Knowing is always free.</b> What is exposed about you, what rights you hold, how to file every request yourself by hand. Everything on this page. Paywalling this would mean selling you the right itself.</li>
     <li><b>Doing it for you is the part that could cost money.</b> Filing hundreds of deletions, chasing each to a real answer, and refiling when they quietly repopulate — that's ongoing work with a real cost attached.</li>
     <li><b>We take no advertising and no data broker money</b>, and we will not take investment from anyone who needs us to change our mind about that later.</li>
+    <li><b>Nobody is turned away for lack of money.</b> If you can't afford the paid tier, you say so and we believe you \u2014 no proof of income, no benefits letter, no case number, no review. We won't ask you to document being poor in order to be protected, because that would mean building a database of exactly who is vulnerable. A fixed share of every paid subscription funds this.</li>
   </ul>
   <p>SOVRAN is an early-stage project. The tools on this site work today and are free. Anything else is not built yet, and we would rather say so plainly than imply otherwise.</p>` }
 ];

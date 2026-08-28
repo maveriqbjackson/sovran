@@ -1,11 +1,19 @@
+# ── Long-lived caching for immutable assets ──
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
 /jszip.min.js
   Cache-Control: public, max-age=31536000, immutable
 
+# ── Security headers, site-wide ──
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: no-referrer
   X-Frame-Options: DENY
-  Permissions-Policy: geolocation=(), camera=(), microphone=(), interest-cohort=()
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  # Because every asset is self-hosted, we can forbid all outside loading
+  # outright. If anything were ever injected into a page here, the browser
+  # would refuse to fetch it. Architecture, not promise.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
