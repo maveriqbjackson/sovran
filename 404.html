@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>No record found — SOVRAN</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#04060F">
+<link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%2304060F'/%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' x2='1'%3E%3Cstop offset='0' stop-color='%237B5CD6'/%3E%3Cstop offset='.5' stop-color='%234FC3D9'/%3E%3Cstop offset='1' stop-color='%23D9AE5F'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M10 76 Q50 26 90 76' stroke='url(%23b)' stroke-width='8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+/* Self-hosted type. No request leaves this domain. */
+@font-face{font-family:'Archivo';font-style:normal;font-weight:100 900;font-stretch:62% 125%;font-display:swap;
+  src:url(/fonts/archivo-var.woff2) format('woff2-variations'),url(/fonts/archivo-var.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:100 700;font-display:swap;
+  src:url(/fonts/plex-sans-var.woff2) format('woff2-variations'),url(/fonts/plex-sans-var.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;
+  src:url(/fonts/plex-mono-500.woff2) format('woff2')}
+:root{
+  --void:#04060F; --surface:#0B1122;
+  --line:rgba(232,224,206,.09); --line-2:rgba(232,224,206,.17);
+  --bone:#EDE7DA; --ash:#8A92AB; --ash-dim:#5D6580;
+  --gold:#D9AE5F; --gold-hi:#F2D9A0; --gold-deep:#8F6B27;
+  --bif-1:#7B5CD6; --bif-2:#4FC3D9; --bif-3:#D9AE5F; --ice:#5BB8D4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--void);color:var(--bone);min-height:100vh;
+  font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;font-size:17px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:40px 24px;text-align:left;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cg fill='%23EDE7DA'%3E%3Ccircle cx='53' cy='88' r='.8' opacity='.5'/%3E%3Ccircle cx='302' cy='142' r='1' opacity='.45'/%3E%3Ccircle cx='588' cy='121' r='.9' opacity='.4'/%3E%3Ccircle cx='97' cy='233' r='.7' opacity='.38'/%3E%3Ccircle cx='389' cy='241' r='.9' opacity='.42'/%3E%3Ccircle cx='657' cy='266' r='.8' opacity='.36'/%3E%3Ccircle cx='31' cy='401' r='.9' opacity='.4'/%3E%3Ccircle cx='291' cy='412' r='.75' opacity='.36'/%3E%3Ccircle cx='447' cy='488' r='1' opacity='.44'/%3E%3Ccircle cx='122' cy='597' r='.8' opacity='.38'/%3E%3Ccircle cx='412' cy='581' r='.85' opacity='.4'/%3E%3Ccircle cx='678' cy='533' r='.9' opacity='.4'/%3E%3C/g%3E%3C/svg%3E");
+}
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(60ch 44ch at 80% 4%,rgba(123,92,214,.10),transparent 66%),
+             radial-gradient(54ch 40ch at 8% 14%,rgba(79,195,217,.06),transparent 64%),
+             radial-gradient(140ch 100ch at 50% 45%,transparent 40%,rgba(0,0,0,.55) 100%);
+}
+main{position:relative;z-index:1;max-width:560px;width:100%}
+.mark{
+  font-family:'Archivo',sans-serif;font-weight:900;font-size:1.1rem;letter-spacing:.16em;
+  font-variation-settings:'wdth' 122;text-transform:uppercase;color:var(--bone);
+  text-decoration:none;display:inline-flex;align-items:center;gap:10px;margin-bottom:44px;
+}
+.bridge{width:20px;height:14px;flex:none;overflow:visible}
+.code{
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:500;letter-spacing:.26em;
+  text-transform:uppercase;color:var(--ice);display:block;margin-bottom:20px;
+}
+h1{
+  font-family:'Archivo',sans-serif;font-weight:900;font-variation-settings:'wdth' 118;
+  text-transform:uppercase;font-size:clamp(2rem,8vw,3.3rem);letter-spacing:-.012em;line-height:1.06;
+}
+h1 .gilt{background:linear-gradient(160deg,var(--gold-hi) 8%,var(--gold) 46%,var(--gold-deep) 96%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+p{color:var(--ash);margin-top:22px;line-height:1.6;max-width:46ch}
+.seam{height:1px;border:0;margin:34px 0;opacity:.42;
+  background:linear-gradient(90deg,var(--bif-1),var(--bif-2) 46%,var(--bif-3) 82%,transparent)}
+.links{display:flex;gap:12px;flex-wrap:wrap}
+.btn{
+  border-radius:11px;text-decoration:none;display:inline-block;
+  background:linear-gradient(165deg,var(--gold-hi),var(--gold) 58%,var(--gold-deep));color:#1E1403;
+  font-family:'Archivo',sans-serif;font-weight:800;font-size:.88rem;text-transform:uppercase;
+  letter-spacing:.09em;padding:15px 28px;transition:filter .18s,box-shadow .18s;
+}
+.btn:hover{filter:brightness(1.1);box-shadow:0 0 24px rgba(217,174,95,.26)}
+.btn.ghost{background:none;border:1px solid var(--line-2);color:var(--ash);box-shadow:none}
+.btn.ghost:hover{border-color:var(--gold);color:var(--gold);filter:none;box-shadow:none}
+.foot{margin-top:40px;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ash-dim)}
+a:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+</style>
+</head>
+<body>
+<main>
+  <a href="/" class="mark">
+    <svg class="bridge" viewBox="0 0 22 15" aria-hidden="true"><defs><linearGradient id="bg" x1="0" x2="1"><stop offset="0" stop-color="#7B5CD6"/><stop offset=".5" stop-color="#4FC3D9"/><stop offset="1" stop-color="#D9AE5F"/></linearGradient></defs><path d="M1.5 13 Q11 2 20.5 13" stroke="url(#bg)" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+    SOVRAN
+  </a>
+
+  <span class="code">Error 404 · No match</span>
+  <h1>We have no <span class="gilt">record</span> of this page.</h1>
+  <p>Which, given what we do here, is arguably the correct outcome. The page you asked for doesn't exist — either the link is wrong, or it moved.</p>
+
+  <hr class="seam">
+
+  <div class="links">
+    <a href="/" class="btn">Back to the start</a>
+    <a href="/photo" class="btn ghost">Check a photo</a>
+  </div>
+
+  <p class="foot">No cookies · No trackers · No analytics</p>
+</main>
+</body>
+</html>

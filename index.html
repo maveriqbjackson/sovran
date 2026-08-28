@@ -104,6 +104,21 @@ header{position:relative;z-index:3;padding:24px 0 0}
 .detect.warm .cnr{border-color:var(--gold);box-shadow:0 0 .5em rgba(217,174,95,.5)}
 .detect.warm .tag{background:var(--gold);color:#1E1403}
 
+/* live tools strip */
+.livebar{margin-top:34px;background:var(--surface);border:1px solid rgba(107,203,155,.26);
+  border-radius:var(--r-lg);padding:20px clamp(18px,3.6vw,24px);max-width:660px}
+.livebar-h{display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;
+  font-size:.66rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#6BCB9B;margin-bottom:16px}
+.livebar-h i{width:7px;height:7px;border-radius:50%;background:#6BCB9B;flex:none;
+  box-shadow:0 0 0 4px rgba(107,203,155,.15),0 0 10px rgba(107,203,155,.6)}
+.livegrid{display:grid;gap:9px}
+.livegrid a{display:block;background:var(--void);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:14px 16px;text-decoration:none;transition:border-color .2s,transform .2s}
+.livegrid a:hover{border-color:rgba(217,174,95,.4);transform:translateX(3px)}
+.livegrid b{display:block;color:var(--bone);font-family:'Archivo',sans-serif;font-weight:700;
+  font-size:.98rem;letter-spacing:-.01em;margin-bottom:3px}
+.livegrid span{display:block;font-size:.83rem;color:var(--ash);line-height:1.4}
+
 /* PROMOTED — the architecture claim carries the page */
 .claim{
   margin-top:40px;padding:26px clamp(20px,4.5vw,32px);
@@ -159,6 +174,8 @@ section{padding:clamp(56px,12vw,96px) 0;position:relative}
 .cap-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.61rem;letter-spacing:.15em;text-transform:uppercase;padding:5px 11px;border-radius:99px;margin-bottom:17px}
 .t-free{background:rgba(91,184,212,.11);color:var(--ice);border:1px solid rgba(91,184,212,.3)}
 .t-plus{background:rgba(217,174,95,.11);color:var(--gold);border:1px solid rgba(217,174,95,.32)}
+.t-live{background:rgba(107,203,155,.11);color:#6BCB9B;border:1px solid rgba(107,203,155,.32)}
+.t-soon{background:rgba(232,224,206,.05);color:var(--ash-dim);border:1px solid var(--line-2)}
 .cap h3{margin-bottom:11px}
 .cap p{font-size:.95rem;color:var(--ash);line-height:1.55}
 .cap ul{list-style:none;margin-top:17px;display:grid;gap:9px}
@@ -234,7 +251,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     </h1>
     <p class="lede">Your face, your address, your habits, your children — collected by people you never met and sold to people you'll never see. SOVRAN finds it, takes it down, and shows you the surveillance you move through every day.</p>
 
-    <p style="margin-top:20px;font-size:.95rem;color:var(--ash)">One piece of this is already built and free to use right now — <a href="audit.html" style="color:var(--gold);border-bottom:1px solid rgba(217,174,95,.4);text-decoration:none">run The Audit on your own data export</a>.</p>
+    <div class="livebar">
+      <span class="livebar-h"><i></i>Three tools are built and free to use right now</span>
+      <div class="livegrid">
+        <a href="/photo"><b>The Photo Check</b><span>See what's hidden in a photo &middot; 5 seconds</span></a>
+        <a href="/audit"><b>The Audit</b><span>Read back your whole social export</span></a>
+        <a href="/guide"><b>The Guide</b><span>What you can actually do, step by step</span></a>
+      </div>
+    </div>
 
     <div class="claim">
       <p>Nothing readable ever reaches our servers.<span class="second">By architecture, not by promise.</span></p>
@@ -297,13 +321,13 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">What it does</span>
-      <h2>Six ways to take yourself back.</h2>
-      <p class="body">Rights you already hold are scattered across a dozen agencies and hundreds of forms. SOVRAN turns them into one place you actually check.</p>
+      <h2>Eight ways to take yourself back.</h2>
+      <p class="body">Rights you already hold are scattered across a dozen agencies and hundreds of forms. SOVRAN turns them into one place you actually check. <strong>Three are live and free today.</strong> The rest are honestly labelled as not built yet — we would rather tell you that than imply otherwise.</p>
     </div>
     <div class="caps">
 
       <div class="cap wide reveal">
-        <span class="cap-tag t-free">Free forever</span>
+        <span class="cap-tag t-soon">Free forever · Not built yet</span>
         <h3>See yourself the way a stranger does</h3>
         <p>Answer a few questions and find out what someone could learn about you in twenty minutes — where you live, where you train, what your car looks like, who your family is. For most people it's the first honest picture they've ever had of themselves.</p>
         <ul>
@@ -314,7 +338,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
       </div>
 
       <div class="cap wide reveal">
-        <span class="cap-tag t-free">Free forever · Live now</span>
+        <span class="cap-tag t-live">Free forever · Live now</span>
         <h3>Read back everything you've already published</h3>
         <p>Every platform is legally required to hand you a full export of your own data. Download yours, drop the file into SOVRAN, and it is read <strong>entirely on your device</strong> — no account connection, no passwords, no tokens for anyone to steal.</p>
         <ul>
@@ -323,29 +347,43 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
           <li>Patterns in when and where you post that reveal a schedule you didn't mean to publish</li>
           <li>A pre-post check that flags all of it <em>before</em> you share the next one</li>
         </ul>
-        <a href="audit.html" class="btn" style="width:auto;display:inline-block;text-decoration:none;margin-top:22px;padding:15px 30px">Run the audit &rarr;</a>
+        <a href="/audit" class="btn" style="width:auto;display:inline-block;text-decoration:none;margin-top:22px;padding:15px 30px">Run the audit &rarr;</a>
       </div>
 
       <div class="cap reveal">
-        <span class="cap-tag t-plus">SOVRAN+</span>
+        <span class="cap-tag t-live">Free forever · Live now</span>
+        <h3>Check a single photo in five seconds</h3>
+        <p>Drop in any photo and see the coordinates, timestamp, and camera serial number written inside it — then download a clean copy with the metadata cut out and every pixel untouched.</p>
+        <a href="/photo" class="btn" style="width:auto;display:inline-block;text-decoration:none;margin-top:20px;padding:14px 26px;font-size:.88rem">Check a photo &rarr;</a>
+      </div>
+
+      <div class="cap reveal">
+        <span class="cap-tag t-live">Free forever · Live now</span>
+        <h3>Know your moves</h3>
+        <p>Searchable, plain-language answers to what you can actually do — broker opt-outs with a checklist that remembers your progress, the routes for removing images, school directory rights, and what to ask your city council.</p>
+        <a href="/guide" class="btn" style="width:auto;display:inline-block;text-decoration:none;margin-top:20px;padding:14px 26px;font-size:.88rem">Open The Guide &rarr;</a>
+      </div>
+
+      <div class="cap reveal">
+        <span class="cap-tag t-soon">SOVRAN+ · Not built yet</span>
         <h3>Find your face</h3>
         <p>Search for photos of yourself you never posted. Your face is matched on your own device — the image never uploads, and SOVRAN can only ever search for the person who verified the account. This is a mirror, not a lookup tool for strangers.</p>
       </div>
 
       <div class="cap reveal">
-        <span class="cap-tag t-plus">SOVRAN+</span>
+        <span class="cap-tag t-soon">SOVRAN+ · Not built yet</span>
         <h3>Take it down and keep it down</h3>
         <p>Broker deletions, copyright claims on photos you took yourself, and non-consensual image removals — filed for you, tracked to a real answer, and refiled the moment someone quietly puts it back.</p>
       </div>
 
       <div class="cap reveal">
-        <span class="cap-tag t-free">Free forever</span>
+        <span class="cap-tag t-soon">Free forever · Not built yet</span>
         <h3>See what sees you</h3>
         <p>Plate readers, camera networks, and the contracts behind them, mapped from public records. What's on your street, who runs it, how long they keep it, and when your city council votes on it next.</p>
       </div>
 
       <div class="cap reveal">
-        <span class="cap-tag t-plus">SOVRAN+</span>
+        <span class="cap-tag t-soon">SOVRAN+ · Not built yet</span>
         <h3>The last word</h3>
         <p>Name someone you trust. If you die or go dark, they can erase everything SOVRAN holds and fire every removal request you had queued — without ever holding your keys while you're alive. Your record shouldn't outlive you unless you decided it should.</p>
       </div>
@@ -437,7 +475,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
       </div>
       <div>
         <p style="font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.17em;text-transform:uppercase;color:var(--ash-dim);margin-bottom:11px">Contact</p>
-        <p><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a></p>
+        <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--></p>
         <p style="margin-top:19px">© 2026 Aether &amp; Ash. No cookies. No trackers. No analytics.</p>
       </div>
     </div>
@@ -502,8 +540,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     .then(function(r){ return r.json().then(function(d){ return { ok: r.ok, d: d }; }); })
     .then(function(res){
       if(res.ok){
-        say('Your place is held. We\u2019ll only write when there\u2019s something real to show you.', 'ok');
-        btn.textContent = 'Claimed';
+        say(res.d && res.d.returning
+          ? 'You\u2019re already on the list \u2014 we\u2019ve updated what you told us. Nothing else to do.'
+          : 'Your place is held. Check your inbox in a moment \u2014 and we\u2019ll only write again when there\u2019s something real to show you.', 'ok');
+        btn.textContent = res.d && res.d.returning ? 'Already in' : 'Claimed';
         email.value = ''; document.getElementById('note').value = '';
       } else {
         say(res.d.error || 'That didn\u2019t go through. Try again in a moment.', 'err');

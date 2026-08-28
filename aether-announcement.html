@@ -1,0 +1,255 @@
+<!--
+════════════════════════════════════════════════════════════════════
+  SOVRAN announcement — drop-in for aetherandash.digital
+  ════════════════════════════════════════════════════════════════════
+
+  Everything is namespaced `sv-` and scoped inside .sv-scope, so it
+  cannot collide with any styles already on your site. No external
+  requests, no libraries, no build step.
+
+  ── WHERE TO PASTE ──
+
+  PIECE 1 (announcement bar)
+    Paste immediately after your opening <body> tag, above everything.
+    It pins to the top of the viewport and pushes nothing around.
+
+  PIECE 2 (feature card)
+    Paste wherever your portfolio items live — above the grid works
+    well, since this is a launch rather than a past project.
+
+  You can use one or both. They're independent.
+
+  ── CHANGING THE LINK ──
+  Both point at https://mysovran.online — search and replace if the
+  canonical domain changes.
+
+  ── RE-ANNOUNCING LATER ──
+  The bar hides for 30 days once dismissed. To show it again to
+  everyone, change SV_KEY below (e.g. 'sv-a1' → 'sv-a2').
+════════════════════════════════════════════════════════════════════
+-->
+
+
+<!-- ═══════════ PIECE 1 — ANNOUNCEMENT BAR ═══════════ -->
+
+<div class="sv-scope">
+  <div class="sv-bar" id="svBar" role="region" aria-label="Announcement" hidden>
+    <a class="sv-bar-link" href="https://mysovran.online" target="_blank" rel="noopener">
+      <span class="sv-pulse" aria-hidden="true"></span>
+      <span class="sv-bar-tag">New</span>
+      <span class="sv-bar-text">
+        <b>SOVRAN</b> is live — a digital self-preservation tool.
+        <span class="sv-bar-more">Find out what you've already published.</span>
+      </span>
+      <span class="sv-bar-go" aria-hidden="true">→</span>
+    </a>
+    <button class="sv-bar-x" id="svBarX" aria-label="Dismiss announcement">×</button>
+  </div>
+</div>
+
+
+<!-- ═══════════ PIECE 2 — FEATURE CARD ═══════════ -->
+
+<div class="sv-scope">
+  <a class="sv-card" href="https://mysovran.online" target="_blank" rel="noopener">
+    <span class="sv-seam" aria-hidden="true"></span>
+
+    <div class="sv-card-top">
+      <span class="sv-logo">
+        <svg viewBox="0 0 22 15" aria-hidden="true" width="22" height="15">
+          <defs><linearGradient id="svBif" x1="0" x2="1">
+            <stop offset="0" stop-color="#7B5CD6"/><stop offset=".5" stop-color="#4FC3D9"/><stop offset="1" stop-color="#D9AE5F"/>
+          </linearGradient></defs>
+          <path d="M1.5 13 Q11 2 20.5 13" stroke="url(#svBif)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        </svg>
+        SOVRAN
+      </span>
+      <span class="sv-badge">Now live</span>
+    </div>
+
+    <h3 class="sv-head">Today you are a record.<br><span class="sv-gilt">Tomorrow you are sovereign.</span></h3>
+
+    <p class="sv-body">
+      A digital self-preservation tool. Find your face and your data where you never
+      put them, get them taken down, and see the surveillance you move through every
+      day. Nothing readable ever reaches a server — by architecture, not by promise.
+    </p>
+
+    <ul class="sv-list">
+      <li>Read back every location you've already published</li>
+      <li>See the plate readers and cameras on your own street</li>
+      <li>Free forever to know. Paid only to have the work done for you.</li>
+    </ul>
+
+    <span class="sv-cta">Open SOVRAN <span aria-hidden="true">→</span></span>
+  </a>
+</div>
+
+
+<!-- ═══════════ STYLES + SCRIPT (paste once, anywhere) ═══════════ -->
+
+<style>
+.sv-scope, .sv-scope *{box-sizing:border-box;margin:0;padding:0}
+.sv-scope{
+  --sv-void:#04060F; --sv-surface:#0B1122; --sv-surface2:#111A31;
+  --sv-line:rgba(232,224,206,.10); --sv-line2:rgba(232,224,206,.19);
+  --sv-bone:#EDE7DA; --sv-ash:#9098AE; --sv-dim:#6A7288;
+  --sv-gold:#D9AE5F; --sv-gold-hi:#F2D9A0; --sv-gold-deep:#8F6B27;
+  --sv-b1:#7B5CD6; --sv-b2:#4FC3D9; --sv-b3:#D9AE5F;
+  font-family:'IBM Plex Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+
+/* ── announcement bar ── */
+.sv-scope .sv-bar{
+  position:fixed;top:0;left:0;right:0;z-index:9999;
+  display:flex;align-items:stretch;
+  background:linear-gradient(100deg,#070B18,#101a33 55%,#0B1122);
+  border-bottom:1px solid rgba(217,174,95,.28);
+  box-shadow:0 6px 30px rgba(0,0,0,.5);
+  animation:svDrop .55s cubic-bezier(.2,.75,.3,1) both;
+}
+.sv-scope .sv-bar::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--sv-b1),var(--sv-b2),var(--sv-b3));
+}
+@keyframes svDrop{from{transform:translateY(-100%);opacity:0}to{transform:none;opacity:1}}
+.sv-scope .sv-bar-link{
+  flex:1;display:flex;align-items:center;gap:11px;
+  padding:13px 14px 13px 18px;text-decoration:none;color:var(--sv-bone);
+  font-size:14.5px;line-height:1.35;min-width:0;
+}
+.sv-scope .sv-bar-link:hover .sv-bar-go{transform:translateX(4px)}
+.sv-scope .sv-pulse{
+  width:8px;height:8px;border-radius:50%;background:var(--sv-gold);flex:none;
+  box-shadow:0 0 0 0 rgba(217,174,95,.6);animation:svPulse 2.4s ease-out infinite;
+}
+@keyframes svPulse{
+  0%{box-shadow:0 0 0 0 rgba(217,174,95,.55)}
+  70%{box-shadow:0 0 0 9px rgba(217,174,95,0)}
+  100%{box-shadow:0 0 0 0 rgba(217,174,95,0)}
+}
+.sv-scope .sv-bar-tag{
+  font-family:ui-monospace,'IBM Plex Mono',SFMono-Regular,Menlo,monospace;
+  font-size:9.5px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;
+  color:#1E1403;background:var(--sv-gold);padding:4px 8px;border-radius:99px;flex:none;
+}
+.sv-scope .sv-bar-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sv-scope .sv-bar-text b{font-weight:700;letter-spacing:.04em}
+.sv-scope .sv-bar-more{color:var(--sv-ash)}
+.sv-scope .sv-bar-go{color:var(--sv-gold);font-size:17px;flex:none;transition:transform .2s ease}
+.sv-scope .sv-bar-x{
+  flex:none;background:none;border:0;border-left:1px solid var(--sv-line);
+  color:var(--sv-dim);font-size:22px;line-height:1;padding:0 17px;cursor:pointer;
+  transition:color .18s,background .18s;
+}
+.sv-scope .sv-bar-x:hover{color:var(--sv-bone);background:rgba(255,255,255,.04)}
+@media(max-width:640px){
+  .sv-scope .sv-bar-link{font-size:13.5px;padding-left:14px;gap:9px}
+  .sv-scope .sv-bar-more{display:none}
+  .sv-scope .sv-bar-tag{display:none}
+}
+
+/* ── feature card ── */
+.sv-scope .sv-card{
+  display:block;position:relative;overflow:hidden;text-decoration:none;
+  background:linear-gradient(150deg,#0B1122,#111A31 60%,#0B1122);
+  border:1px solid rgba(217,174,95,.22);border-radius:24px;
+  padding:clamp(24px,4.5vw,36px);margin:26px 0;max-width:760px;
+  transition:transform .28s cubic-bezier(.2,.7,.3,1),border-color .28s,box-shadow .28s;
+}
+.sv-scope .sv-card::after{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:.6;
+  background:radial-gradient(30ch 22ch at 88% -6%,rgba(123,92,214,.20),transparent 68%),
+             radial-gradient(26ch 20ch at 4% 106%,rgba(217,174,95,.13),transparent 66%);
+}
+.sv-scope .sv-card:hover{
+  transform:translateY(-3px);border-color:rgba(217,174,95,.45);
+  box-shadow:0 18px 52px rgba(0,0,0,.5);
+}
+.sv-scope .sv-card > *{position:relative;z-index:1}
+.sv-scope .sv-seam{
+  position:absolute;top:0;left:0;right:0;height:3px;z-index:2;
+  background:linear-gradient(90deg,var(--sv-b1),var(--sv-b2) 48%,var(--sv-b3));
+}
+.sv-scope .sv-card-top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:22px}
+.sv-scope .sv-logo{
+  display:inline-flex;align-items:center;gap:10px;color:var(--sv-bone);
+  font-family:'Archivo',ui-sans-serif,system-ui,sans-serif;
+  font-weight:900;font-size:15px;letter-spacing:.17em;text-transform:uppercase;
+}
+.sv-scope .sv-badge{
+  font-family:ui-monospace,'IBM Plex Mono',SFMono-Regular,Menlo,monospace;
+  font-size:9.5px;font-weight:600;letter-spacing:.17em;text-transform:uppercase;
+  color:var(--sv-gold);background:rgba(217,174,95,.11);
+  border:1px solid rgba(217,174,95,.32);padding:5px 11px;border-radius:99px;flex:none;
+}
+.sv-scope .sv-head{
+  font-family:'Archivo',ui-sans-serif,system-ui,sans-serif;
+  font-weight:900;text-transform:uppercase;color:var(--sv-bone);
+  font-size:clamp(1.3rem,4.4vw,2rem);line-height:1.13;letter-spacing:-.014em;margin-bottom:16px;
+}
+.sv-scope .sv-gilt{
+  background:linear-gradient(160deg,var(--sv-gold-hi) 6%,var(--sv-gold) 48%,var(--sv-gold-deep) 96%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.sv-scope .sv-body{color:var(--sv-ash);font-size:15px;line-height:1.62;max-width:58ch}
+.sv-scope .sv-list{list-style:none;margin-top:20px;display:grid;gap:9px}
+.sv-scope .sv-list li{
+  color:var(--sv-ash);font-size:13.5px;line-height:1.5;padding-left:20px;position:relative;
+}
+.sv-scope .sv-list li::before{
+  content:'';position:absolute;left:0;top:.6em;width:9px;height:1.5px;background:var(--sv-gold-deep);
+}
+.sv-scope .sv-cta{
+  display:inline-block;margin-top:26px;border-radius:11px;
+  background:linear-gradient(165deg,var(--sv-gold-hi),var(--sv-gold) 58%,var(--sv-gold-deep));
+  color:#1E1403;font-family:'Archivo',ui-sans-serif,system-ui,sans-serif;
+  font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.09em;
+  padding:14px 26px;transition:filter .18s,box-shadow .18s;
+}
+.sv-scope .sv-card:hover .sv-cta{filter:brightness(1.1);box-shadow:0 0 26px rgba(217,174,95,.3)}
+
+.sv-scope a:focus-visible,.sv-scope button:focus-visible{outline:2px solid var(--sv-gold);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){
+  .sv-scope *{animation:none!important;transition:none!important}
+}
+</style>
+
+<script>
+(function(){
+  var SV_KEY = 'sv-a1';                 // bump this to re-announce to everyone
+  var SV_DAYS = 30;                     // how long a dismissal lasts
+
+  var bar = document.getElementById('svBar');
+  if(!bar) return;
+
+  var hidden = false;
+  try{
+    var until = window.localStorage.getItem(SV_KEY);
+    if(until && Date.now() < parseInt(until,10)) hidden = true;
+  }catch(e){ /* storage blocked — just show it */ }
+
+  if(hidden) return;
+
+  bar.hidden = false;
+
+  // nudge the page down so the bar never covers a fixed header
+  function pad(){
+    document.body.style.paddingTop = bar.offsetHeight + 'px';
+  }
+  pad();
+  window.addEventListener('resize', pad);
+
+  document.getElementById('svBarX').addEventListener('click', function(){
+    bar.style.transition = 'transform .35s ease, opacity .35s ease';
+    bar.style.transform = 'translateY(-100%)';
+    bar.style.opacity = '0';
+    document.body.style.transition = 'padding-top .35s ease';
+    document.body.style.paddingTop = '0px';
+    setTimeout(function(){ bar.hidden = true; document.body.style.transition = ''; }, 360);
+    try{
+      window.localStorage.setItem(SV_KEY, String(Date.now() + SV_DAYS*864e5));
+    }catch(e){}
+  });
+})();
+</script>
