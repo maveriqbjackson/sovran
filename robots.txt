@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin
+Disallow: /panel
+Disallow: /account
+Disallow: /api/
+Allow: /
+
+Sitemap: https://mysovran.online/sitemap.xml
