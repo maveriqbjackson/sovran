@@ -168,6 +168,55 @@ export async function onRequestPost({ request, env }) {
       });
     }
 
+    /* ── Overpass proxy, for building map snapshots ──
+       Runs server-side so the browser only ever talks to this origin. A page's
+       Content-Security-Policy governs what the BROWSER may contact; it has no
+       say over what a Worker fetches. That is why this works where the direct
+       call did not.
+       Note this is admin-only and used to build public map files. It is not on
+       any path a visitor touches, so it changes nothing about what SOVRAN can
+       see of anyone's browsing. ── */
+    if (action === "overpass") {
+      const query = String(body.query || "");
+      if (!query || query.length > 4000) return json({ error: "Bad query." }, 400);
+
+      const mirrors = [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://overpass.private.coffee/api/interpreter",
+      ];
+      const tried = [];
+
+      for (const url of mirrors) {
+        const host = url.replace(/^https:\/\//, "").replace(/\/.*$/, "");
+        try {
+          const res = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              // Overpass asks that clients identify themselves
+              "User-Agent": "SOVRAN-map-builder/1.0 (+https://mysovran.online)",
+            },
+            body: "data=" + encodeURIComponent(query),
+          });
+
+          if (!res.ok) {
+            const txt = (await res.text().catch(() => "")).replace(/<[^>]*>/g, " ")
+              .replace(/\s+/g, " ").trim().slice(0, 200);
+            tried.push(`${host}: HTTP ${res.status}${txt ? " — " + txt : ""}`);
+            continue;
+          }
+
+          const data = await res.json().catch(() => null);
+          if (!data) { tried.push(`${host}: replied but not with JSON`); continue; }
+          return json({ ok: true, host, elements: data.elements || [] });
+        } catch (e) {
+          tried.push(`${host}: ${String(e && e.message || "unreachable")}`);
+        }
+      }
+      return json({ error: "Every mirror failed.", tried }, 502);
+    }
+
     if (action === "export") {
       const { results } = await env.DB.prepare(
         "SELECT email, interest, note, source, created_at FROM waitlist ORDER BY id ASC").all();
