@@ -253,6 +253,10 @@ body::after{
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
           <select id="mstate" style="background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:13px 15px;font-family:inherit;font-size:.9rem;min-width:190px"></select>
           <button class="btn" id="mbuild" style="font-size:.84rem;padding:13px 22px">Build this state</button>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--ash);cursor:pointer">
+            <input type="checkbox" id="mroads" checked style="width:16px;height:16px;accent-color:var(--gold)">
+            include roads
+          </label>
           <button class="btn ghost" id="mstop" style="font-size:.84rem;padding:13px 22px;display:none">Stop</button>
         </div>
         <div class="msg" id="mmsg"></div>
@@ -311,10 +315,17 @@ function call(action,extra){
       var d;
       try{ d=JSON.parse(txt); }
       catch(e){
-        if(redirected || /cloudflareaccess|<!DOCTYPE|<html/i.test(txt)){
+        // Only a genuine Access login page counts as a redirect. Cloudflare's
+        // own timeout and error pages are also HTML, and treating those as an
+        // Access problem hid the real cause for two rounds.
+        if(redirected || /cloudflareaccess\.com|Sign in with|Access denied/i.test(txt)){
           return {ok:false, accessRedirect:true, d:{}};
         }
-        return {ok:false, d:{error:'The server replied with something that was not JSON (HTTP '+r.status+').'}};
+        var hint='';
+        if(r.status===524||/524|timed out|Origin Time-?out/i.test(txt))
+          hint=' The Worker took too long \u2014 the query was too large. Try a smaller region, or build without roads.';
+        else if(r.status===502||r.status===503) hint=' The upstream service was unavailable.';
+        return {ok:false, d:{error:'Server returned HTTP '+r.status+' and not JSON.'+hint}};
       }
       if(d && d.session) session=d.session;
       if(d && d.expired){ session=''; }
@@ -580,7 +591,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
   function build(code){
     var r=REGIONS[code], name=r[0], bb=[r[1],r[2],r[3],r[4]];
     var bbox=bb.join(',');
-    var qCams='[out:json][timeout:60];('+
+    var qCams='[out:json][timeout:40];('+
       'node["man_made"="surveillance"]('+bbox+');'+
       'way["man_made"="surveillance"]('+bbox+');'+
       ');out center;';
@@ -588,10 +599,16 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     // roads with full geometry is tens of megabytes and reliably times out, so
     // this is the trunk network only, and a failure here still leaves you a
     // usable camera file.
-    var qRoads='[out:json][timeout:90];'+
-      'way["highway"~"^(motorway|trunk|primary)$"]("+bbox+");'+
-      'out geom;';
-    qRoads=qRoads.replace('"+bbox+"',bbox);
+    // Roads are fetched as four quadrants. One request covering a whole state
+    // makes the Worker sit waiting long enough that Cloudflare kills it at the
+    // edge and returns an HTML error page instead of JSON.
+    var midLat=(bb[0]+bb[2])/2, midLon=(bb[1]+bb[3])/2;
+    var quads=[
+      [bb[0],bb[1],midLat,midLon],[bb[0],midLon,midLat,bb[3]],
+      [midLat,bb[1],bb[2],midLon],[midLat,midLon,bb[2],bb[3]]
+    ].map(function(t){
+      return '[out:json][timeout:25];way["highway"~"^(motorway|trunk|primary)$"]('+t.join(',')+');out geom;';
+    });
     var q=qCams;
 
     line('\u2192 '+name+' \u2014 querying\u2026','var(--ice)');
@@ -624,14 +641,27 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     }
 
     return go().then(function(camData){
-      line('   fetching the road network separately\u2026','var(--ash-dim)');
-      q=qRoads;
-      return go().then(function(roadData){
-        line('   \u2713 roads returned '+((roadData.elements||[]).length).toLocaleString()+' ways','var(--ash-dim)');
-        return {elements:(camData.elements||[]).concat(roadData.elements||[])};
-      }).catch(function(){
-        line('   \u26A0 roads unavailable \u2014 saving cameras only. Re-run later to add them.','#FFCB6B');
+      if(!document.getElementById('mroads').checked){
+        line('   roads skipped by choice','var(--ash-dim)');
         return camData;
+      }
+      var acc=[], done=0;
+      function quad(i){
+        if(i>=quads.length) return Promise.resolve();
+        q=quads[i];
+        line('   roads: quadrant '+(i+1)+' of 4\u2026','var(--ash-dim)');
+        return go().then(function(r){
+          acc=acc.concat(r.elements||[]); done++;
+          return new Promise(function(res){ setTimeout(res,1500); }).then(function(){ return quad(i+1); });
+        }).catch(function(){
+          line('   \u26A0 quadrant '+(i+1)+' failed \u2014 continuing','#FFCB6B');
+          return new Promise(function(res){ setTimeout(res,2500); }).then(function(){ return quad(i+1); });
+        });
+      }
+      return quad(0).then(function(){
+        if(!acc.length) line('   \u26A0 no roads returned \u2014 saving cameras only','#FFCB6B');
+        else line('   \u2713 roads: '+acc.length.toLocaleString()+' ways from '+done+'/4 quadrants','var(--ash-dim)');
+        return {elements:(camData.elements||[]).concat(acc)};
       });
     }).then(function(d){
       var ops=[], types=[], oi={}, ti={}, pts=[], roads=[], rnames=[], rni={};
@@ -652,8 +682,11 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
         return out;
       }
 
+      var seenWay={};
       (d.elements||[]).forEach(function(el){
         if(el.type==='way'&&el.tags&&el.tags.highway&&el.geometry){
+          if(seenWay[el.id]) return;
+          seenWay[el.id]=1;
           var cls=RC[el.tags.highway];
           if(cls===undefined) return;
           var g=thin(el.geometry, cls<2?0.003:0.005);
