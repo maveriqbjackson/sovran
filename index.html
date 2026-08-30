@@ -268,7 +268,11 @@ section{padding:clamp(56px,12vw,96px) 0;position:relative}
 .fact{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:25px}
 .fact .n{font-family:'Archivo',sans-serif;font-weight:900;font-variation-settings:'wdth' 86;font-size:clamp(2.1rem,7vw,2.8rem);color:var(--ice);letter-spacing:-.04em;line-height:1;display:block}
 .fact p{font-size:.92rem;color:var(--ash);margin-top:13px;line-height:1.5}
+.fact{display:flex;flex-direction:column}
 .fact .src{font-family:'IBM Plex Mono',monospace;font-size:.61rem;letter-spacing:.11em;text-transform:uppercase;color:var(--ash-dim);margin-top:15px;display:block}
+.fact .act{margin-top:auto;padding-top:16px;display:block;color:var(--gold);text-decoration:none;
+  font-family:'Archivo',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:-.01em;transition:transform .18s}
+.fact:hover .act{transform:translateX(3px)}
 
 .caps{display:grid;gap:14px;margin-top:46px}
 @media(min-width:800px){.caps{grid-template-columns:repeat(2,1fr)}.caps .cap.wide{grid-column:1/-1}}
@@ -369,6 +373,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 
     <div class="livebar">
       <span class="livebar-h"><i></i>Seven tools, built and free to use right now</span>
+      <p style="font-size:.88rem;color:var(--ash);margin-bottom:14px">New here? <a href="/start" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.4)">Start here instead</a> &mdash; it asks why you came and points you at one thing.</p>
       <div class="livegrid">
         <a href="/photo"><b>The Photo Check</b><span>Find the GPS coordinates and camera serial hidden in any photo, then download a clean copy. <em>Use it before you send a picture to anyone you don&rsquo;t know.</em></span></a>
         <a href="/audit"><b>The Audit</b><span>Drop in your own Instagram or TikTok export and see every location and routine you&rsquo;ve published. <em>Use it once to find out what&rsquo;s already out there.</em></span></a>
@@ -425,13 +430,16 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow cold">Where things stand</span>
-      <h2>This is not fear. It is a count of the doors left open.</h2>
-      <p class="body">None of this is hidden. It is public, documented, and almost nobody has the hours to act on it. The rights already exist. What's missing is anyone making them usable.</p>
+      <h2>Not fear. A count of the doors left open &mdash; and how to close each one.</h2>
+      <p class="body">None of this is hidden. It is public, documented, and almost nobody has the hours to act on it. The rights already exist &mdash; what's missing is anyone making them usable. So every number below comes with the thing you can do about it.</p>
     </div>
     <div class="facts">
-      <div class="fact reveal"><span class="n">500+</span><p>Data brokers registered in California alone are now legally required to delete your information on request — and to keep checking for new requests every 45 days.</p><span class="src">CalPrivacy · Delete Act</span></div>
-      <div class="fact reveal"><span class="n">120k+</span><p>License plate readers mapped across the United States by volunteers. Most drivers have never been told one sits on their street.</p><span class="src">DeFlock · OpenStreetMap</span></div>
-      <div class="fact reveal"><span class="n">48 hrs</span><p>The window platforms now have to remove intimate images shared without consent — real or AI-generated — once you file a valid request.</p><span class="src">TAKE IT DOWN Act · FTC</span></div>
+      <div class="fact reveal"><span class="n">500+</span><p>Data brokers registered in California alone are now legally required to delete your information on request &mdash; and to keep checking for new requests every 45 days.</p><span class="src">CalPrivacy &middot; Delete Act</span><a class="act" href="/guide#brokers">Start removing yourself &rarr;</a></div>
+      <div class="fact reveal"><span class="n">120k+</span><p>License plate readers mapped across the United States by volunteers. Most drivers have never been told one sits on their street.</p><span class="src">DeFlock &middot; OpenStreetMap</span><a class="act" href="/map">See what's on your street &rarr;</a></div>
+      <div class="fact reveal"><span class="n">48 hrs</span><p>The window platforms now have to remove intimate images shared without consent &mdash; real or AI-generated &mdash; once you file a valid request.</p><span class="src">TAKE IT DOWN Act &middot; FTC</span><a class="act" href="/guide#images">The routes that work &rarr;</a></div>
+      <div class="fact reveal"><span class="n">1 photo</span><p>A single picture from your phone can carry your exact coordinates, the second you took it, and your camera's serial number &mdash; and it travels with the file to everyone you send it to.</p><span class="src">EXIF metadata</span><a class="act" href="/photo">Check one of yours &rarr;</a></div>
+      <div class="fact reveal"><span class="n">Free</span><p>Freezing your credit at all three bureaus costs nothing and is the single strongest protection against identity theft. Most people have never done it.</p><span class="src">FTC &middot; Fair Credit Reporting Act</span><a class="act" href="/guide#start">The five that matter most &rarr;</a></div>
+      <div class="fact reveal"><span class="n">In writing</span><p>Schools can release your child's name, photo, address, and birthday to almost anyone &mdash; unless you opt out of the directory in writing, usually within a window at the start of the year.</p><span class="src">FERPA &middot; directory information</span><a class="act" href="/guide#kids">What to send the school &rarr;</a></div>
     </div>
   </div>
 </section>
@@ -442,7 +450,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">What it does</span>
-      <h2>Nine ways to take yourself back.</h2>
+      <h2>Ten ways to take yourself back.</h2>
       <p class="body">Rights you already hold are scattered across a dozen agencies and hundreds of forms. SOVRAN turns them into one place you actually check. <strong>Seven are live and free today.</strong> The rest are honestly labelled as launching soon — we would rather tell you that than imply otherwise.</p>
     </div>
     <div class="caps">
@@ -509,6 +517,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
         <h3>See what sees you</h3>
         <p>Plate readers, camera networks, and who operates them, drawn from a public database and plotted on your device. No location permission, no address search, and no map tiles &mdash; because a normal map quietly reports exactly where you are looking.</p><p style="margin-top:12px;font-size:.9rem;color:var(--ash)"><strong>Free forever.</strong> This is public records mapped by volunteers. It was never ours to sell.</p><div class="guard"><svg width="17" height="19" viewBox="0 0 17 19" fill="none" aria-hidden="true"><path d="M8.5 1L15.5 4v6c0 4.2-3 7.2-7 8.5C4.5 17.2 1.5 14.2 1.5 10V4L8.5 1Z" stroke="#3DE8A5" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.6 9.6l2 2 3.8-4" stroke="#3DE8A5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><p><b>Awareness, not evasion</b>This shows you what surveillance exists around you, who operates it, and how to question it. It is not a tool for avoiding a lawful investigation, and we are not going to build one.</p></div>
         <a href="/map" class="btn" style="width:auto;display:inline-block;text-decoration:none;margin-top:20px;padding:14px 26px;font-size:.88rem">Open The Map &rarr;</a>
+      </div>
+
+      <div class="cap reveal">
+        <span class="cap-tag t-soon">One payment · Launching soon</span>
+        <h3>Or once, and done</h3>
+        <p>Leaving the country. Going properly off-grid. Closing a chapter and not opening another. <strong>The Clean Break</strong> is a single sweep &mdash; every broker, every takedown route, everything a year of subscription would do, in one pass &mdash; and then it is finished.</p>
+        <p style="margin-top:12px">It works because brokers repopulate from <em>new</em> public records. If your life is about to stop producing them, one sweep holds. If it isn't, we will tell you so rather than sell you this.</p>
+        <a href="/access" class="btn" style="width:auto;display:inline-block;text-decoration:none;margin-top:20px;padding:14px 26px;font-size:.88rem">How both shapes work &rarr;</a>
       </div>
 
       <div class="cap reveal">
@@ -603,6 +619,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   <div class="wrap">
     <nav class="fnav">
       <div><span>Use now</span>
+        <a href="/start">Start here</a>
         <a href="/photo">The Photo Check</a><a href="/audit">The Audit</a><a href="/map">The Map</a>
         <a href="/guide">The Guide</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
       </div>

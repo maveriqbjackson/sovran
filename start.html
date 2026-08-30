@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Charter — SOVRAN</title>
-<meta name="description" content="What SOVRAN cannot do to you. Eight articles about the shape of the system, not a privacy policy.">
+<title>Start here — SOVRAN</title>
+<meta name="description" content="Six free tools, none requiring an account. Find the one that matches why you came, and start there.">
 <meta name="theme-color" content="#04060F">
 <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/plex-sans-var.woff2" as="font" type="font/woff2" crossorigin>
@@ -72,33 +72,29 @@ footer a:hover{color:var(--gold);border-color:var(--gold)}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 
-.arts{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;position:relative;margin-top:28px}
-.arts::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;
-  background:linear-gradient(180deg,var(--bif-1),var(--bif-2) 44%,var(--bif-3))}
-.art{display:grid;grid-template-columns:auto 1fr;gap:18px;padding:24px clamp(20px,4vw,28px);border-bottom:1px solid var(--line)}
-.art:last-child{border-bottom:0}
-.art .num{font-family:'Archivo',sans-serif;font-weight:900;font-variation-settings:'wdth' 118;
-  font-size:.9rem;letter-spacing:.1em;color:var(--gold-deep);padding-top:4px;min-width:30px}
-.art h3{font-size:1.06rem;margin-bottom:8px}
-.art p{font-size:.92rem;color:var(--ash);line-height:1.62}
-.art.affirm{background:linear-gradient(90deg,rgba(255,203,107,.07),transparent 74%)}
-.art.affirm .num{color:var(--gold)}
-.pre{background:linear-gradient(140deg,rgba(169,120,255,.10),transparent 72%);border:1px solid rgba(169,120,255,.28);
-  border-radius:var(--r-lg);padding:clamp(22px,4.5vw,30px);margin-top:26px}
-.pre p{color:var(--ash);font-size:1rem;line-height:1.68;margin-bottom:14px;max-width:64ch}
-.pre p:last-child{margin-bottom:0}
-.pre strong{color:var(--bone)}
-
-.chk{display:grid;gap:12px;margin-top:20px}
-.chk>div{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--gold-deep);
-  border-radius:var(--r-md);padding:18px 20px;font-size:.92rem;color:var(--ash);line-height:1.6}
-.chk b{display:block;color:var(--bone);font-family:'Archivo',sans-serif;font-weight:700;font-size:1rem;margin-bottom:6px}
-.chk a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.35)}
-ul.open{list-style:none;display:grid;gap:12px;margin-top:18px}
-ul.open li{padding-left:22px;position:relative;font-size:.93rem;color:var(--ash);line-height:1.6}
-ul.open li::before{content:'';position:absolute;left:0;top:.62em;width:10px;height:1.5px;background:var(--gold-deep)}
-ul.open b{color:var(--bone)}
-ul.open a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.35)}
+.paths{display:grid;gap:13px;margin-top:26px}
+@media(min-width:800px){.paths{grid-template-columns:repeat(2,1fr)}}
+.path{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(20px,4vw,26px);display:flex;flex-direction:column}
+.path .t{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.path h3{margin-bottom:9px}
+.path p{font-size:.9rem;color:var(--ash);line-height:1.6;margin-bottom:14px}
+.path ol{list-style:none;counter-reset:p;display:grid;gap:9px;margin-bottom:18px}
+.path li{counter-increment:p;padding-left:30px;position:relative;font-size:.87rem;color:var(--ash);line-height:1.5}
+.path li::before{content:counter(p);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;
+  background:rgba(255,203,107,.13);border:1px solid rgba(255,203,107,.3);color:var(--gold);
+  font-family:'IBM Plex Mono',monospace;font-size:.63rem;font-weight:600;display:flex;align-items:center;justify-content:center}
+.path li a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.35)}
+.path .go{margin-top:auto}
+.mins{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.12em;
+  text-transform:uppercase;color:#3DE8A5;background:rgba(61,232,165,.1);border:1px solid rgba(61,232,165,.3);
+  border-radius:99px;padding:4px 10px;margin-left:8px}
+.noacct{background:linear-gradient(140deg,rgba(61,232,165,.10),transparent 72%);border:1px solid rgba(61,232,165,.32);
+  border-radius:var(--r-lg);padding:22px 24px;margin-top:26px}
+.noacct p{color:var(--ash);font-size:.95rem;line-height:1.62;max-width:62ch}
+.noacct b{color:#3DE8A5;font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.15em;
+  text-transform:uppercase;display:block;margin-bottom:9px}
 
 /* ══════════════════════════════════════════════════════════════════
    ASGARD · three stacked layers of sky, none of which cost a request
@@ -172,25 +168,99 @@ body::after{
 <main>
 <section class="intro">
   <div class="wrap">
-    <span class="eyebrow">The Charter</span>
-    <h1>What we <span class="gilt">cannot</span> do to you.</h1>
-    <p class="lede">This is not a privacy policy. A privacy policy describes what a company decided this quarter, and it can be rewritten the morning after an acquisition. These are statements about the shape of the system.</p>
+    <span class="eyebrow">Start here</span>
+    <h1>Pick the one that<br>sounds like <span class="gilt">you</span>.</h1>
+    <p class="lede">Six tools, all free, none of them needing an account. You do not have to read the whole site. Find the sentence below that matches why you came, and start there.</p>
 
-    <div class="pre">
-      <p>Every service that protects your identity collects your identity first. That makes it the most valuable target in the room &mdash; for a breach, for a broker, for a subpoena. It is the reason so many privacy tools eventually become the thing they were built against.</p>
-      <p><strong>SOVRAN is built to be worthless to anyone who takes it.</strong></p>
-      <p>A promise can be broken overnight. An architecture has to be rebuilt.</p>
+    <div class="noacct">
+      <b>Before you go further</b>
+      <p>Nothing on this page requires signing up, paying, or giving us an email address. Every tool runs inside your browser &mdash; turn off your connection first if you want to prove it. An account exists, but it only syncs a checklist between your devices, and most people do not need one.</p>
     </div>
+  </div>
+</section>
 
-    <div class="arts">
-      <div class="art"><span class="num">I</span><div><h3>Your photographs stay on your device</h3><p>Faces are matched locally. The image is never uploaded, and there is no copy of it to lose. This is also what makes searching for a face ethical rather than dangerous: we can only ever look for yours.</p></div></div>
-      <div class="art"><span class="num">II</span><div><h3>We never ask who you are</h3><p>No name, no address, no phone number, no date of birth, no government document. An account is an email address you choose and a passphrase you generate. If you use an alias, we will not check &mdash; there is nothing here to check it against.</p></div></div>
-      <div class="art"><span class="num">III</span><div><h3>Your notes are sealed before they leave you</h3><p>Encrypted with a key derived from your passphrase, in your browser, before anything is sent. We hold ciphertext and cannot open it &mdash; not for a court, not for ourselves. The cost of that being real is that a lost passphrase cannot be recovered by anybody. We would rather say so plainly than offer a reset that proves we could have read it all along.</p></div></div>
-      <div class="art"><span class="num">IV</span><div><h3>Nothing you search for is written down</h3><p>No query logs. No history. No behavioural profile. There is no record of your use to hand to anyone, which is why we will not add an AI assistant &mdash; the questions people would ask it are the most sensitive sentences they will write all year.</p></div></div>
-      <div class="art"><span class="num">V</span><div><h3>We never sell, and never take money from anyone who does</h3><p>No advertising. No data brokers. No investment from anyone whose interests require us to reverse this later.</p></div></div>
-      <div class="art"><span class="num">VI</span><div><h3>You can end it completely</h3><p>Delete your account and everything goes with it. Not flagged, not moved to a suppression list, not kept for compliance. The row is gone, because there was almost nothing in it to begin with.</p></div></div>
-      <div class="art"><span class="num">VII</span><div><h3>We never block you for how you connect</h3><p>Use a VPN. Use Tor. Use a borrowed phone on someone else's wifi. We will not throttle you, challenge you, or treat you as suspicious for it. Protecting yourself is not suspicious behaviour &mdash; it is the behaviour we recommend.</p></div></div>
-      <div class="art affirm"><span class="num">VIII</span><div><h3>Nobody is turned away for lack of money</h3><p>If you cannot afford it, you say so and we believe you. No proof of income, no benefits letter, no case number, no review. We will not ask you to document being poor in order to be protected &mdash; requiring that proof would mean building a database of exactly who is vulnerable, which is the thing this entire project exists to argue against. <a href="/access">How that works &rarr;</a></p></div></div>
+<section>
+  <div class="wrap">
+    <div class="paths">
+
+      <div class="path">
+        <span class="t">&ldquo;I have five minutes and no idea where to start&rdquo;</span>
+        <h3>Check one photo<span class="mins">3 min</span></h3>
+        <p>The fastest way to understand the problem is to see it in something of your own. Pick a picture from your camera roll and find out what is written inside it.</p>
+        <ol>
+          <li>Open <a href="/photo">The Photo Check</a></li>
+          <li>Drop in a photo taken on your phone with location on</li>
+          <li>Read the precision ladder &mdash; it shows what your coordinates actually pin down</li>
+          <li>Download the clean copy if you want one</li>
+        </ol>
+        <div class="go"><a href="/photo" class="btn">Check a photo &rarr;</a></div>
+      </div>
+
+      <div class="path">
+        <span class="t">&ldquo;I want my address off the internet&rdquo;</span>
+        <h3>Start the removals<span class="mins">30 min, then ongoing</span></h3>
+        <p>People-search sites publish your home address, your phone number, and your relatives' names to anyone who types your name. Removal is free everywhere legitimate, and tedious &mdash; which is why almost nobody finishes.</p>
+        <ol>
+          <li>Open <a href="/guide#brokers">the broker section of The Guide</a></li>
+          <li>If you are in California, submit one DROP request &mdash; it covers 500+ brokers at once</li>
+          <li>Otherwise work the checklist; it remembers your progress on this device</li>
+          <li>Set a reminder for six months. They repopulate.</li>
+        </ol>
+        <div class="go"><a href="/guide#brokers" class="btn">Open the checklist &rarr;</a></div>
+      </div>
+
+      <div class="path">
+        <span class="t">&ldquo;What is watching my street?&rdquo;</span>
+        <h3>Look at the map<span class="mins">5 min</span></h3>
+        <p>Plate readers photograph every car that passes and log where it was, and when. Most were approved in a routine council vote with nobody in the room.</p>
+        <ol>
+          <li>Open <a href="/map">The Map</a> and choose your state</li>
+          <li>Zoom into your area &mdash; roads and towns appear as you go</li>
+          <li>Tap any device to see who runs it, or that nobody has said</li>
+          <li>Use the generated letter to ask your council the questions that get answers</li>
+        </ol>
+        <div class="go"><a href="/map" class="btn">See what sees you &rarr;</a></div>
+      </div>
+
+      <div class="path">
+        <span class="t">&ldquo;I want to know what I have already published&rdquo;</span>
+        <h3>Audit your own export<span class="mins">Request today, run tomorrow</span></h3>
+        <p>Every platform must hand you a full archive of your data on request. Most people have never looked at theirs. It is the single most complete document about you that exists.</p>
+        <ol>
+          <li>Request your download from Instagram, TikTok, or Facebook &mdash; choose <b>JSON</b></li>
+          <li>It arrives by email in a few hours</li>
+          <li>Drop the file into <a href="/audit">The Audit</a>. It is read entirely on your device</li>
+          <li>Look at the repeated coordinates first. Those are your home, work, and routine.</li>
+        </ol>
+        <div class="go"><a href="/audit" class="btn">Open The Audit &rarr;</a></div>
+      </div>
+
+      <div class="path">
+        <span class="t">&ldquo;I am worried about my kids&rdquo;</span>
+        <h3>Audit what you posted<span class="mins">20 min</span></h3>
+        <p>By the time a child can consent, thousands of images of them are public &mdash; nearly all posted by adults who love them. The fix is about what you publish, never about monitoring them.</p>
+        <ol>
+          <li>Read <a href="/guide#kids">the family section</a> &mdash; start with the school directory opt-out</li>
+          <li>Run your own social export through <a href="/audit">The Audit</a> to find the geotags</li>
+          <li>Use <a href="/photo">The Photo Check</a> before sharing the next picture</li>
+          <li>Ask grandparents to tighten their accounts. They are usually the largest source.</li>
+        </ol>
+        <div class="go"><a href="/guide#kids" class="btn">For families &rarr;</a></div>
+      </div>
+
+      <div class="path" style="border-color:rgba(255,158,94,.34)">
+        <span class="t" style="color:#FF9E5E">&ldquo;Someone is trying to find me&rdquo;</span>
+        <h3>Read this before changing anything<span class="mins">Do not rush</span></h3>
+        <p>Different rules apply when the threat is a specific person. Suddenly locking everything down can signal that you know &mdash; and the period right after someone realises they are losing control is the most dangerous one.</p>
+        <ol>
+          <li>Talk to an advocate before you change settings. They help you sequence it safely.</li>
+          <li>National Domestic Violence Hotline: <b>1-800-799-7233</b>, or text <b>START</b> to <b>88788</b></li>
+          <li>For the technology side specifically, <a href="/guide#risk">techsafety.org</a> is the best resource there is</li>
+          <li>If the device you are reading this on might be monitored, use a different one</li>
+        </ol>
+        <div class="go"><a href="/guide#risk" class="btn">Resources and numbers &rarr;</a></div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -199,28 +269,24 @@ body::after{
 
 <section>
   <div class="wrap">
-    <h2>How to check we mean it</h2>
-    <p class="body">A charter nobody can verify is just nice writing. Three of these are checkable right now, by you, without asking us.</p>
-    <div class="chk">
-      <div><b>Turn off your connection</b>Then use the Photo Check, the Audit, the Guide, the Map, or the Passphrase generator. They all still work. That is only possible because nothing is being sent anywhere. It is the fastest way to verify Articles I, III and IV without taking our word for anything.</div>
-      <div><b>Read the Canary</b>A statement we renew on a schedule, saying we have received no secret order. Some orders come with a gag clause; nobody can be compelled to keep repeating something untrue. <a href="/canary">Check its status &rarr;</a></div>
-      <div><b>Look at what an account holds</b>An email address, a random salt, a hash that only proves identity, and a block of ciphertext. That is the complete list, and it is written on the <a href="/account">account page</a> before you sign up rather than buried after.</div>
+    <h2>Everything, in one list</h2>
+    <p class="body">All free. None require an account. All work with your connection switched off.</p>
+    <div class="paths" style="grid-template-columns:1fr">
+      <div class="path" style="padding:0;background:none;border:0">
+        <ol style="gap:12px">
+          <li><a href="/photo"><b>The Photo Check</b></a> &mdash; the coordinates and camera serial hidden inside a photo, and a clean copy to replace it</li>
+          <li><a href="/audit"><b>The Audit</b></a> &mdash; your whole social export read on your device, with every location and routine you have published</li>
+          <li><a href="/map"><b>The Map</b></a> &mdash; plate readers and cameras near you, with a letter to your council written from the real numbers</li>
+          <li><a href="/guide"><b>The Guide</b></a> &mdash; what you can actually do, searchable, with a broker checklist that remembers where you got to</li>
+          <li><a href="/passphrase"><b>The Passphrase</b></a> &mdash; a key strong enough for your email, your bank, or an encrypted backup</li>
+          <li><a href="/panel"><b>Your Panel</b></a> &mdash; the whole plan as a checklist, stored only in your browser, with a one-click erase</li>
+        </ol>
+      </div>
     </div>
-  </div>
-</section>
-
-<hr class="rule">
-
-<section>
-  <div class="wrap">
-    <h2>What we have not decided yet</h2>
-    <p class="body">Being honest about the unfinished parts is the only way the finished parts are worth believing.</p>
-    <ul class="open">
-      <li><b>The identity check for face search.</b> We will never take a government document. The plan is a live selfie enrolled on your device, so the account is bound to a face rather than to a legal name. Until that is built, face search does not exist.</li>
-      <li><b>How payment stays separate.</b> The intent is that your payment and your account never share an identifier, so that no database we hold could connect them. <a href="/access">The design is written down</a>; it is not built.</li>
-      <li><b>Whether SOVRAN becomes a public benefit corporation.</b> That would make this document legally binding rather than a promise on a web page. We are leaning towards it.</li>
-    </ul>
-    <p class="body" style="margin-top:20px">If we ever change one of these articles, the change will be announced rather than quietly edited. That is not itself enforceable &mdash; but saying it here makes it harder to do otherwise.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px">
+      <a href="/charter" class="btn ghost">What we cannot do to you &rarr;</a>
+      <a href="/access" class="btn ghost">What costs money, and what never will &rarr;</a>
+    </div>
   </div>
 </section>
 </main>
@@ -239,7 +305,7 @@ body::after{
         <a href="/account">Sign in or create</a><a href="/#waitlist">Join the waitlist</a>
       </div>
     </nav>
-    <p style="margin-bottom:12px;max-width:62ch;line-height:1.55">The Charter of <a href="/">SOVRAN</a>, a concept by <a href="https://aetherandash.digital" target="_blank" rel="noopener">Aether &amp; Ash</a>. If an article ever changes, the change will be announced.</p>
+    <p style="margin-bottom:12px;max-width:62ch;line-height:1.55">Start here is part of <a href="/">SOVRAN</a>, a concept by <a href="https://aetherandash.digital" target="_blank" rel="noopener">Aether &amp; Ash</a>.</p>
     <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--> &middot; No cookies. No trackers. No analytics.</p>
   </div>
 </footer>
