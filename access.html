@@ -108,6 +108,14 @@ ol.steps li::before{content:counter(p);position:absolute;left:0;top:0;width:23px
 ol.steps li b{color:var(--bone)}
 ol.steps code{font-family:'IBM Plex Mono',monospace;font-size:.86rem;color:var(--gold-hi);background:var(--void);
   border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+.shapes{display:grid;gap:13px;margin-bottom:20px}
+@media(min-width:760px){.shapes{grid-template-columns:1fr 1fr}}
+.shapes>div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:20px 22px}
+.shapes .sh{display:block;font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:11px}
+.shapes .sh.alt{color:#3DE8A5}
+.shapes p{font-size:.9rem;color:var(--ash);line-height:1.6}
+.shapes b{color:var(--bone)}
 .pay{display:grid;gap:12px;margin-bottom:20px}
 @media(min-width:760px){.pay{grid-template-columns:repeat(3,1fr)}}
 .pay>div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:19px 21px}
@@ -185,6 +193,14 @@ body::after{
 .btn{box-shadow:0 0 0 1px rgba(255,237,192,.22) inset}
 .btn:hover{box-shadow:0 0 30px rgba(255,203,107,.34),0 0 0 1px rgba(255,237,192,.35) inset}
 @media(prefers-reduced-motion:reduce){html::before{animation:none}}
+
+.fnav{display:grid;gap:22px;margin-bottom:26px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+@media(min-width:700px){.fnav{grid-template-columns:repeat(3,1fr)}}
+.fnav>div{display:flex;flex-direction:column;gap:7px}
+.fnav span{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content}
+.fnav a:hover{color:var(--gold)}
 </style>
 </head>
 <body>
@@ -261,6 +277,26 @@ body::after{
       <li><b>Nothing joins them.</b> Handed both databases, we could not tell you which customer is which user. Neither could anyone who took them from us.</li>
     </ol>
 
+    <h3 style="margin:30px 0 14px">Two shapes, because two things are being bought</h3>
+    <div class="shapes">
+      <div>
+        <span class="sh">SOVRAN+ &middot; ongoing</span>
+        <p><b>For a life that keeps generating records.</b> You move, you vote, you register a car, you get a licence renewed. Every one of those events repopulates the broker databases within months. Removal is not a task you finish, it is a task you maintain &mdash; so this is filing, chasing, and refiling, month after month.</p>
+      </div>
+      <div>
+        <span class="sh alt">The Clean Break &middot; one payment</span>
+        <p><b>For a life that is about to stop generating them.</b> Leaving the country. Going properly off-grid. Closing a chapter and not opening another. You pay once, we run the whole removal sweep &mdash; every broker, every takedown route, everything we would do in a year, done in one pass &mdash; and then it is finished. No subscription, no renewal, no relationship.</p>
+      </div>
+    </div>
+
+    <div class="key"><b>Why a one-time sweep is a real thing and not a lesser one</b>
+      Brokers repopulate from <i>new</i> public records. If you are still living an ordinary documented life, a single sweep decays in months, and we would be taking your money for something we knew would not hold.
+      <br><br>
+      But if you are about to leave the country, or shut down your accounts, or stop feeding the machine &mdash; there is very little new for them to find. The same sweep that decays in six months for one person holds for years for another. The difference is not the service. It is what happens next in your life.
+      <br><br>
+      <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">We will tell you which one you need.</b> If you describe your situation and the honest answer is "the one-time sweep is enough for you", that is what we will say, even though the subscription is worth more to us. A privacy company that upsells you is telling you something about itself.
+    </div>
+
     <h3 style="margin:30px 0 14px">Ways to pay, from ordinary to invisible</h3>
     <div class="pay">
       <div><span class="ph">Card</span><p>Normal checkout. Card details go straight to the payment processor and never touch our servers. We would see an email and the last four digits, attached to nothing you do here.</p></div>
@@ -319,6 +355,19 @@ body::after{
 </main>
 <footer>
   <div class="wrap">
+    <nav class="fnav">
+      <div><span>Use now</span>
+        <a href="/photo">The Photo Check</a><a href="/audit">The Audit</a><a href="/map">The Map</a>
+        <a href="/guide">The Guide</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
+      </div>
+      <div><span>Understand</span>
+        <a href="/charter">The Charter</a><a href="/access">Access &amp; cost</a><a href="/canary">The Canary</a>
+      </div>
+      <div><span>Account</span>
+        <a href="/account">Sign in or create</a><a href="/#waitlist">Join the waitlist</a>
+      </div>
+    </nav>
+
     <p style="margin-bottom:12px;max-width:62ch;line-height:1.55">Access is part of <a href="/">SOVRAN</a>, a concept by <a href="https://aetherandash.digital" target="_blank" rel="noopener">Aether &amp; Ash</a>. This is Article VIII of our Charter, and it is not negotiable.</p>
     <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--> &middot; No cookies. No trackers. No analytics.</p>
   </div>

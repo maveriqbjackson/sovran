@@ -111,6 +111,28 @@ body::after{
 .btn{box-shadow:0 0 0 1px rgba(255,237,192,.22) inset}
 .btn:hover{box-shadow:0 0 30px rgba(255,203,107,.34),0 0 0 1px rgba(255,237,192,.35) inset}
 @media(prefers-reduced-motion:reduce){html::before{animation:none}}
+
+.fnav{display:grid;gap:22px;margin-bottom:26px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+@media(min-width:700px){.fnav{grid-template-columns:repeat(3,1fr)}}
+.fnav>div{display:flex;flex-direction:column;gap:7px}
+.fnav span{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content}
+.fnav a:hover{color:var(--gold)}
+
+.cbanner{display:flex;align-items:center;gap:13px;max-width:var(--maxw);margin:18px auto 0;
+  padding:14px 20px;background:var(--surface);border:1px solid rgba(61,232,165,.3);
+  border-radius:var(--r-md);text-decoration:none;transition:border-color .2s;
+  width:calc(100% - var(--pad)*2);position:relative;z-index:2}
+.cbanner:hover{border-color:rgba(61,232,165,.6)}
+.cbanner .cdot{width:9px;height:9px;border-radius:50%;background:var(--ash-dim);flex:none}
+.cbanner.ok .cdot{background:#3DE8A5;box-shadow:0 0 0 3px rgba(61,232,165,.18),0 0 12px rgba(61,232,165,.6)}
+.cbanner.due .cdot{background:var(--gold)} .cbanner.bad .cdot{background:#FF9E5E}
+.cbanner .ctext{flex:1;font-size:.87rem;color:var(--ash);line-height:1.4}
+.cbanner .ctext b{color:var(--bone);font-family:'Archivo',sans-serif;font-weight:700}
+.cbanner .cgo{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--gold);flex:none}
+@media(max-width:620px){.cbanner .cgo{display:none}}
 </style>
 <style>
 :root{--void:#04060F; --void-2:#070B18; --surface:#0C1424; --surface-2:#131E38;
@@ -328,6 +350,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 </header>
 
 <main id="top">
+<a class="cbanner" href="/canary" id="cbanner">
+  <span class="cdot" id="cbdot"></span>
+  <span class="ctext"><b>The Canary</b> <span id="cbtext">checking&hellip;</span></span>
+  <span class="cgo">Read it &rarr;</span>
+</a>
 
 <section class="hero">
   <div class="wrap">
@@ -500,6 +527,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
       <div class="reveal">
         <span class="eyebrow">The charter</span>
         <h2 style="margin:18px 0 22px">Sovereignty means<br>no one else holds<br>the keys.</h2>
+        <p style="margin-bottom:16px"><a href="/charter" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.4);font-size:.92rem">Read the full Charter &rarr;</a></p>
         <p class="body">Every service that protects your identity collects your identity first. That makes it the most valuable target in the room — for a breach, for a broker, for a subpoena. It is the reason so many privacy tools eventually become the thing they were built against.</p>
         <p class="body" style="margin-top:17px">So SOVRAN is built to be worthless to anyone who takes it. These are not promises in a policy that changes when the company does. They are the shape of the system. <strong>A promise can be broken overnight. An architecture has to be rebuilt.</strong></p>
       </div>
@@ -573,6 +601,19 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 
 <footer>
   <div class="wrap">
+    <nav class="fnav">
+      <div><span>Use now</span>
+        <a href="/photo">The Photo Check</a><a href="/audit">The Audit</a><a href="/map">The Map</a>
+        <a href="/guide">The Guide</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
+      </div>
+      <div><span>Understand</span>
+        <a href="/charter">The Charter</a><a href="/access">Access &amp; cost</a><a href="/canary">The Canary</a>
+      </div>
+      <div><span>Account</span>
+        <a href="/account">Sign in or create</a><a href="/#waitlist">Join the waitlist</a>
+      </div>
+    </nav>
+
     <p class="concept"><strong>This is a concept.</strong> SOVRAN is an early-stage prototype and not yet a working product. The rights and mechanisms described here are real and available to you today — the waitlist is how you'll hear when we've built the thing that makes them easy.</p>
     <div class="foot-grid">
       <div>
@@ -585,7 +626,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
       <div>
         <p style="font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.17em;text-transform:uppercase;color:var(--ash-dim);margin-bottom:11px">Contact</p>
         <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--></p>
-        <p style="margin-top:16px;line-height:2"><a href="/access">Access &amp; affordability</a> &middot; <a href="/canary">The Canary</a> &middot; <a href="/guide">The Guide</a></p>
+        <p style="margin-top:16px;line-height:2"><a href="/charter">The Charter</a> &middot; <a href="/access">Access &amp; affordability</a> &middot; <a href="/canary">The Canary</a> &middot; <a href="/guide">The Guide</a></p>
         <p style="margin-top:16px">© 2026 Aether &amp; Ash. No cookies. No trackers. No analytics.</p>
       </div>
     </div>
@@ -671,6 +712,25 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     el.addEventListener('keydown', function(e){
       if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); submit(); }
     });
+  });
+})();
+
+/* canary state in the banner, read from our own endpoint */
+(function(){
+  var b=document.getElementById('cbanner'); if(!b) return;
+  fetch('/api/canary',{cache:'no-store'}).then(function(r){return r.json();}).then(function(d){
+    if(d.error) throw 0;
+    var signed=new Date(String(d.signed_at).replace(' ','T')+'Z');
+    var days=Math.floor((Date.now()-signed.getTime())/86400000);
+    var iv=d.interval_days||14, gr=d.grace_days||7;
+    b.classList.add(days<=iv?'ok':days<=iv+gr?'due':'bad');
+    document.getElementById('cbtext').innerHTML = days<=iv
+      ? '\u2713 We have received no secret order, no gag order, and no demand for your data. Signed '+(days===0?'today':days+(days===1?' day':' days')+' ago')+'.'
+      : days<=iv+gr
+      ? '\u26A0 Overdue by '+(days-iv)+' day'+(days-iv===1?'':'s')+'. Probably nothing \u2014 but check back.'
+      : '\u2717 Lapsed '+(days-iv)+' days ago. Treat assurances here as unverified.';
+  }).catch(function(){
+    document.getElementById('cbtext').textContent='A public statement that we have not been secretly ordered to hand over your data.';
   });
 })();
 </script>

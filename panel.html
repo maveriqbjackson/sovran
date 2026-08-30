@@ -189,6 +189,14 @@ body::after{
 .btn{box-shadow:0 0 0 1px rgba(255,237,192,.22) inset}
 .btn:hover{box-shadow:0 0 30px rgba(255,203,107,.34),0 0 0 1px rgba(255,237,192,.35) inset}
 @media(prefers-reduced-motion:reduce){html::before{animation:none}}
+
+.fnav{display:grid;gap:22px;margin-bottom:26px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+@media(min-width:700px){.fnav{grid-template-columns:repeat(3,1fr)}}
+.fnav>div{display:flex;flex-direction:column;gap:7px}
+.fnav span{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content}
+.fnav a:hover{color:var(--gold)}
 </style>
 </head>
 <body>
@@ -238,6 +246,19 @@ body::after{
 </main>
 <footer>
   <div class="wrap">
+    <nav class="fnav">
+      <div><span>Use now</span>
+        <a href="/photo">The Photo Check</a><a href="/audit">The Audit</a><a href="/map">The Map</a>
+        <a href="/guide">The Guide</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
+      </div>
+      <div><span>Understand</span>
+        <a href="/charter">The Charter</a><a href="/access">Access &amp; cost</a><a href="/canary">The Canary</a>
+      </div>
+      <div><span>Account</span>
+        <a href="/account">Sign in or create</a><a href="/#waitlist">Join the waitlist</a>
+      </div>
+    </nav>
+
     <p style="margin-bottom:12px;max-width:62ch;line-height:1.55">Your Panel is part of <a href="/">SOVRAN</a>, a concept by <a href="https://aetherandash.digital" target="_blank" rel="noopener">Aether &amp; Ash</a>. Progress is stored in this browser only &mdash; clearing your browser data clears it too.</p>
     <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--> &middot; No cookies. No trackers. No analytics.</p>
   </div>
