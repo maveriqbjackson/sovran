@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Admin — SOVRAN</title>
 <meta name="description" content="Private.">
-<meta name="theme-color" content="#04060F">
+<meta name="theme-color" content="#080C1C">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/plex-sans-var.woff2" as="font" type="font/woff2" crossorigin>
@@ -18,11 +18,11 @@
 @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/plex-mono-400.woff2) format('woff2')}
 @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/plex-mono-500.woff2) format('woff2')}
 @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/plex-mono-600.woff2) format('woff2')}
-:root{--void:#04060F;--void-2:#070B18;--surface:#0B1122;--surface-2:#111A31;
-  --line:rgba(232,224,206,.09);--line-2:rgba(232,224,206,.17);
-  --bone:#EDE7DA;--ash:#8A92AB;--ash-dim:#5D6580;
+:root{--void:#080C1C;--void-2:#0C1226;--surface:#121A33;--surface-2:#1A2444;
+  --line:rgba(232,224,206,.12);--line-2:rgba(232,224,206,.22);
+  --bone:#EDE7DA;--ash:#9BA3BC;--ash-dim:#6E7791;
   --gold:#D9AE5F;--gold-hi:#F2D9A0;--gold-deep:#8F6B27;
-  --bif-1:#7B5CD6;--bif-2:#4FC3D9;--bif-3:#D9AE5F;--ice:#5BB8D4;
+  --bif-1:#9B7BF0;--bif-2:#5FDCEF;--bif-3:#D9AE5F;--ice:#5BB8D4;
   --alarm:#FF9E5E;--clear:#3DE8A5;
   --r-lg:26px;--r-md:18px;--r-sm:11px;--pad:clamp(20px,5vw,32px);--maxw:860px}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -116,7 +116,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 <header>
   <div class="wrap bar">
     <a href="/" class="mark">
-      <svg class="bridge" viewBox="0 0 22 15" aria-hidden="true"><defs><linearGradient id="bg1" x1="0" x2="1"><stop offset="0" stop-color="#7B5CD6"/><stop offset=".5" stop-color="#4FC3D9"/><stop offset="1" stop-color="#D9AE5F"/></linearGradient></defs><path d="M1.5 13 Q11 2 20.5 13" stroke="url(#bg1)" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+      <svg class="bridge" viewBox="0 0 22 15" aria-hidden="true"><defs><linearGradient id="bg1" x1="0" x2="1"><stop offset="0" stop-color="#9B7BF0"/><stop offset=".5" stop-color="#5FDCEF"/><stop offset="1" stop-color="#D9AE5F"/></linearGradient></defs><path d="M1.5 13 Q11 2 20.5 13" stroke="url(#bg1)" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
       SOVRAN
     </a>
     <a href="/" class="back">&larr; Back</a>
@@ -171,6 +171,17 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
           <button class="btn ghost" id="csv">Export everything as CSV</button>
         </div>
         <div class="msg" id="emsg"></div>
+      </div>
+
+      <div class="blk">
+        <h3>Integrity check</h3>
+        <p class="body" style="font-size:.88rem;margin-bottom:14px">Re-downloads every deployed file, hashes it in this browser, and compares against the manifest committed to the repo. Any difference means a file changed without a commit.</p>
+        <p class="body" style="font-size:.84rem;color:var(--ash-dim);margin-bottom:16px">This catches unauthorised code changes &mdash; a modified script, an injected tracker, a swapped page. It is not a bug detector and nobody should claim otherwise. What it does do is make silent tampering with the site itself very hard to get away with.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+          <button class="btn" id="ichk" style="font-size:.84rem;padding:13px 22px">Verify all files</button>
+        </div>
+        <div class="msg" id="imsg"></div>
+        <div id="ilog" style="margin-top:14px;display:grid;gap:4px;max-height:300px;overflow-y:auto"></div>
       </div>
 
       <div class="blk">
@@ -371,6 +382,68 @@ document.getElementById('rm').addEventListener('click',function(){
 
 // Nothing is remembered. A rotating code expires in 30 seconds, so caching a
 // session here would defeat the second factor entirely.
+
+/* ───────────────── file integrity check ───────────────── */
+(function(){
+  var BTN=document.getElementById('ichk'); if(!BTN) return;
+  var LOG=document.getElementById('ilog'), MSG=document.getElementById('imsg');
+
+  function line(t,c){
+    var d=document.createElement('div');
+    d.style.cssText='font-family:IBM Plex Mono,monospace;font-size:.73rem;color:'+(c||'var(--ash)')+';line-height:1.5;word-break:break-all';
+    d.textContent=t; LOG.appendChild(d); LOG.scrollTop=LOG.scrollHeight;
+  }
+  function m(t,k){ MSG.textContent=t; MSG.className='msg show '+(k||'ok'); }
+
+  async function sha256(buf){
+    var h=await crypto.subtle.digest('SHA-256',buf);
+    return Array.from(new Uint8Array(h)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+  }
+
+  BTN.addEventListener('click',async function(){
+    LOG.innerHTML=''; BTN.disabled=true;
+    m('Downloading and hashing every file\u2026','busy');
+    var man;
+    try{
+      var r=await fetch('/manifest.json',{cache:'no-store'});
+      man=await r.json();
+    }catch(e){
+      m('No manifest.json found at the site root. Upload it and redeploy.','err');
+      BTN.disabled=false; return;
+    }
+
+    var names=Object.keys(man.files||{}), ok=0, bad=0, missing=0;
+    line('manifest generated '+(man.generated||'unknown')+' \u00b7 '+names.length+' files','var(--ash-dim)');
+
+    for(var i=0;i<names.length;i++){
+      var name=names[i], want=man.files[name];
+      try{
+        var res=await fetch(name+'?v='+Date.now(),{cache:'no-store'});
+        if(!res.ok){ missing++; line('\u2717 '+name+' \u2014 HTTP '+res.status,'#FF9E5E'); continue; }
+        var buf=await res.arrayBuffer();
+        var got=await sha256(buf);
+        if(got===want.sha256){ ok++; }
+        else {
+          bad++;
+          line('\u2717 '+name+' \u2014 HASH MISMATCH','#FF9E5E');
+          line('    expected '+want.sha256.slice(0,32)+'\u2026','var(--ash-dim)');
+          line('    actual   '+got.slice(0,32)+'\u2026','var(--ash-dim)');
+          line('    size expected '+want.bytes+', got '+buf.byteLength,'var(--ash-dim)');
+        }
+      }catch(e){ missing++; line('\u2717 '+name+' \u2014 could not fetch','#FF9E5E'); }
+    }
+
+    line('');
+    line('\u2713 '+ok+' files match the manifest','#3DE8A5');
+    if(bad) line('\u2717 '+bad+' files DO NOT MATCH','#FF9E5E');
+    if(missing) line('\u2717 '+missing+' files could not be read','#FF9E5E');
+
+    BTN.disabled=false;
+    if(bad===0&&missing===0) m('All '+ok+' files match. Nothing has been altered since the manifest was generated.','ok');
+    else if(bad) m('MISMATCH on '+bad+' file(s). Either the manifest is stale after a legitimate change, or something was altered. Regenerate the manifest after any deliberate edit; investigate if you did not make one.','err');
+    else m(missing+' file(s) could not be read \u2014 usually means they were renamed or removed.','err');
+  });
+})();
 
 /* ───────────────── map snapshot builder ───────────────── */
 var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179.15,71.44,179.78],"AZ":["Arizona",31.33,-114.82,37.01,-109.04],"AR":["Arkansas",33.0,-94.62,36.5,-89.64],"CA":["California",32.53,-124.41,42.01,-114.13],"CO":["Colorado",36.99,-109.06,41.0,-102.04],"CT":["Connecticut",40.98,-73.73,42.05,-71.79],"DE":["Delaware",38.45,-75.79,39.84,-75.05],"DC":["District of Columbia",38.79,-77.12,38.996,-76.91],"FL":["Florida",24.4,-87.63,31.0,-79.97],"GA":["Georgia",30.36,-85.61,35.0,-80.84],"HI":["Hawaii",18.91,-160.25,22.24,-154.81],"ID":["Idaho",41.99,-117.24,49.0,-111.04],"IL":["Illinois",36.97,-91.51,42.51,-87.02],"IN":["Indiana",37.77,-88.1,41.76,-84.78],"IA":["Iowa",40.38,-96.64,43.5,-90.14],"KS":["Kansas",36.99,-102.05,40.0,-94.59],"KY":["Kentucky",36.5,-89.57,39.15,-81.96],"LA":["Louisiana",28.93,-94.04,33.02,-88.76],"ME":["Maine",42.98,-71.08,47.46,-66.95],"MD":["Maryland",37.91,-79.49,39.72,-75.05],"MA":["Massachusetts",41.24,-73.51,42.89,-69.93],"MI":["Michigan",41.7,-90.42,48.31,-82.41],"MN":["Minnesota",43.5,-97.24,49.38,-89.49],"MS":["Mississippi",30.17,-91.65,35.0,-88.1],"MO":["Missouri",35.996,-95.77,40.61,-89.1],"MT":["Montana",44.36,-116.05,49.0,-104.04],"NE":["Nebraska",39.999,-104.05,43.0,-95.31],"NV":["Nevada",35.0,-120.01,42.0,-114.04],"NH":["New Hampshire",42.7,-72.56,45.31,-70.61],"NJ":["New Jersey",38.93,-75.56,41.36,-73.89],"NM":["New Mexico",31.33,-109.05,37.0,-103.0],"NY":["New York",40.5,-79.76,45.02,-71.86],"NC":["North Carolina",33.84,-84.32,36.59,-75.46],"ND":["North Dakota",45.94,-104.05,49.0,-96.55],"OH":["Ohio",38.4,-84.82,42.33,-80.52],"OK":["Oklahoma",33.62,-103.0,37.0,-94.43],"OR":["Oregon",41.99,-124.57,46.29,-116.46],"PA":["Pennsylvania",39.72,-80.52,42.27,-74.69],"RI":["Rhode Island",41.15,-71.86,42.02,-71.12],"SC":["South Carolina",32.03,-83.35,35.22,-78.54],"SD":["South Dakota",42.48,-104.06,45.95,-96.44],"TN":["Tennessee",34.98,-90.31,36.68,-81.65],"TX":["Texas",25.84,-106.65,36.5,-93.51],"UT":["Utah",36.998,-114.05,42.0,-109.04],"VT":["Vermont",42.73,-73.44,45.02,-71.47],"VA":["Virginia",36.54,-83.68,39.47,-75.24],"WA":["Washington",45.54,-124.85,49.0,-116.92],"WV":["West Virginia",37.2,-82.64,40.64,-77.72],"WI":["Wisconsin",42.49,-92.89,47.31,-86.25],"WY":["Wyoming",40.99,-111.06,45.01,-104.05]};

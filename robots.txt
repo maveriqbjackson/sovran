@@ -5,6 +5,7 @@ Disallow: /sign
 Disallow: /account
 Disallow: /api/
 Disallow: /mapdata/
+Disallow: /manifest.json
 Allow: /
 
 Sitemap: https://mysovran.online/sitemap.xml
