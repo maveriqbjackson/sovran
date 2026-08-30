@@ -16,7 +16,7 @@
 // Env vars : ADMIN_KEY, ADMIN_TOTP_SECRET, CANARY_KEYS,
 //            REQUIRE_ACCESS ("true" once Cloudflare Access is configured)
 
-const BUILD_ID = "2026-08-31-session-and-roads";
+const BUILD_ID = "2026-08-31-tiled-roads";
 
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), {
@@ -243,6 +243,10 @@ export async function onRequestPost({ request, env }) {
       for (const url of mirrors) {
         const host = url.replace(/^https:\/\//, "").replace(/\/.*$/, "");
         try {
+          // Give up before Cloudflare gives up on us. An edge timeout returns an
+          // HTML error page, which is far harder to diagnose than a clean failure.
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 45000);
           const res = await fetch(url, {
             method: "POST",
             headers: {
@@ -251,7 +255,8 @@ export async function onRequestPost({ request, env }) {
               "User-Agent": "SOVRAN-map-builder/1.0 (+https://mysovran.online)",
             },
             body: "data=" + encodeURIComponent(query),
-          });
+            signal: ctrl.signal,
+          }).finally(() => clearTimeout(timer));
 
           if (!res.ok) {
             const txt = (await res.text().catch(() => "")).replace(/<[^>]*>/g, " ")
@@ -264,7 +269,11 @@ export async function onRequestPost({ request, env }) {
           if (!data) { tried.push(`${host}: replied but not with JSON`); continue; }
           return json({ ok: true, host, elements: data.elements || [] });
         } catch (e) {
-          tried.push(`${host}: ${String(e && e.message || "unreachable")}`);
+          tried.push(`${host}: ${
+            e && e.name === "AbortError"
+              ? "no answer within 45s — the area is too large for one request"
+              : String((e && e.message) || "unreachable")
+          }`);
         }
       }
       return json({ error: "Every mirror failed.", tried }, 502);
