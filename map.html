@@ -129,6 +129,33 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
   border-radius:9px;padding:9px 12px;font-size:.78rem;color:var(--bone);line-height:1.45;max-width:230px;
   box-shadow:0 8px 26px rgba(0,0,0,.55);z-index:5}
 .tip.show{display:block}
+.detail{display:none;margin-top:14px;background:var(--surface);border:1px solid rgba(255,203,107,.3);
+  border-radius:var(--r-md);padding:20px 22px;position:relative}
+.detail.show{display:block}
+.dclose{position:absolute;top:12px;right:14px;background:none;border:0;color:var(--ash-dim);
+  font-size:22px;line-height:1;cursor:pointer;padding:4px}
+.dclose:hover{color:var(--bone)}
+.dkind{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;font-weight:600;
+  letter-spacing:.15em;text-transform:uppercase;padding:5px 11px;border-radius:99px;margin-bottom:12px}
+.detail h3{margin-bottom:14px}
+.drows{display:grid;gap:8px;margin-bottom:18px}
+.drow{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);
+  font-size:.87rem;flex-wrap:wrap}
+.drow:last-child{border-bottom:0}
+.drow span:first-child{color:var(--ash-dim);font-family:'IBM Plex Mono',monospace;font-size:.66rem;
+  letter-spacing:.1em;text-transform:uppercase}
+.drow span:last-child{color:var(--bone);text-align:right;font-family:'IBM Plex Mono',monospace;font-size:.82rem}
+.dacts{display:flex;gap:10px;flex-wrap:wrap}
+.dacts .btn{font-size:.8rem;padding:12px 18px}
+.draft{display:none;margin-top:18px}
+.draft.show{display:block}
+.draft textarea{width:100%;min-height:280px;background:var(--void);color:var(--bone);
+  border:1px solid var(--line-2);border-radius:var(--r-sm);padding:15px;
+  font-family:'IBM Plex Mono',monospace;font-size:.8rem;line-height:1.6;resize:vertical}
+.draft .dhint{font-size:.84rem;color:var(--ash);line-height:1.55;margin:12px 0}
+.draft .dhint b{color:var(--bone)}
+.copied{display:none;font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:#3DE8A5;margin-top:10px}
+.copied.show{display:block}
 .tip b{display:block;color:var(--gold-hi);font-size:.8rem;margin-bottom:3px}
 .tip span{color:var(--ash);font-size:.73rem;font-family:'IBM Plex Mono',monospace}
 .legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ash-dim);letter-spacing:.07em}
@@ -295,13 +322,25 @@ body::after{
         <div class="scalebar"><span id="scaleline"></span><span id="scaletxt"></span></div>
         <div class="tip" id="tip"></div>
       </div>
+      <div class="detail" id="detail">
+        <button class="dclose" id="dclose" aria-label="Close">&times;</button>
+        <span class="dkind" id="dkind"></span>
+        <h3 id="dtitle"></h3>
+        <div class="drows" id="drows"></div>
+        <div class="dacts">
+          <button class="btn" id="dask">Draft a records request about this one</button>
+          <button class="btn ghost" id="dcopy">Copy coordinates</button>
+          <button class="btn ghost" id="dfix">This is wrong or missing</button>
+        </div>
+        <div class="draft" id="draft"></div>
+      </div>
       <div class="legend">
         <span><i style="background:#FF9E5E"></i>Plate readers</span>
         <span><i style="background:#6BCBE8"></i>Cameras</span>
         <span><i style="background:#A8B0C8"></i>Other</span>
         <span><i style="background:rgba(255,203,107,.55);border-radius:1px;width:14px;height:3px"></i>Highways</span>
         <span><i style="background:rgba(168,200,255,.34);border-radius:1px;width:14px;height:3px"></i>Main roads &middot; appear as you zoom</span>
-        <span style="margin-left:auto">Scroll or pinch to zoom &middot; drag to pan &middot; tap a dot for detail</span>
+        <span style="margin-left:auto">Scroll or pinch to zoom &middot; drag to pan &middot; <b style="color:var(--gold)">tap any device to act on it</b></span>
       </div>
     </div>
 
@@ -326,9 +365,11 @@ body::after{
         <li style="color:var(--ash);font-size:.9rem;line-height:1.5;padding-left:20px;position:relative"><span style="position:absolute;left:0;top:.6em;width:9px;height:1.5px;background:var(--gold-deep);display:block"></span>Was there a public vote, and is there an audit of how searches are used?</li>
       </ul>
       <div class="dl">
+        <button class="btn" id="council">Draft a letter to your council</button>
         <button class="btn ghost" id="csv">Download this data</button>
-        <a href="/guide#surveillance" class="btn ghost">How to ask your council &rarr;</a>
+        <a href="/guide#surveillance" class="btn ghost">More on this &rarr;</a>
       </div>
+      <div class="draft" id="cdraft" style="margin-top:18px"></div>
     </div>
 
     <div class="blk">
@@ -596,6 +637,110 @@ function render(s,w,n,e){
   OUT.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
+document.getElementById('dclose').addEventListener('click',function(){
+  document.getElementById('detail').classList.remove('show');
+});
+
+document.getElementById('dask').addEventListener('click',function(){
+  if(!SELECTED) return;
+  var box=document.getElementById('draft');
+  box.innerHTML =
+    '<p class="dhint"><b>Who to send it to:</b> whichever body operates the device. '+
+    (SELECTED.op ? 'This one is recorded as <b>'+esc(SELECTED.op)+'</b>. ' : 'The operator is not recorded, which is itself worth asking about. ')+
+    'If it is a police department, look for their records or FOIA officer. If it is a city, the clerk\u2019s office is the usual route. '+
+    'Most have an online portal \u2014 search for your city name plus &ldquo;public records request&rdquo;.</p>'+
+    '<textarea id="dtext" spellcheck="false"></textarea>'+
+    '<div class="dacts" style="margin-top:12px">'+
+    '<button class="btn" id="dcopytxt">Copy the request</button>'+
+    '<a class="btn ghost" href="/guide#surveillance">What to do with the answer &rarr;</a></div>'+
+    '<p class="copied" id="dcopied">Copied. Paste it into your city\u2019s records portal or an email.</p>'+
+    '<p class="dhint" style="margin-top:14px;color:var(--ash-dim);font-size:.82rem">This is a template, not legal advice. '+
+    'Records law differs by state \u2014 some require a specific form of words or a residency statement. '+
+    'Your state\u2019s attorney general usually publishes a plain-language guide.</p>';
+  document.getElementById('dtext').value=requestText(SELECTED);
+  box.classList.add('show');
+  document.getElementById('dcopytxt').addEventListener('click',function(){
+    var t=document.getElementById('dtext');
+    t.select();
+    if(navigator.clipboard) navigator.clipboard.writeText(t.value).catch(function(){});
+    else { try{ document.execCommand('copy'); }catch(e){} }
+    document.getElementById('dcopied').classList.add('show');
+  });
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
+document.getElementById('dcopy').addEventListener('click',function(){
+  if(!SELECTED) return;
+  var t=SELECTED.lat.toFixed(6)+', '+SELECTED.lon.toFixed(6);
+  if(navigator.clipboard) navigator.clipboard.writeText(t).catch(function(){});
+});
+
+document.getElementById('dfix').addEventListener('click',function(){
+  if(!SELECTED) return;
+  var box=document.getElementById('draft');
+  box.innerHTML='<p class="dhint"><b>The map is only as good as the people editing it.</b> '+
+    'If this device has moved, been removed, or the operator is wrong, the fix belongs in OpenStreetMap '+
+    'where everyone benefits from it \u2014 not in a form we hold.</p>'+
+    '<p class="dhint">Its coordinates are <b>'+SELECTED.lat.toFixed(6)+', '+SELECTED.lon.toFixed(6)+'</b>. '+
+    'Open <a href="https://www.openstreetmap.org" target="_blank" rel="noopener" style="color:var(--gold)">openstreetmap.org</a>, '+
+    'find that spot, press Edit, and correct or delete the point. Scroll down on this page for the tags that matter.</p>';
+  box.classList.add('show');
+});
+
+document.getElementById('council').addEventListener('click',function(){
+  var alpr=rows.filter(function(x){return x.kind==='alpr';}).length;
+  var unknown=rows.filter(function(x){return !x.op;}).length;
+  var ops={};
+  rows.forEach(function(r){ if(r.op) ops[r.op]=(ops[r.op]||0)+1; });
+  var top=Object.keys(ops).sort(function(a,b){return ops[b]-ops[a];}).slice(0,5);
+
+  var body='Subject: Questions about automated surveillance in our community\n\n'+
+  'Dear Council Member,\n\n'+
+  'I am a resident writing about automated surveillance equipment operating in our area.\n\n'+
+  'Using publicly mapped data from OpenStreetMap, I can identify '+rows.length.toLocaleString()+
+  ' surveillance devices across '+regionName+', of which '+alpr.toLocaleString()+
+  ' are automated licence plate readers. '+
+  (unknown ? unknown.toLocaleString()+' of these have no publicly recorded operator at all.\n\n'
+           : 'Operators are recorded for most of them.\n\n')+
+  (top.length ? 'The most frequently recorded operators are: '+top.join(', ')+'.\n\n' : '')+
+  'I would like to understand the following, and I believe other residents would too:\n\n'+
+  '1. Which of these systems does our jurisdiction operate or fund, and under what contracts?\n\n'+
+  '2. How long is captured data retained, and who authorises its deletion?\n\n'+
+  '3. Which agencies can query our data? Is any of it shared with state or federal\n'+
+  '   agencies, or with other jurisdictions?\n\n'+
+  '4. Was there a public vote authorising these deployments? If so, when, and where can\n'+
+  '   residents read the minutes?\n\n'+
+  '5. Is there an audit of how searches are used, and has any misuse been identified?\n\n'+
+  '6. What is the annual cost to taxpayers, and when do these contracts come up for renewal?\n\n'+
+  'I am not asking the council to take a position today. I am asking for the information\n'+
+  'residents need in order to have an informed opinion. Much of this is already public\n'+
+  'record; it is simply not collected anywhere a resident can find it.\n\n'+
+  'I would appreciate a written response, and I would welcome the chance to raise this\n'+
+  'during public comment at an upcoming meeting.\n\n'+
+  'Thank you for your time.\n\n'+
+  'Sincerely,\n[Your name]\n[Your address, if your council requires it for correspondence]\n';
+
+  var box=document.getElementById('cdraft');
+  box.innerHTML='<p class="dhint"><b>Where to send it:</b> your city council members\u2019 addresses are almost always '+
+    'published on the city website. Sending to the whole council rather than one member makes it part of the record. '+
+    'Copying the city clerk usually means it gets logged as correspondence.</p>'+
+    '<textarea id="ctext" spellcheck="false"></textarea>'+
+    '<div class="dl" style="margin-top:12px"><button class="btn" id="ccopy">Copy the letter</button></div>'+
+    '<p class="copied" id="ccopied">Copied. The numbers in it come from the data on this page.</p>'+
+    '<p class="dhint" style="margin-top:14px;color:var(--ash-dim);font-size:.82rem">'+
+    'The figures are drawn from volunteer mapping and are a floor, not a total \u2014 real coverage is almost '+
+    'certainly higher. Saying so in the letter is honest and harder to dismiss.</p>';
+  document.getElementById('ctext').value=body;
+  box.classList.add('show');
+  document.getElementById('ccopy').addEventListener('click',function(){
+    var t=document.getElementById('ctext'); t.select();
+    if(navigator.clipboard) navigator.clipboard.writeText(t.value).catch(function(){});
+    else { try{ document.execCommand('copy'); }catch(e){} }
+    document.getElementById('ccopied').classList.add('show');
+  });
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
 $('csv').addEventListener('click',function(){
   var q=function(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; };
   var csv='latitude,longitude,kind,type,operator,zone,name\n'+
@@ -823,7 +968,7 @@ function bindMap(){
   });
   cv.addEventListener('pointerup',function(e){
     dragging=false; cv.classList.remove('drag');
-    if(!moved){ var p=rel(e); probe(p[0],p[1],true); }
+    if(!moved){ var p=rel(e); openDetail(p[0],p[1]); }
   });
   cv.addEventListener('pointerleave',function(){
     dragging=false; cv.classList.remove('drag');
@@ -858,6 +1003,89 @@ function bindMap(){
   document.getElementById('zin').addEventListener('click',function(){ zoomAt(cv.cssW/2,cv.cssH/2,1.5); });
   document.getElementById('zout').addEventListener('click',function(){ zoomAt(cv.cssW/2,cv.cssH/2,1/1.5); });
   document.getElementById('zreset').addEventListener('click',function(){ fit(); drawMap(); });
+}
+
+
+var SELECTED=null;
+
+function nearest(x,y,r2){
+  var best=null,bd=r2||(16*16);
+  for(var i=0;i<rows.length;i++){
+    var q=px(rows[i].lon,rows[i].lat);
+    var d=(q[0]-x)*(q[0]-x)+(q[1]-y)*(q[1]-y);
+    if(d<bd){ bd=d; best=rows[i]; }
+  }
+  return best;
+}
+
+function kindLabel(k){
+  return k==='alpr' ? 'Licence plate reader'
+       : k==='camera' ? 'Surveillance camera' : 'Surveillance device';
+}
+
+function openDetail(x,y){
+  var d=nearest(x,y);
+  var box=document.getElementById('detail');
+  if(!d){ box.classList.remove('show'); document.getElementById('tip').classList.remove('show'); return; }
+  SELECTED=d;
+  document.getElementById('tip').classList.remove('show');
+
+  var tag=document.getElementById('dkind');
+  tag.textContent = d.kind==='alpr' ? 'Plate reader' : d.kind==='camera' ? 'Camera' : 'Surveillance';
+  tag.style.cssText = d.kind==='alpr'
+    ? 'background:rgba(255,158,94,.13);color:#FF9E5E;border:1px solid rgba(255,158,94,.34)'
+    : 'background:rgba(107,203,232,.13);color:#6BCBE8;border:1px solid rgba(107,203,232,.34)';
+
+  document.getElementById('dtitle').textContent = d.name || kindLabel(d.kind);
+
+  var near=(view.cities||[]).map(function(c){
+    return {n:c[0], d:Math.hypot((c[2]-d.lat)*111, (c[3]-d.lon)*111*Math.cos(d.lat*Math.PI/180))};
+  }).sort(function(a,b){return a.d-b.d;})[0];
+
+  document.getElementById('drows').innerHTML =
+    '<div class="drow"><span>Operator</span><span>'+(d.op?esc(d.op):'not recorded')+'</span></div>'+
+    (d.type?'<div class="drow"><span>Type</span><span>'+esc(d.type)+'</span></div>':'')+
+    '<div class="drow"><span>Coordinates</span><span>'+d.lat.toFixed(6)+', '+d.lon.toFixed(6)+'</span></div>'+
+    (near?'<div class="drow"><span>Nearest town</span><span>'+esc(near.n)+' \u00b7 '+near.d.toFixed(1)+' km</span></div>':'')+
+    '<div class="drow"><span>Region</span><span>'+esc(regionName)+'</span></div>';
+
+  document.getElementById('draft').classList.remove('show');
+  box.classList.add('show');
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function requestText(d){
+  var near=(view.cities||[]).map(function(c){
+    return {n:c[0], d:Math.hypot((c[2]-d.lat)*111,(c[3]-d.lon)*111*Math.cos(d.lat*Math.PI/180))};
+  }).sort(function(a,b){return a.d-b.d;})[0];
+  var where = near ? near.n+', '+regionName : regionName;
+  var isALPR = d.kind==='alpr';
+
+  return 'Subject: Public records request \u2014 '+(isALPR?'automated licence plate reader':'surveillance camera')+' at '+d.lat.toFixed(5)+', '+d.lon.toFixed(5)+'\n\n'+
+  'To whom it may concern,\n\n'+
+  'Under the public records law of this state, I am requesting records concerning a '+
+  (isALPR?'automated licence plate reader (ALPR)':'surveillance camera')+' located at or near '+
+  d.lat.toFixed(6)+', '+d.lon.toFixed(6)+' in '+where+'.'+
+  (d.op?' This device is recorded as being operated by '+d.op+'.':' The operator of this device is not publicly recorded.')+'\n\n'+
+  'Specifically, I request:\n\n'+
+  '1. Any contract, purchase order, memorandum of understanding, or agreement governing\n'+
+  '   this device or the system it belongs to, including the vendor name and contract value.\n\n'+
+  '2. The current data retention policy: how long captured data is kept, in what form,\n'+
+  '   and who authorises deletion.\n\n'+
+  '3. A list of agencies, departments, or private entities that can query or receive data\n'+
+  '   from this system, including any federal agencies or out-of-state partners.\n\n'+
+  '4. Any audit logs, usage reports, or statistics showing how often the system has been\n'+
+  '   queried in the past twelve months, and for what stated purposes.\n\n'+
+  '5. The policy governing what constitutes an authorised search, and any record of\n'+
+  '   disciplinary action taken for unauthorised searches.\n\n'+
+  '6. Records of the public meeting, vote, or administrative decision that authorised\n'+
+  '   the deployment of this device or system.\n\n'+
+  'I am requesting these records as a member of the public. If any portion is withheld,\n'+
+  'please cite the specific exemption claimed and release all reasonably segregable\n'+
+  'portions of the remaining records.\n\n'+
+  'If fees are expected to exceed a nominal amount, please contact me before proceeding.\n\n'+
+  'Thank you for your time.\n\n'+
+  'Sincerely,\n[Your name]\n[Your contact information]\n';
 }
 
 function probe(x,y,sticky){
