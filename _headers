@@ -28,12 +28,12 @@
 /admin
   X-Robots-Tag: noindex, nofollow, noarchive
   Cache-Control: no-store
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://overpass-api.de https://overpass.kumi.systems; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://overpass-api.de https://overpass.kumi.systems https://overpass.private.coffee; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
 
 /admin.html
   X-Robots-Tag: noindex, nofollow, noarchive
   Cache-Control: no-store
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://overpass-api.de https://overpass.kumi.systems; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://overpass-api.de https://overpass.kumi.systems https://overpass.private.coffee; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
 
 /api/admin
   X-Robots-Tag: noindex, nofollow
@@ -53,10 +53,10 @@
 # ── The Map: the ONLY path allowed to reach outside this domain, and only to
 #    the public OpenStreetMap query service. Two mirrors, both read-only.
 /map
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://overpass-api.de https://overpass.kumi.systems; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://overpass-api.de https://overpass.kumi.systems https://overpass.private.coffee; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
 
 /map.html
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://overpass-api.de https://overpass.kumi.systems; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://overpass-api.de https://overpass.kumi.systems https://overpass.private.coffee; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
 
 # ── Everything else: locked to this domain. Declared per path, because a
 #    wildcard rule would intersect with the Map exception above and break it.
@@ -83,6 +83,10 @@
 
 /access
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+
+/sign
+  X-Robots-Tag: noindex, nofollow
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'
 
 /canary
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests

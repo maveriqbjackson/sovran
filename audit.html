@@ -50,7 +50,7 @@
   --bone:#EDE7DA; --ash:#8A92AB; --ash-dim:#5D6580;
   --gold:#D9AE5F; --gold-hi:#F2D9A0; --gold-deep:#8F6B27;
   --bif-1:#7B5CD6; --bif-2:#4FC3D9; --bif-3:#D9AE5F; --ice:#5BB8D4;
-  --alarm:#E0844F;
+  --alarm:#FF9E5E;
   --r-lg:26px; --r-md:18px; --r-sm:11px;
   --pad:clamp(20px,5vw,32px); --maxw:1000px;
 }
@@ -109,7 +109,7 @@ header{position:relative;z-index:3;padding:22px 0 0}
 .pstat{font-family:'IBM Plex Mono',monospace;font-size:.75rem;color:var(--ash);letter-spacing:.04em}
 .pfile{font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ash-dim);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-.err{display:none;margin-top:22px;background:rgba(224,132,79,.09);border:1px solid rgba(224,132,79,.35);color:var(--alarm);border-radius:var(--r-md);padding:16px 18px;font-size:.92rem;line-height:1.5}
+.err{display:none;margin-top:22px;background:rgba(255,158,94,.09);border:1px solid rgba(255,158,94,.35);color:var(--alarm);border-radius:var(--r-md);padding:16px 18px;font-size:.92rem;line-height:1.5}
 .err.show{display:block}
 
 /* results */
@@ -129,10 +129,10 @@ header{position:relative;z-index:3;padding:22px 0 0}
 .stat .l{font-size:.79rem;color:var(--ash);margin-top:9px;line-height:1.35;display:block}
 
 .finding{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(22px,4.5vw,28px);margin-top:14px}
-.finding.hot{border-color:rgba(224,132,79,.32)}
+.finding.hot{border-color:rgba(255,158,94,.32)}
 .f-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:13px;flex-wrap:wrap}
 .f-count{font-family:'IBM Plex Mono',monospace;font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:5px 11px;border-radius:99px;background:rgba(91,184,212,.11);color:var(--ice);border:1px solid rgba(91,184,212,.3);white-space:nowrap;flex:none}
-.f-count.hot{background:rgba(224,132,79,.11);color:var(--alarm);border-color:rgba(224,132,79,.32)}
+.f-count.hot{background:rgba(255,158,94,.11);color:var(--alarm);border-color:rgba(255,158,94,.32)}
 .finding p{font-size:.93rem;color:var(--ash);line-height:1.55}
 .f-do{margin-top:15px;padding-top:15px;border-top:1px solid var(--line);font-size:.88rem;color:var(--ash);line-height:1.5}
 .f-do b{color:var(--gold);font-weight:600;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:6px}

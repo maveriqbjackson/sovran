@@ -1,6 +1,7 @@
 User-agent: *
 Disallow: /admin
 Disallow: /panel
+Disallow: /sign
 Disallow: /account
 Disallow: /api/
 Disallow: /mapdata/

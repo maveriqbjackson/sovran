@@ -36,7 +36,7 @@
   --bone:#EDE7DA; --ash:#8A92AB; --ash-dim:#5D6580;
   --gold:#D9AE5F; --gold-hi:#F2D9A0; --gold-deep:#8F6B27;
   --bif-1:#7B5CD6; --bif-2:#4FC3D9; --bif-3:#D9AE5F; --ice:#5BB8D4;
-  --alarm:#E0844F; --clear:#6BCB9B;
+  --alarm:#FF9E5E; --clear:#3DE8A5;
   --r-lg:26px; --r-md:18px; --r-sm:11px;
   --pad:clamp(20px,5vw,32px); --maxw:900px;
 }
@@ -100,8 +100,8 @@ section{padding:0 0 clamp(40px,8vw,64px)}
 .tcat{font-family:'IBM Plex Mono',monospace;font-size:.58rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
   padding:4px 10px;border-radius:99px;background:rgba(91,184,212,.11);color:var(--ice);border:1px solid rgba(91,184,212,.3);
   flex:none;margin-top:3px}
-.tcat.urgent{background:rgba(224,132,79,.11);color:var(--alarm);border-color:rgba(224,132,79,.32)}
-.tcat.free{background:rgba(107,203,155,.10);color:var(--clear);border-color:rgba(107,203,155,.3)}
+.tcat.urgent{background:rgba(255,158,94,.11);color:var(--alarm);border-color:rgba(255,158,94,.32)}
+.tcat.free{background:rgba(61,232,165,.10);color:var(--clear);border-color:rgba(61,232,165,.3)}
 .chev{flex:none;color:var(--ash-dim);transition:transform .25s ease;margin-top:4px}
 .topic.open .chev{transform:rotate(180deg)}
 .tbody{display:none;padding:0 clamp(18px,3.6vw,26px) 26px;border-top:1px solid var(--line);margin-top:-1px;padding-top:22px}
@@ -128,7 +128,7 @@ section{padding:0 0 clamp(40px,8vw,64px)}
 .bro{display:flex;align-items:center;gap:12px;background:var(--void);border:1px solid var(--line);
   border-radius:var(--r-sm);padding:12px 15px;cursor:pointer;transition:border-color .18s,opacity .18s}
 .bro:hover{border-color:var(--line-2)}
-.bro.done{opacity:.5;border-color:rgba(107,203,155,.3)}
+.bro.done{opacity:.5;border-color:rgba(61,232,165,.3)}
 .bro .box{width:19px;height:19px;border-radius:5px;border:1.5px solid var(--line-2);flex:none;
   display:flex;align-items:center;justify-content:center;color:var(--void);font-size:12px;font-weight:700;transition:all .18s}
 .bro.done .box{background:var(--clear);border-color:var(--clear)}

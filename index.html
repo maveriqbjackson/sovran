@@ -115,12 +115,12 @@ header{position:relative;z-index:3;padding:24px 0 0}
 .detect.warm .tag{background:var(--gold);color:#1E1403}
 
 /* live tools strip */
-.livebar{margin-top:34px;background:var(--surface);border:1px solid rgba(107,203,155,.26);
+.livebar{margin-top:34px;background:var(--surface);border:1px solid rgba(61,232,165,.26);
   border-radius:var(--r-lg);padding:20px clamp(18px,3.6vw,24px);max-width:660px}
 .livebar-h{display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;
-  font-size:.66rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#6BCB9B;margin-bottom:16px}
-.livebar-h i{width:7px;height:7px;border-radius:50%;background:#6BCB9B;flex:none;
-  box-shadow:0 0 0 4px rgba(107,203,155,.15),0 0 10px rgba(107,203,155,.6)}
+  font-size:.66rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#3DE8A5;margin-bottom:16px}
+.livebar-h i{width:7px;height:7px;border-radius:50%;background:#3DE8A5;flex:none;
+  box-shadow:0 0 0 4px rgba(61,232,165,.15),0 0 10px rgba(61,232,165,.6)}
 .livegrid{display:grid;gap:9px}
 .livegrid a{display:block;background:var(--void);border:1px solid var(--line);border-radius:var(--r-sm);
   padding:14px 16px;text-decoration:none;transition:border-color .2s,transform .2s}
@@ -186,7 +186,7 @@ section{padding:clamp(56px,12vw,96px) 0;position:relative}
 .cap-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.61rem;letter-spacing:.15em;text-transform:uppercase;padding:5px 11px;border-radius:99px;margin-bottom:17px}
 .t-free{background:rgba(91,184,212,.11);color:var(--ice);border:1px solid rgba(91,184,212,.3)}
 .t-plus{background:rgba(217,174,95,.11);color:var(--gold);border:1px solid rgba(217,174,95,.32)}
-.t-live{background:rgba(107,203,155,.11);color:#6BCB9B;border:1px solid rgba(107,203,155,.32)}
+.t-live{background:rgba(61,232,165,.11);color:#3DE8A5;border:1px solid rgba(61,232,165,.32)}
 .t-soon{background:rgba(232,224,206,.05);color:var(--ash-dim);border:1px solid var(--line-2)}
 .cap h3{margin-bottom:11px}
 .cap p{font-size:.95rem;color:var(--ash);line-height:1.55}
@@ -195,12 +195,12 @@ section{padding:clamp(56px,12vw,96px) 0;position:relative}
 .cap li::before{content:'';position:absolute;left:0;top:.56em;width:9px;height:1.5px;background:var(--gold-deep)}
 
 /* guardrails — the lines about how this may and may not be used */
-.guard{margin-top:18px;background:linear-gradient(135deg,rgba(107,203,155,.09),rgba(79,195,217,.04));
-  border:1px solid rgba(107,203,155,.34);border-radius:var(--r-md);padding:16px 18px;display:flex;gap:13px;align-items:flex-start}
+.guard{margin-top:18px;background:linear-gradient(135deg,rgba(61,232,165,.09),rgba(79,195,217,.04));
+  border:1px solid rgba(61,232,165,.34);border-radius:var(--r-md);padding:16px 18px;display:flex;gap:13px;align-items:flex-start}
 .guard svg{flex:none;margin-top:2px}
 .guard p{font-size:.92rem!important;color:var(--bone)!important;line-height:1.55;margin:0}
 .guard p b{display:block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;
-  text-transform:uppercase;color:#6BCB9B;margin-bottom:7px;font-weight:600}
+  text-transform:uppercase;color:#3DE8A5;margin-bottom:7px;font-weight:600}
 
 .charter{background:var(--void-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .charter-grid{display:grid;gap:38px}
@@ -399,7 +399,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
       <div class="cap reveal">
         <span class="cap-tag t-soon">SOVRAN+ · Launching soon</span>
         <h3>Find your face</h3>
-        <p>Search for photos of yourself you never posted. Your face is matched on your own device &mdash; the image never uploads.</p><div class="guard"><svg width="17" height="19" viewBox="0 0 17 19" fill="none" aria-hidden="true"><path d="M8.5 1L15.5 4v6c0 4.2-3 7.2-7 8.5C4.5 17.2 1.5 14.2 1.5 10V4L8.5 1Z" stroke="#6BCB9B" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.6 9.6l2 2 3.8-4" stroke="#6BCB9B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><p><b>How this may be used</b>SOVRAN can only ever search for <em>your own face</em>. You cannot look up a stranger, an ex, a neighbour, or anyone else. This is a mirror, not a search engine for people &mdash; and that limit is built into how it works, not written into a policy we could quietly change.</p></div>
+        <p>Search for photos of yourself you never posted. Your face is matched on your own device &mdash; the image never uploads.</p><div class="guard"><svg width="17" height="19" viewBox="0 0 17 19" fill="none" aria-hidden="true"><path d="M8.5 1L15.5 4v6c0 4.2-3 7.2-7 8.5C4.5 17.2 1.5 14.2 1.5 10V4L8.5 1Z" stroke="#3DE8A5" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.6 9.6l2 2 3.8-4" stroke="#3DE8A5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><p><b>How this may be used</b>SOVRAN can only ever search for <em>your own face</em>. You cannot look up a stranger, an ex, a neighbour, or anyone else. This is a mirror, not a search engine for people &mdash; and that limit is built into how it works, not written into a policy we could quietly change.</p></div>
       </div>
 
       <div class="cap reveal">
@@ -411,7 +411,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
       <div class="cap reveal">
         <span class="cap-tag t-live">Free forever · Live now</span>
         <h3>See what sees you</h3>
-        <p>Plate readers, camera networks, and who operates them, drawn from a public database and plotted on your device. No location permission, no address search, and no map tiles &mdash; because a normal map quietly reports exactly where you are looking.</p><p style="margin-top:12px;font-size:.9rem;color:var(--ash)"><strong>Free forever.</strong> This is public records mapped by volunteers. It was never ours to sell.</p><div class="guard"><svg width="17" height="19" viewBox="0 0 17 19" fill="none" aria-hidden="true"><path d="M8.5 1L15.5 4v6c0 4.2-3 7.2-7 8.5C4.5 17.2 1.5 14.2 1.5 10V4L8.5 1Z" stroke="#6BCB9B" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.6 9.6l2 2 3.8-4" stroke="#6BCB9B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><p><b>Awareness, not evasion</b>This shows you what surveillance exists around you, who operates it, and how to question it. It is not a tool for avoiding a lawful investigation, and we are not going to build one.</p></div>
+        <p>Plate readers, camera networks, and who operates them, drawn from a public database and plotted on your device. No location permission, no address search, and no map tiles &mdash; because a normal map quietly reports exactly where you are looking.</p><p style="margin-top:12px;font-size:.9rem;color:var(--ash)"><strong>Free forever.</strong> This is public records mapped by volunteers. It was never ours to sell.</p><div class="guard"><svg width="17" height="19" viewBox="0 0 17 19" fill="none" aria-hidden="true"><path d="M8.5 1L15.5 4v6c0 4.2-3 7.2-7 8.5C4.5 17.2 1.5 14.2 1.5 10V4L8.5 1Z" stroke="#3DE8A5" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.6 9.6l2 2 3.8-4" stroke="#3DE8A5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><p><b>Awareness, not evasion</b>This shows you what surveillance exists around you, who operates it, and how to question it. It is not a tool for avoiding a lawful investigation, and we are not going to build one.</p></div>
         <a href="/map" class="btn" style="width:auto;display:inline-block;text-decoration:none;margin-top:20px;padding:14px 26px;font-size:.88rem">Open The Map &rarr;</a>
       </div>
 
@@ -454,7 +454,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="sec-head reveal">
       <span class="eyebrow">For families</span>
       <h2>Your child's record started before they could type.</h2>
-      <p class="body">By the time a kid is old enough to consent, thousands of images and details about them are already public — nearly all of it posted by adults who love them. SOVRAN helps parents close that down without ever building a tool that tracks a child.</p><div class="guard" style="max-width:64ch"><svg width="17" height="19" viewBox="0 0 17 19" fill="none" aria-hidden="true"><path d="M8.5 1L15.5 4v6c0 4.2-3 7.2-7 8.5C4.5 17.2 1.5 14.2 1.5 10V4L8.5 1Z" stroke="#6BCB9B" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.6 9.6l2 2 3.8-4" stroke="#6BCB9B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><p><b>Where we draw the line</b>Everything here is about what <em>you</em> have published, never about monitoring your child. We will not build tracking, location sharing, or message reading for kids. Tools like that are one small step from being used against the person they claim to protect.</p></div>
+      <p class="body">By the time a kid is old enough to consent, thousands of images and details about them are already public — nearly all of it posted by adults who love them. SOVRAN helps parents close that down without ever building a tool that tracks a child.</p><div class="guard" style="max-width:64ch"><svg width="17" height="19" viewBox="0 0 17 19" fill="none" aria-hidden="true"><path d="M8.5 1L15.5 4v6c0 4.2-3 7.2-7 8.5C4.5 17.2 1.5 14.2 1.5 10V4L8.5 1Z" stroke="#3DE8A5" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.6 9.6l2 2 3.8-4" stroke="#3DE8A5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><p><b>Where we draw the line</b>Everything here is about what <em>you</em> have published, never about monitoring your child. We will not build tracking, location sharing, or message reading for kids. Tools like that are one small step from being used against the person they claim to protect.</p></div>
     </div>
     <div class="kids-grid">
       <div class="kid reveal"><h3>Audit what you posted</h3><p>Point it at your own accounts. Find the school name on the jersey, the street sign behind the birthday cake, the geotag on the soccer field — and clear it in a few taps.</p></div>
@@ -480,7 +480,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
         <h3>Doing it for you is the paid part</h3>
         <p>Filing hundreds of deletions, chasing them to a real answer, and refiling when they quietly repopulate — that is ongoing human and machine work with a real cost. That's SOVRAN+.</p>
       </div>
-      <div class="pillar reveal" style="grid-column:1/-1;border-color:rgba(107,203,155,.28)">
+      <div class="pillar reveal" style="grid-column:1/-1;border-color:rgba(61,232,165,.28)">
         <h3>And nobody is turned away for lack of money</h3>
         <p>The people who most need protection are very often the people least able to pay for it &mdash; someone leaving an abusive home, someone on disability, someone whose immigration status makes every record dangerous. So if you can't afford SOVRAN+, you tell us, and we believe you. <strong>No proof of income, no benefits letter, no case number, no review.</strong> A link that says you need it, and the price changes.</p>
         <p style="margin-top:14px">We won't ask you to document being poor in order to be protected. Requiring that proof would mean building a database of exactly who is vulnerable &mdash; which is the same database this whole project exists to argue against. <a href="/access" style="color:var(--gold);border-bottom:1px solid rgba(217,174,95,.4);text-decoration:none">10% of every paid subscription</a> funds this tier &mdash; not &ldquo;a portion&rdquo;, ten percent, and we will raise it before we ever lower it.</p>
