@@ -374,6 +374,18 @@ document.getElementById('rm').addEventListener('click',function(){
 var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179.15,71.44,179.78],"AZ":["Arizona",31.33,-114.82,37.01,-109.04],"AR":["Arkansas",33.0,-94.62,36.5,-89.64],"CA":["California",32.53,-124.41,42.01,-114.13],"CO":["Colorado",36.99,-109.06,41.0,-102.04],"CT":["Connecticut",40.98,-73.73,42.05,-71.79],"DE":["Delaware",38.45,-75.79,39.84,-75.05],"DC":["District of Columbia",38.79,-77.12,38.996,-76.91],"FL":["Florida",24.4,-87.63,31.0,-79.97],"GA":["Georgia",30.36,-85.61,35.0,-80.84],"HI":["Hawaii",18.91,-160.25,22.24,-154.81],"ID":["Idaho",41.99,-117.24,49.0,-111.04],"IL":["Illinois",36.97,-91.51,42.51,-87.02],"IN":["Indiana",37.77,-88.1,41.76,-84.78],"IA":["Iowa",40.38,-96.64,43.5,-90.14],"KS":["Kansas",36.99,-102.05,40.0,-94.59],"KY":["Kentucky",36.5,-89.57,39.15,-81.96],"LA":["Louisiana",28.93,-94.04,33.02,-88.76],"ME":["Maine",42.98,-71.08,47.46,-66.95],"MD":["Maryland",37.91,-79.49,39.72,-75.05],"MA":["Massachusetts",41.24,-73.51,42.89,-69.93],"MI":["Michigan",41.7,-90.42,48.31,-82.41],"MN":["Minnesota",43.5,-97.24,49.38,-89.49],"MS":["Mississippi",30.17,-91.65,35.0,-88.1],"MO":["Missouri",35.996,-95.77,40.61,-89.1],"MT":["Montana",44.36,-116.05,49.0,-104.04],"NE":["Nebraska",39.999,-104.05,43.0,-95.31],"NV":["Nevada",35.0,-120.01,42.0,-114.04],"NH":["New Hampshire",42.7,-72.56,45.31,-70.61],"NJ":["New Jersey",38.93,-75.56,41.36,-73.89],"NM":["New Mexico",31.33,-109.05,37.0,-103.0],"NY":["New York",40.5,-79.76,45.02,-71.86],"NC":["North Carolina",33.84,-84.32,36.59,-75.46],"ND":["North Dakota",45.94,-104.05,49.0,-96.55],"OH":["Ohio",38.4,-84.82,42.33,-80.52],"OK":["Oklahoma",33.62,-103.0,37.0,-94.43],"OR":["Oregon",41.99,-124.57,46.29,-116.46],"PA":["Pennsylvania",39.72,-80.52,42.27,-74.69],"RI":["Rhode Island",41.15,-71.86,42.02,-71.12],"SC":["South Carolina",32.03,-83.35,35.22,-78.54],"SD":["South Dakota",42.48,-104.06,45.95,-96.44],"TN":["Tennessee",34.98,-90.31,36.68,-81.65],"TX":["Texas",25.84,-106.65,36.5,-93.51],"UT":["Utah",36.998,-114.05,42.0,-109.04],"VT":["Vermont",42.73,-73.44,45.02,-71.47],"VA":["Virginia",36.54,-83.68,39.47,-75.24],"WA":["Washington",45.54,-124.85,49.0,-116.92],"WV":["West Virginia",37.2,-82.64,40.64,-77.72],"WI":["Wisconsin",42.49,-92.89,47.31,-86.25],"WY":["Wyoming",40.99,-111.06,45.01,-104.05]};
 (function(){
   var SEL=document.getElementById('mstate'); if(!SEL) return;
+
+  // If anything on this page is ever blocked by the security policy, say so plainly
+  // rather than reporting a vague network error.
+  document.addEventListener('securitypolicyviolation', function(e){
+    if(e.violatedDirective && e.violatedDirective.indexOf('connect-src')>-1){
+      var L=document.getElementById('mlog');
+      if(L){ var d=document.createElement('div');
+        d.style.cssText='font-family:IBM Plex Mono,monospace;font-size:.74rem;color:#FF9E5E;line-height:1.5';
+        d.textContent='\u2717 Blocked by this site\u2019s Content-Security-Policy: '+(e.blockedURI||'');
+        L.appendChild(d); }
+    }
+  });
   var LOG=document.getElementById('mlog'), MSG=document.getElementById('mmsg');
   var stop=false;
 
@@ -405,47 +417,26 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
       ');out center;';
 
     line('\u2192 '+name+' \u2014 querying\u2026','var(--ice)');
-    // Three public mirrors, and each is tried with POST then GET. Some instances
-    // sit behind proxies that mishandle one or the other.
-    var hosts=['https://overpass-api.de/api/interpreter',
-               'https://overpass.kumi.systems/api/interpreter',
-               'https://overpass.private.coffee/api/interpreter'];
-    var plan=[]; hosts.forEach(function(h){ plan.push([h,'POST']); plan.push([h,'GET']); });
+    // The browser cannot reach Overpass directly \u2014 this page's Content-Security-Policy
+    // forbids contacting other origins, which is exactly what we want everywhere else.
+    // So the request is made by our own Worker instead, and the browser only ever
+    // talks to this domain. Same result, no exception to the security policy.
+    line('   asking our server to query OpenStreetMap\u2026','var(--ash-dim)');
 
-    function go(i){
-      if(i>=plan.length) return Promise.reject(new Error('exhausted'));
-      var url=plan[i][0], method=plan[i][1];
-      var host=url.replace(/^https:\/\//,'').replace(/\/.*$/,'');
-      var c=('AbortController' in window)?new AbortController():null;
-      var t=c?setTimeout(function(){c.abort();},90000):null;
-
-      var opts = method==='POST'
-        ? {method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
-           body:'data='+encodeURIComponent(q),signal:c?c.signal:undefined}
-        : {method:'GET',signal:c?c.signal:undefined};
-      var target = method==='GET' ? url+'?data='+encodeURIComponent(q) : url;
-
-      return fetch(target,opts).then(function(res){
-        if(t) clearTimeout(t);
-        if(!res.ok) return res.text().catch(function(){return '';}).then(function(txt){
-          var clean=txt.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().slice(0,150);
-          line('   \u2717 '+host+' ['+method+'] HTTP '+res.status+(clean?' \u2014 '+clean:''),'#FF9E5E');
-          throw new Error('http-'+res.status);
-        });
-        return res.json().catch(function(){
-          line('   \u2717 '+host+' ['+method+'] replied but not with JSON','#FF9E5E');
-          throw new Error('bad-json');
-        });
-      }).catch(function(e){
-        if(t) clearTimeout(t);
-        if(e && e.name==='AbortError') line('   \u2717 '+host+' ['+method+'] timed out after 90s','#FF9E5E');
-        else if(e && !/^http-|bad-json/.test(e.message||'')) line('   \u2717 '+host+' ['+method+'] unreachable \u2014 '+(e.message||'network or CSP block'),'#FF9E5E');
-        if(i+1<plan.length) return go(i+1);
-        throw e;
+    function go(){
+      return call('overpass',{query:q}).then(function(res){
+        if(!res.ok){
+          (res.d && res.d.tried ? res.d.tried : ['no detail returned']).forEach(function(t){
+            line('   \u2717 '+t,'#FF9E5E');
+          });
+          throw new Error('overpass-failed');
+        }
+        line('   \u2713 answered by '+(res.d.host||'a mirror'),'var(--ash-dim)');
+        return {elements:res.d.elements||[]};
       });
     }
 
-    return go(0).then(function(d){
+    return go().then(function(d){
       var ops=[], types=[], oi={}, ti={}, pts=[];
       (d.elements||[]).forEach(function(el){
         var lat=el.lat!=null?el.lat:(el.center&&el.center.lat);
@@ -489,7 +480,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     build(k).then(function(ok){
       document.getElementById('mbuild').disabled=false;
       m(ok ? 'Done. Upload the downloaded file to mapdata/ in your repo, then redeploy.'
-           : 'That one failed. Wait a few minutes and try again.', ok?'ok':'err');
+           : 'That one failed \u2014 the log above says why. Overpass is often genuinely overloaded; waiting ten minutes usually fixes it.', ok?'ok':'err');
     });
   });
 })();
