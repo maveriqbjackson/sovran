@@ -101,6 +101,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .err code{font-family:'IBM Plex Mono',monospace;font-size:.82rem;background:var(--void);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
 .err li{font-size:.86rem;line-height:1.5}
 #out{display:none} #out.show{display:block}
+.srcbar{margin-bottom:16px;font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.07em;
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.srcbar .ok{color:var(--clear)} .srcbar .live{color:var(--gold)}
+.srcbar .mini{background:none;border:1px solid var(--line-2);color:var(--ash);border-radius:7px;
+  font-family:'IBM Plex Mono',monospace;font-size:.66rem;padding:6px 11px;cursor:pointer;letter-spacing:.06em}
+.srcbar .mini:hover{border-color:var(--gold);color:var(--gold)}
 .stats{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);margin-bottom:20px}
 @media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
 .st{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:18px}
@@ -166,7 +172,7 @@ ol.steps a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(2
 
     <div class="disc">
       <h3>This page is different, and we want you to know why</h3>
-      <p>Every other tool on SOVRAN works with your connection switched off. This one cannot &mdash; the camera data lives in a public database and has to be fetched. So here is exactly what happens, and nothing happens until you press the button.</p>
+      <p><b>This page normally makes no outside request at all.</b> We keep a snapshot of the camera data on our own servers, so choosing a region loads it straight from this site and works with your connection switched off, exactly like everything else here.</p><p>An outside request happens only in two cases: a region we have not built a snapshot for yet, or you pressing <i>check for newer</i>. Both are your choice, and here is precisely what they send.</p>
       <p><strong>What gets sent:</strong> a request to <code>overpass-api.de</code>, a free public OpenStreetMap service, asking for every surveillance device inside the bounding box of the region you choose. That is a rectangle roughly the size of a US state.</p>
       <p><strong>What does not get sent:</strong> your address, your location, your postcode, or anything you type. We never ask for browser location permission. There is no address search, on purpose &mdash; typing your street into a box is how these tools usually leak the thing they claim to protect.</p>
       <p><strong>And no map tiles.</strong> A normal map downloads image tiles as you pan and zoom, which tells the tile server exactly where you are looking and how closely. That is a sharper location trail than asking for your GPS. We draw the map ourselves from coordinates instead. It looks less like Google and more like a radar screen, which is fitting.</p>
@@ -190,6 +196,7 @@ ol.steps a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(2
 <div id="out">
   <div class="wrap">
     <hr class="rule">
+    <div class="srcbar" id="src"></div>
     <div class="stats" id="stats"></div>
 
     <div class="plotwrap">
@@ -266,7 +273,7 @@ ol.steps a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(2
 'use strict';
 var $=function(i){return document.getElementById(i);};
 var SEL=$('region'), PROG=$('prog'), ERR=$('err'), OUT=$('out');
-var rows=[], regionName='', blocked=false, diag=[];
+var rows=[], regionName='', blocked=false, diag=[], dataAge=null;
 
 // A blocked request throws a generic TypeError, which is indistinguishable from
 // a network failure. This event tells us which one actually happened.
@@ -292,6 +299,36 @@ function classify(t){
   return t['camera:type']||t['camera:mount'] ? 'camera' : 'other';
 }
 
+
+/* ── Static first. A file on our own domain, no outside request, works offline. ── */
+function loadStatic(code){
+  return fetch('/mapdata/'+code+'.json',{cache:'default'})
+    .then(function(r){ if(!r.ok) throw new Error('no-static'); return r.json(); });
+}
+
+function expand(d){
+  // compact arrays -> the same row shape the renderer already uses
+  var KINDS=['alpr','camera','other'];
+  return (d.pts||[]).map(function(p){
+    return {lat:p[0], lon:p[1], kind:KINDS[p[2]]||'other',
+            op:(d.ops||[])[p[3]]||'', type:(d.types||[])[p[4]]||'',
+            zone:'', mount:'', name:''};
+  });
+}
+
+function offerLive(code,msg){
+  var r=REGIONS[code], bb=r.slice(1);
+  ERR.innerHTML = msg +
+    '<div style="margin-top:16px"><button class="btn" id="golive" style="font-size:.82rem;padding:12px 22px">'+
+    'Ask OpenStreetMap directly &rarr;</button></div>'+
+    '<p style="margin-top:12px;font-size:.83rem;color:var(--ash);line-height:1.5">'+
+    'This sends one request from your browser to a public OpenStreetMap server. '+
+    'It is the only outside request anywhere on SOVRAN, and nothing happens unless you press it.</p>';
+  ERR.classList.add('show');
+  var b=document.getElementById('golive');
+  if(b) b.addEventListener('click',function(){ liveQuery(code,bb[0],bb[1],bb[2],bb[3]); });
+}
+
 $('go').addEventListener('click',function(){
   var k=SEL.value;
   if(!k){ fail('Choose a region first.'); return; }
@@ -299,7 +336,27 @@ $('go').addEventListener('click',function(){
   var r=REGIONS[k]; regionName=r[0];
   var s=r[1],w=r[2],n=r[3],e=r[4];
 
-  say('Asking OpenStreetMap for surveillance devices in '+regionName+'\u2026<br>Large regions can take up to a minute. Nothing is being sent to SOVRAN.');
+  say('Loading '+regionName+' from this device\u2026');
+  loadStatic(k).then(function(d){
+    rows=expand(d);
+    var f=$('kind').value;
+    if(f!=='all') rows=rows.filter(function(x){ return x.kind===f; });
+    if(!rows.length){ offerLive(k,'<b>Nothing matched that filter in our copy of '+esc(regionName)+'.</b>'); return; }
+    PROG.classList.remove('show');
+    dataAge = d.built || null;
+    render(s,w,n,e);
+  }).catch(function(){
+    offerLive(k,'<b>We don\u2019t have a local copy of '+esc(regionName)+' yet.</b><br><br>'+
+      'Every other page here works with your connection switched off, and this one normally does too \u2014 '+
+      'we keep the camera data on our own servers so no outside request is ever needed. '+
+      'That file has not been built for this region yet.');
+  });
+});
+
+function liveQuery(k,s,w,n,e){
+  ERR.classList.remove('show');
+  regionName=REGIONS[k][0];
+  say('Asking OpenStreetMap for surveillance devices in '+regionName+'\u2026<br>This can take up to a minute. Nothing is being sent to SOVRAN.');
 
   var bbox=s+','+w+','+n+','+e;
   var q='[out:json][timeout:60];('+
@@ -383,7 +440,7 @@ $('go').addEventListener('click',function(){
                    : '<li>No detail was returned.</li>')+
       '</ul><br>Nothing failed on SOVRAN\u2019s side \u2014 the request goes from your browser straight to OpenStreetMap and never passes through us.');
   });
-});
+}
 
 function render(s,w,n,e){
   var alpr=rows.filter(function(x){return x.kind==='alpr';}).length;
@@ -438,6 +495,18 @@ function render(s,w,n,e){
   $('ops').innerHTML=bars(tally('op','(no operator recorded)'));
   $('kinds').innerHTML=bars(tally('type','(type not specified)'));
 
+  var src=document.getElementById('src');
+  if(src){
+    src.innerHTML = dataAge
+      ? '<span class="ok">Loaded from this site &middot; no outside request &middot; snapshot taken '+esc(dataAge)+'</span>'
+        + ' <button id="refresh" class="mini">Check OpenStreetMap for newer</button>'
+      : '<span class="live">Loaded live from OpenStreetMap just now</span>';
+    var rb=document.getElementById('refresh');
+    if(rb) rb.addEventListener('click',function(){
+      var kk=SEL.value, rr=REGIONS[kk];
+      dataAge=null; liveQuery(kk,rr[1],rr[2],rr[3],rr[4]);
+    });
+  }
   OUT.classList.add('show');
   OUT.scrollIntoView({behavior:'smooth',block:'start'});
 }
