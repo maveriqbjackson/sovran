@@ -78,6 +78,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .msg{display:none;margin-top:14px;font-size:.9rem;border-radius:var(--r-sm);padding:13px 15px;line-height:1.5}
 .msg.show{display:block}
 .msg.err{background:rgba(224,132,79,.09);border:1px solid rgba(224,132,79,.34);color:var(--alarm)}
+.msg b{color:var(--bone)}
+.msg code{font-family:'IBM Plex Mono',monospace;font-size:.84rem;background:var(--void);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--gold-hi)}
 .msg.ok{background:rgba(107,203,155,.09);border:1px solid rgba(107,203,155,.34);color:var(--clear)}
 #panel{display:none}
 #panel.show{display:block}
@@ -218,9 +220,40 @@ function when(t){
 }
 function call(action,extra){
   var b=Object.assign({key:key,code:code,action:action},extra||{});
-  return fetch('/api/admin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)})
-    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); });
+  return fetch('/api/admin',{
+    method:'POST',
+    credentials:'same-origin',           // carry the Cloudflare Access cookie
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(b)
+  }).then(function(r){
+    // Cloudflare Access answers an unauthenticated API call with a redirect to
+    // its login domain. A fetch cannot follow that cross-origin, so it either
+    // lands on a non-JSON page or fails outright. Detect it rather than guess.
+    var redirected = r.redirected || (r.url && r.url.indexOf(location.origin)!==0);
+    return r.text().then(function(txt){
+      var d;
+      try{ d=JSON.parse(txt); }
+      catch(e){
+        if(redirected || /cloudflareaccess|<!DOCTYPE|<html/i.test(txt)){
+          return {ok:false, accessRedirect:true, d:{}};
+        }
+        return {ok:false, d:{error:'The server replied with something that was not JSON (HTTP '+r.status+').'}};
+      }
+      return {ok:r.ok, d:d};
+    });
+  });
 }
+
+var ACCESS_HELP =
+  '<b>Cloudflare Access is intercepting the API call.</b><br><br>'+
+  'You got through Access to load this page, but the request to <code>/api/admin</code> is being '+
+  'redirected to the Access login screen instead of reaching the endpoint. A browser cannot follow '+
+  'that redirect from inside a page, so it fails.<br><br>'+
+  '<b>The cause:</b> Access sessions are per-application. If you created a second application for '+
+  '<code>api/admin</code>, this page is authenticated for one and not the other.<br><br>'+
+  '<b>The fix:</b> in Zero Trust &rarr; Access &rarr; Applications, <b>delete the application covering '+
+  '<code>api/admin</code></b> and keep only the one on <code>admin</code>. The endpoint stays protected: '+
+  'your browser sends the Access cookie with the request, and the API refuses anything that arrives without it.';
 
 function unlock(){
   key=KEYIN.value.trim();
@@ -229,10 +262,15 @@ function unlock(){
   if(code.length!==6){ say(MSG,'Enter the current 6-digit code from your authenticator app.','err'); return; }
   say(MSG,'Checking\u2026','ok');
   call('overview').then(function(res){
+    if(res.accessRedirect){ MSG.innerHTML=ACCESS_HELP; MSG.className='msg show err'; key=''; code=''; return; }
     if(!res.ok){ say(MSG,res.d.error||'Not authorised.','err'); key=''; code=''; document.getElementById('code').value=''; return; }
     GATE.style.display='none'; PANEL.classList.add('show');
     render(res.d);
-  }).catch(function(){ say(MSG,'Could not reach the server.','err'); });
+  }).catch(function(){
+    MSG.innerHTML = ACCESS_HELP +
+      '<br><br><span style="color:var(--ash);font-size:.86rem">If you have no such application, then the request failed for another reason \u2014 check that <code>functions/api/admin.js</code> exists in the repo and that you have redeployed since adding it.</span>';
+    MSG.className='msg show err';
+  });
 }
 
 function render(d){
