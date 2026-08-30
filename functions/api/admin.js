@@ -308,8 +308,12 @@ export async function onRequestPost({ request, env }) {
       }
       if (!statement) return json({ error: "No statement to sign." }, 400);
 
-      await env.DB.prepare("INSERT INTO canary (statement, signed_by, note) VALUES (?1, ?2, ?3)")
-        .bind(statement, signer, String(body.note || "").slice(0, 500) || null).run();
+      const freshness = String(body.freshness || "").trim().slice(0, 300);
+      if (!freshness || freshness.length < 12) {
+        return json({ error: "A freshness token is required — something public from today." }, 400);
+      }
+      await env.DB.prepare("INSERT INTO canary (statement, signed_by, note, freshness) VALUES (?1, ?2, ?3, ?4)")
+        .bind(statement, signer, String(body.note || "").slice(0, 500) || null, freshness).run();
       return json({ ok: true, signed_by: signer });
     }
 

@@ -24,20 +24,21 @@ const json = (obj, status = 200) =>
 export async function onRequestGet({ env }) {
   try {
     const row = await env.DB.prepare(
-      "SELECT statement, signed_by, signed_at, note FROM canary ORDER BY id DESC LIMIT 1"
+      "SELECT statement, signed_by, signed_at, note, freshness FROM canary ORDER BY id DESC LIMIT 1"
     ).first();
 
     if (!row) return json({ error: "No statement has been signed yet." }, 404);
 
     // history of signing dates only — proves the cadence without extra detail
     const { results } = await env.DB.prepare(
-      "SELECT signed_by, signed_at FROM canary ORDER BY id DESC LIMIT 12"
+      "SELECT signed_by, signed_at, freshness FROM canary ORDER BY id DESC LIMIT 12"
     ).all();
 
     return json({
       statement: row.statement,
       signed_by: row.signed_by,
       signed_at: row.signed_at,
+      freshness: row.freshness || null,
       note: row.note || null,
       history: results || [],
       // how long before the page should call it overdue
@@ -91,10 +92,21 @@ export async function onRequestPost({ request, env }) {
 
   const note = String(body.note || "").slice(0, 500) || null;
 
+  // A freshness token is something that could not have been known before today.
+  // Without it, a signing date is just a number our own server wrote, and anyone
+  // who controlled the server could backdate it. With it, the statement is
+  // provably composed after a public event that anyone can check.
+  const freshness = String(body.freshness || "").trim().slice(0, 300);
+  if (!freshness || freshness.length < 12) {
+    return json({
+      error: "A freshness token is required — something public from today that could not have been known earlier. A news headline works.",
+    }, 400);
+  }
+
   try {
     await env.DB.prepare(
-      "INSERT INTO canary (statement, signed_by, note) VALUES (?1, ?2, ?3)"
-    ).bind(statement, signer, note).run();
+      "INSERT INTO canary (statement, signed_by, note, freshness) VALUES (?1, ?2, ?3, ?4)"
+    ).bind(statement, signer, note, freshness).run();
   } catch {
     return json({ error: "Could not record the signature." }, 500);
   }
