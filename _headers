@@ -24,6 +24,15 @@
 /api/admin
   X-Robots-Tag: noindex, nofollow
 
+# ── The Map is the only page permitted to reach outside this domain,
+#    and only to the public OpenStreetMap query service. Every other page
+#    stays locked to 'self'. The exception is narrow and deliberate.
+/map
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://overpass-api.de; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+
+/map.html
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://overpass-api.de; form-action 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+
 # ── Security headers, site-wide ──
 /*
   X-Content-Type-Options: nosniff

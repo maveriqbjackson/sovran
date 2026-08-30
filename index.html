@@ -127,7 +127,9 @@ header{position:relative;z-index:3;padding:24px 0 0}
 .livegrid a:hover{border-color:rgba(217,174,95,.4);transform:translateX(3px)}
 .livegrid b{display:block;color:var(--bone);font-family:'Archivo',sans-serif;font-weight:700;
   font-size:.98rem;letter-spacing:-.01em;margin-bottom:3px}
-.livegrid span{display:block;font-size:.83rem;color:var(--ash);line-height:1.4}
+.livegrid span{display:block;font-size:.83rem;color:var(--ash);line-height:1.5}
+.livegrid span em{display:block;font-style:normal;color:var(--gold);margin-top:5px;font-size:.79rem}
+.livenote{margin-top:15px;font-size:.82rem;color:var(--ash-dim);line-height:1.5}
 
 /* PROMOTED — the architecture claim carries the page */
 .claim{
@@ -191,6 +193,14 @@ section{padding:clamp(56px,12vw,96px) 0;position:relative}
 .cap ul{list-style:none;margin-top:17px;display:grid;gap:9px}
 .cap li{font-size:.88rem;color:var(--ash);padding-left:21px;position:relative;line-height:1.45}
 .cap li::before{content:'';position:absolute;left:0;top:.56em;width:9px;height:1.5px;background:var(--gold-deep)}
+
+/* guardrails — the lines about how this may and may not be used */
+.guard{margin-top:18px;background:linear-gradient(135deg,rgba(107,203,155,.09),rgba(79,195,217,.04));
+  border:1px solid rgba(107,203,155,.34);border-radius:var(--r-md);padding:16px 18px;display:flex;gap:13px;align-items:flex-start}
+.guard svg{flex:none;margin-top:2px}
+.guard p{font-size:.92rem!important;color:var(--bone)!important;line-height:1.55;margin:0}
+.guard p b{display:block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;
+  text-transform:uppercase;color:#6BCB9B;margin-bottom:7px;font-weight:600}
 
 .charter{background:var(--void-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .charter-grid{display:grid;gap:38px}
@@ -262,15 +272,17 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     <p class="lede">Your face, your address, your habits, your children — collected by people you never met and sold to people you'll never see. SOVRAN finds it, takes it down, and shows you the surveillance you move through every day.</p>
 
     <div class="livebar">
-      <span class="livebar-h"><i></i>Six tools are built and free to use right now</span>
+      <span class="livebar-h"><i></i>Seven tools, built and free to use right now</span>
       <div class="livegrid">
-        <a href="/photo"><b>The Photo Check</b><span>See what's hidden in a photo &middot; 5 seconds</span></a>
-        <a href="/audit"><b>The Audit</b><span>Read back your whole social export</span></a>
-        <a href="/guide"><b>The Guide</b><span>What you can actually do, step by step</span></a>
-        <a href="/passphrase"><b>The Passphrase</b><span>A key nobody can guess or reset</span></a>
-        <a href="/panel"><b>Your Panel</b><span>A plan you can finish &middot; saved only on your device</span></a>
-        <a href="/account"><b>Your Account</b><span>Encrypted with a key we never receive</span></a>
+        <a href="/photo"><b>The Photo Check</b><span>Find the GPS coordinates and camera serial hidden in any photo, then download a clean copy. <em>Use it before you send a picture to anyone you don&rsquo;t know.</em></span></a>
+        <a href="/audit"><b>The Audit</b><span>Drop in your own Instagram or TikTok export and see every location and routine you&rsquo;ve published. <em>Use it once to find out what&rsquo;s already out there.</em></span></a>
+        <a href="/guide"><b>The Guide</b><span>Step-by-step answers with a broker opt-out checklist. <em>Use it when you want your address off people-search sites.</em></span></a>
+        <a href="/passphrase"><b>The Passphrase</b><span>Six random words strong enough for your email, bank, or password manager. <em>Use it anywhere a password protects something you can&rsquo;t afford to lose.</em></span></a>
+        <a href="/panel"><b>Your Panel</b><span>A checklist of everything worth doing, ordered by impact. <em>Use it to actually finish, instead of reading and forgetting.</em></span></a>
+        <a href="/map"><b>The Map</b><span>Plate readers and cameras near you, from public records. <em>Use it to find out what is watching your street.</em></span></a>
+        <a href="/account"><b>Your Account</b><span>Optional, free, and encrypted with a key we never receive. <em>Use it to carry your progress between your phone and laptop.</em></span></a>
       </div>
+      <p class="livenote">No payment, no trial, no card. Only the account asks for an email &mdash; the other five need nothing at all.</p>
     </div>
 
     <div class="claim">
@@ -335,12 +347,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="sec-head reveal">
       <span class="eyebrow">What it does</span>
       <h2>Nine ways to take yourself back.</h2>
-      <p class="body">Rights you already hold are scattered across a dozen agencies and hundreds of forms. SOVRAN turns them into one place you actually check. <strong>Six are live and free today.</strong> The rest are honestly labelled as not built yet — we would rather tell you that than imply otherwise.</p>
+      <p class="body">Rights you already hold are scattered across a dozen agencies and hundreds of forms. SOVRAN turns them into one place you actually check. <strong>Seven are live and free today.</strong> The rest are honestly labelled as launching soon — we would rather tell you that than imply otherwise.</p>
     </div>
     <div class="caps">
 
       <div class="cap wide reveal">
-        <span class="cap-tag t-soon">Free forever · Not built yet</span>
+        <span class="cap-tag t-soon">Free forever · Launching soon</span>
         <h3>See yourself the way a stranger does</h3>
         <p>Answer a few questions and find out what someone could learn about you in twenty minutes — where you live, where you train, what your car looks like, who your family is. For most people it's the first honest picture they've ever had of themselves.</p>
         <ul>
@@ -385,25 +397,26 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
       </div>
 
       <div class="cap reveal">
-        <span class="cap-tag t-soon">SOVRAN+ · Not built yet</span>
+        <span class="cap-tag t-soon">SOVRAN+ · Launching soon</span>
         <h3>Find your face</h3>
-        <p>Search for photos of yourself you never posted. Your face is matched on your own device — the image never uploads, and SOVRAN can only ever search for the person who verified the account. This is a mirror, not a lookup tool for strangers.</p>
+        <p>Search for photos of yourself you never posted. Your face is matched on your own device &mdash; the image never uploads.</p><div class="guard"><svg width="17" height="19" viewBox="0 0 17 19" fill="none" aria-hidden="true"><path d="M8.5 1L15.5 4v6c0 4.2-3 7.2-7 8.5C4.5 17.2 1.5 14.2 1.5 10V4L8.5 1Z" stroke="#6BCB9B" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.6 9.6l2 2 3.8-4" stroke="#6BCB9B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><p><b>How this may be used</b>SOVRAN can only ever search for <em>your own face</em>. You cannot look up a stranger, an ex, a neighbour, or anyone else. This is a mirror, not a search engine for people &mdash; and that limit is built into how it works, not written into a policy we could quietly change.</p></div>
       </div>
 
       <div class="cap reveal">
-        <span class="cap-tag t-soon">SOVRAN+ · Not built yet</span>
+        <span class="cap-tag t-soon">SOVRAN+ · Launching soon</span>
         <h3>Take it down and keep it down</h3>
         <p>Broker deletions, copyright claims on photos you took yourself, and non-consensual image removals — filed for you, tracked to a real answer, and refiled the moment someone quietly puts it back.</p>
       </div>
 
       <div class="cap reveal">
-        <span class="cap-tag t-soon">Free forever · Not built yet</span>
+        <span class="cap-tag t-live">Free forever · Live now</span>
         <h3>See what sees you</h3>
-        <p>Plate readers, camera networks, and the contracts behind them, mapped from public records. What's on your street, who runs it, how long they keep it, and when your city council votes on it next.</p>
+        <p>Plate readers, camera networks, and who operates them, drawn from a public database and plotted on your device. No location permission, no address search, and no map tiles &mdash; because a normal map quietly reports exactly where you are looking.</p><p style="margin-top:12px;font-size:.9rem;color:var(--ash)"><strong>Free forever.</strong> This is public records mapped by volunteers. It was never ours to sell.</p><div class="guard"><svg width="17" height="19" viewBox="0 0 17 19" fill="none" aria-hidden="true"><path d="M8.5 1L15.5 4v6c0 4.2-3 7.2-7 8.5C4.5 17.2 1.5 14.2 1.5 10V4L8.5 1Z" stroke="#6BCB9B" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.6 9.6l2 2 3.8-4" stroke="#6BCB9B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><p><b>Awareness, not evasion</b>This shows you what surveillance exists around you, who operates it, and how to question it. It is not a tool for avoiding a lawful investigation, and we are not going to build one.</p></div>
+        <a href="/map" class="btn" style="width:auto;display:inline-block;text-decoration:none;margin-top:20px;padding:14px 26px;font-size:.88rem">Open The Map &rarr;</a>
       </div>
 
       <div class="cap reveal">
-        <span class="cap-tag t-soon">SOVRAN+ · Not built yet</span>
+        <span class="cap-tag t-soon">SOVRAN+ · Launching soon</span>
         <h3>The last word</h3>
         <p>Name someone you trust. If you die or go dark, they can erase everything SOVRAN holds and fire every removal request you had queued — without ever holding your keys while you're alive. Your record shouldn't outlive you unless you decided it should.</p>
       </div>
@@ -441,7 +454,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     <div class="sec-head reveal">
       <span class="eyebrow">For families</span>
       <h2>Your child's record started before they could type.</h2>
-      <p class="body">By the time a kid is old enough to consent, thousands of images and details about them are already public — nearly all of it posted by adults who love them. SOVRAN helps parents close that down without ever building a tool that tracks a child.</p>
+      <p class="body">By the time a kid is old enough to consent, thousands of images and details about them are already public — nearly all of it posted by adults who love them. SOVRAN helps parents close that down without ever building a tool that tracks a child.</p><div class="guard" style="max-width:64ch"><svg width="17" height="19" viewBox="0 0 17 19" fill="none" aria-hidden="true"><path d="M8.5 1L15.5 4v6c0 4.2-3 7.2-7 8.5C4.5 17.2 1.5 14.2 1.5 10V4L8.5 1Z" stroke="#6BCB9B" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.6 9.6l2 2 3.8-4" stroke="#6BCB9B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><p><b>Where we draw the line</b>Everything here is about what <em>you</em> have published, never about monitoring your child. We will not build tracking, location sharing, or message reading for kids. Tools like that are one small step from being used against the person they claim to protect.</p></div>
     </div>
     <div class="kids-grid">
       <div class="kid reveal"><h3>Audit what you posted</h3><p>Point it at your own accounts. Find the school name on the jersey, the street sign behind the birthday cake, the geotag on the soccer field — and clear it in a few taps.</p></div>

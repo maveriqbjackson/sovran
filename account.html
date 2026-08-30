@@ -83,6 +83,21 @@ footer a:hover{color:var(--gold);border-color:var(--gold)}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 
+.guard{background:linear-gradient(135deg,rgba(107,203,155,.09),rgba(79,195,217,.04));border:1px solid rgba(107,203,155,.34);border-radius:var(--r-md);padding:17px 19px;display:flex;gap:13px;align-items:flex-start;margin-top:24px}
+.guard p{font-size:.92rem;color:var(--bone);line-height:1.58;margin:0}
+.guard p b{display:block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:#6BCB9B;margin-bottom:8px;font-weight:600}
+.guard p span{display:block;color:var(--ash);margin-top:9px;font-size:.88rem}
+.whybox{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(20px,4vw,26px);margin-top:26px}
+.yn{display:grid;gap:13px}
+@media(min-width:640px){.yn{grid-template-columns:1fr 1fr}}
+.yn>div{background:var(--void);border:1px solid var(--line);border-radius:var(--r-md);padding:17px 19px}
+.yn .h{display:block;font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.15em;
+  text-transform:uppercase;margin-bottom:11px}
+.yn .y .h{color:var(--clear)} .yn .n .h{color:var(--ash-dim)}
+.yn ul{list-style:none;display:grid;gap:9px}
+.yn li{font-size:.87rem;color:var(--ash);line-height:1.5;padding-left:19px;position:relative}
+.yn .y li::before{content:'\2713';position:absolute;left:0;color:var(--clear);font-size:.85rem}
+.yn .n li::before{content:'\2013';position:absolute;left:0;color:var(--ash-dim)}
 .tabs{display:flex;gap:8px;margin-top:26px;margin-bottom:20px}
 .tabs button{flex:1;background:var(--surface);border:1px solid var(--line-2);color:var(--ash);
   border-radius:var(--r-sm);font-family:'Archivo',sans-serif;font-weight:700;font-size:.85rem;
@@ -158,6 +173,32 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
       </div>
     </div>
 
+    <div class="guard"><svg width="17" height="19" viewBox="0 0 17 19" fill="none" aria-hidden="true" style="flex:none;margin-top:2px"><path d="M8.5 1L15.5 4v6c0 4.2-3 7.2-7 8.5C4.5 17.2 1.5 14.2 1.5 10V4L8.5 1Z" stroke="#6BCB9B" stroke-width="1.6" stroke-linejoin="round"/><path d="M5.6 9.6l2 2 3.8-4" stroke="#6BCB9B" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><p><b>Signing up is not an ID check</b>We do not ask for your name, your address, your phone number, your date of birth, or a government document. We never will. Creating an account here means choosing an email address and a passphrase, and nothing else.<span>If you use an alias or a throwaway address, that is fine. We are not going to check, because there is nothing we would check it against.</span></p></div>
+
+    <div class="whybox">
+      <h2 style="font-size:1.15rem;margin-bottom:14px">Do you even need one?</h2>
+      <p style="color:var(--ash);font-size:.94rem;line-height:1.6;margin-bottom:18px"><strong>Probably not yet, and we would rather say so.</strong> Five of our six tools work with no account at all &mdash; no email, no signup, nothing. An account does exactly one thing today.</p>
+      <div class="yn">
+        <div class="y">
+          <span class="h">Worth it if</span>
+          <ul>
+            <li>You use SOVRAN on both a phone and a laptop and want your checklist on both</li>
+            <li>You want your progress to survive clearing your browser data</li>
+            <li>You want to be first in line when the paid removal tools arrive</li>
+          </ul>
+        </div>
+        <div class="n">
+          <span class="h">Skip it if</span>
+          <ul>
+            <li>You just want to check a photo or read the Guide &mdash; those need nothing</li>
+            <li>You only use one device</li>
+            <li>You would rather not have an account anywhere, which is a completely reasonable position and one we agree with more often than not</li>
+          </ul>
+        </div>
+      </div>
+      <p style="color:var(--ash-dim);font-size:.86rem;line-height:1.55;margin-top:16px">It is free, and it will stay free. There is no trial, no card, and no upsell waiting on the other side.</p>
+    </div>
+
     <div id="forms">
       <div class="tabs">
         <button id="tCreate" class="on">Create</button>
@@ -224,7 +265,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 <section>
   <div class="wrap">
     <h2>What we actually store</h2>
-    <div class="key"><b>Everything on our side, in full</b>Your email address. A random salt. A hash of a key that only proves identity. And a block of ciphertext.<br><br>That is the complete list. If this database were stolen tomorrow, the attacker would get a mailing list and a pile of noise.</div>
+    <div class="key"><b>Everything on our side, in full</b>Your email address. A random salt. A hash of a key that only proves identity. And a block of ciphertext.<br><br>That is the complete list. No name, no address, no phone number, no document, no date of birth. If this database were stolen tomorrow, the attacker would get a mailing list and a pile of noise.</div>
     <p class="body">Your passphrase is stretched through 600,000 rounds of PBKDF2 in your browser to produce two independent keys. The <strong>auth key</strong> is sent here and hashed again before storage. The <strong>data key</strong> never leaves your device and is what encrypts your vault with AES-GCM before upload.</p>
     <p class="body">We are not choosing not to look. We built it so that looking is not possible. <a href="/#charter" style="color:var(--gold)">That is Articles I through VI of the Charter</a>, in working code.</p>
   </div>

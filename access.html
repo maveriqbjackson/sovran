@@ -100,6 +100,20 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(min-width:700px){.who{grid-template-columns:repeat(2,1fr)}}
 .who div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:19px 21px;
   font-size:.92rem;color:var(--ash);line-height:1.55}
+ol.steps{list-style:none;counter-reset:p;display:grid;gap:13px;margin:0 0 18px}
+ol.steps li{counter-increment:p;padding-left:34px;position:relative;font-size:.94rem;line-height:1.58;color:var(--ash)}
+ol.steps li::before{content:counter(p);position:absolute;left:0;top:0;width:23px;height:23px;border-radius:50%;
+  background:rgba(217,174,95,.13);border:1px solid rgba(217,174,95,.3);color:var(--gold);
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;font-weight:600;display:flex;align-items:center;justify-content:center}
+ol.steps li b{color:var(--bone)}
+ol.steps code{font-family:'IBM Plex Mono',monospace;font-size:.86rem;color:var(--gold-hi);background:var(--void);
+  border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+.pay{display:grid;gap:12px;margin-bottom:20px}
+@media(min-width:760px){.pay{grid-template-columns:repeat(3,1fr)}}
+.pay>div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:19px 21px}
+.pay .ph{display:block;font-family:'Archivo',sans-serif;font-weight:700;font-size:1rem;color:var(--bone);margin-bottom:9px}
+.pay p{font-size:.88rem;color:var(--ash);line-height:1.55}
+.pay p b{color:var(--gold)}
 .who div b{display:block;color:var(--bone);font-family:'Archivo',sans-serif;font-weight:700;font-size:.98rem;margin-bottom:6px}
 
 </style>
@@ -163,6 +177,46 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 
 <section>
   <div class="wrap">
+    <h2>How paying will work</h2>
+    <p class="body">SOVRAN+ is not open yet. When it is, here is the shape of it &mdash; written down now so you can hold us to it later.</p>
+
+    <div class="key"><b>The rule</b>Your payment and your account will never share an identifier. Not a customer number, not an email, not a reference code. Nothing that could be used to join the two together will exist in any database we hold.</div>
+
+    <p class="body">Almost every service does the opposite: you pay, your subscription attaches to your account, and their database now links a real name and a card to everything that account ever does. That link is the honeypot all over again, and we are not building it.</p>
+
+    <h3 style="margin:30px 0 14px">Instead, you buy a token</h3>
+    <ol class="steps">
+      <li><b>Your account already has a token.</b> A random string like <code>sv-4kx9-mnp2-7wqr</code>, created the moment you sign up, with no time on it. It is not derived from your email and means nothing on its own.</li>
+      <li><b>You buy time on a separate checkout page.</b> No login, no account, nothing connecting the two. Our payment processor sees a card. It does not see a SOVRAN account, because none is involved.</li>
+      <li><b>You paste the code into your account.</b> Your account record then says one thing: <i>paid until this date</i>.</li>
+      <li><b>Nothing joins them.</b> Handed both databases, we could not tell you which customer is which user. Neither could anyone who took them from us.</li>
+    </ol>
+
+    <h3 style="margin:30px 0 14px">Ways to pay, from ordinary to invisible</h3>
+    <div class="pay">
+      <div><span class="ph">Card</span><p>Normal checkout. Card details go straight to the payment processor and never touch our servers. We would see an email and the last four digits, attached to nothing you do here.</p></div>
+      <div><span class="ph">Prepaid card</span><p>Buy a prepaid Visa or Mastercard with cash at any supermarket and use it at normal checkout. No bank account, no name, no trace back to you. <b>Most services quietly block these. We will not.</b></p></div>
+      <div><span class="ph">Cash in an envelope</span><p>Write your token number on a slip of paper, put it in with cash, post it. We open it, credit the token, and that is the end of it. <b>We never send anything back, so you never need to include a return address.</b> The envelope holds a random number and some money and identifies nobody.</p></div>
+    </div>
+
+    <div class="key" style="border-left-color:var(--alarm);background:linear-gradient(140deg,rgba(224,132,79,.07),transparent 70%)"><b>Being straight about the cash option</b>Post it plain and untracked, in small amounts, and understand it is at your own risk. A courier would give you tracking but requires your name and address, which destroys the only reason to do it this way. If an envelope goes missing you have lost the money and revealed nothing &mdash; that trade is the whole design.</div>
+
+    <h3 style="margin:30px 0 14px">What happens when someone cheats</h3>
+    <p class="body">Anonymous payment attracts fraud. Handling it without surveillance is possible, and it comes out cleaner than the usual approach:</p>
+    <ul class="yeslist">
+      <li>We sell time, never lifetime access &mdash; a fraudulent payment costs a month, not forever</li>
+      <li>A stolen card means we void that token, not investigate a person</li>
+      <li>Cash and prepaid cannot be charged back at all, so the most private methods are also the safest for us</li>
+      <li>A token used from thirty places at once is visible as a <i>count</i> &mdash; we never need to know where any of them are</li>
+    </ul>
+    <p class="body" style="margin-top:16px">None of that requires knowing who you are. It never will.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <div class="wrap">
     <h2>Who this is for</h2>
     <p class="body">Not an eligibility list &mdash; there is no eligibility. Just who we had in mind, so you know you are not an exception being tolerated.</p>
     <div class="who">
@@ -185,10 +239,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px">
       <a href="/photo" class="btn ghost">The Photo Check</a>
       <a href="/audit" class="btn ghost">The Audit</a>
+      <a href="/map" class="btn ghost">The Map</a>
       <a href="/guide" class="btn ghost">The Guide</a>
       <a href="/passphrase" class="btn ghost">The Passphrase</a>
     </div>
-    <p class="body" style="margin-top:24px">The paid tier is for the ongoing labour &mdash; filing hundreds of deletion requests, chasing each to a real answer, and refiling when brokers quietly repopulate. That is work with a real cost, which is the only reason it costs anything.</p>
+    <p class="body" style="margin-top:24px">The paid tier is for the ongoing labour &mdash; filing hundreds of deletion requests, chasing each to a real answer, and refiling when brokers quietly repopulate. That is work with a real cost, which is the only reason it costs anything.</p><div class="key" style="margin-top:20px"><b>A line we are not going to cross</b>Nothing currently free will ever move behind the paywall. Not the Photo Check, not the Audit, not the Guide, and not the Map &mdash; especially not the Map, which is public records mapped by volunteers and was never ours to sell. When SOVRAN+ opens, it will contain new work, not fenced-off old work.</div>
     <div style="margin-top:26px"><a href="/#waitlist" class="btn">Join the waitlist</a></div>
   </div>
 </section>
