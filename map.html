@@ -158,6 +158,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .copied.show{display:block}
 .tip b{display:block;color:var(--gold-hi);font-size:.8rem;margin-bottom:3px}
 .tip span{color:var(--ash);font-size:.73rem;font-family:'IBM Plex Mono',monospace}
+.layers{display:flex;flex-direction:column;gap:5px;margin-top:12px;
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.05em;line-height:1.5}
+.layers .lok{color:#3DE8A5}
+.layers .lmiss{color:#FFCB6B}
 .legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ash-dim);letter-spacing:.07em}
 .legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:middle}
 .blk{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(20px,4vw,26px);margin-bottom:14px}
@@ -333,6 +337,7 @@ body::after{
         </div>
         <div class="draft" id="draft"></div>
       </div>
+      <div class="layers" id="layers"></div>
       <div class="legend">
         <span><i style="background:#FF9E5E"></i>Plate readers</span>
         <span><i style="background:#6BCBE8"></i>Cameras</span>
@@ -489,17 +494,40 @@ $('go').addEventListener('click',function(){
 
 function render(s,w,n,e){
   view={outline:null,cities:[],bbox:[s,w,n,e]};
+  var layerNotes=[];
   Promise.all([
-    fetch('/outlines/'+SEL.value+'.json').then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
-    CITIES ? Promise.resolve(CITIES) : fetch('/cities.json').then(function(r){return r.ok?r.json():[];}).catch(function(){return [];})
+    fetch('/outlines/'+SEL.value+'.json').then(function(r){
+      if(!r.ok){ layerNotes.push(['outline','missing \u2014 /outlines/'+SEL.value+'.json returned '+r.status]); return null; }
+      return r.json();
+    }).catch(function(){ layerNotes.push(['outline','could not be read']); return null; }),
+    CITIES ? Promise.resolve(CITIES) : fetch('/cities.json').then(function(r){
+      if(!r.ok){ layerNotes.push(['towns','missing \u2014 /cities.json returned '+r.status]); return []; }
+      return r.json();
+    }).catch(function(){ layerNotes.push(['towns','could not be read']); return []; })
   ]).then(function(res){
     view.outline=res[0];
     CITIES=res[1]||[];
     view.cities=CITIES.filter(function(c){ return c[2]>=s&&c[2]<=n&&c[3]>=w&&c[3]<=e; });
+    if(!ROADS.length) layerNotes.push(['roads','none in this snapshot \u2014 rebuild it with &ldquo;include roads&rdquo; ticked']);
+    showLayers(layerNotes);
     initMap();
   });
 
-  function tally(field,label){
+  function showLayers(notes){
+  var el=document.getElementById('layers');
+  if(!el) return;
+  var ok=[];
+  if(view.outline) ok.push('state outline');
+  if(view.cities.length) ok.push(view.cities.length+' towns');
+  if(ROADS.length) ok.push(ROADS.length.toLocaleString()+' road segments');
+  ok.push(rows.length.toLocaleString()+' devices');
+
+  var h='<span class="lok">\u2713 drawn: '+ok.join(' \u00b7 ')+'</span>';
+  notes.forEach(function(n){ h+='<span class="lmiss">\u26A0 '+n[0]+': '+n[1]+'</span>'; });
+  el.innerHTML=h;
+}
+
+function tally(field,label){
     var m={};
     rows.forEach(function(x){ var k=x[field]||label; m[k]=(m[k]||0)+1; });
     return Object.keys(m).map(function(k){return [k,m[k]];}).sort(function(a,b){return b[1]-a[1];}).slice(0,12);
