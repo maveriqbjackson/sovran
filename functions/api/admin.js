@@ -16,7 +16,7 @@
 // Env vars : ADMIN_KEY, ADMIN_TOTP_SECRET, CANARY_KEYS,
 //            REQUIRE_ACCESS ("true" once Cloudflare Access is configured)
 
-const BUILD_ID = "2026-08-31-tiled-roads";
+const BUILD_ID = "2026-08-31-fast-fail";
 
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), {
@@ -246,7 +246,9 @@ export async function onRequestPost({ request, env }) {
           // Give up before Cloudflare gives up on us. An edge timeout returns an
           // HTML error page, which is far harder to diagnose than a clean failure.
           const ctrl = new AbortController();
-          const timer = setTimeout(() => ctrl.abort(), 45000);
+          // Cloudflare cuts a Pages Function off well before 45s and answers with an
+          // HTML error page. Bail at 20s so the failure is ours, clean, and in JSON.
+          const timer = setTimeout(() => ctrl.abort(), 20000);
           const res = await fetch(url, {
             method: "POST",
             headers: {
@@ -271,7 +273,7 @@ export async function onRequestPost({ request, env }) {
         } catch (e) {
           tried.push(`${host}: ${
             e && e.name === "AbortError"
-              ? "no answer within 45s — the area is too large for one request"
+              ? "no answer within 20s — the area is too large for one request"
               : String((e && e.message) || "unreachable")
           }`);
         }
