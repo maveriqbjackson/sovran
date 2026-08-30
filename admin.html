@@ -580,13 +580,19 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
   function build(code){
     var r=REGIONS[code], name=r[0], bb=[r[1],r[2],r[3],r[4]];
     var bbox=bb.join(',');
-    var q='[out:json][timeout:90];('+
+    var qCams='[out:json][timeout:60];('+
       'node["man_made"="surveillance"]('+bbox+');'+
       'way["man_made"="surveillance"]('+bbox+');'+
-      ');out center;'+
-      // major roads, so a dot sits on a road people recognise
-      'way["highway"~"^(motorway|trunk|primary|secondary)$"]('+bbox+');'+
+      ');out center;';
+    // Roads go in a separate request. A whole state of primary AND secondary
+    // roads with full geometry is tens of megabytes and reliably times out, so
+    // this is the trunk network only, and a failure here still leaves you a
+    // usable camera file.
+    var qRoads='[out:json][timeout:90];'+
+      'way["highway"~"^(motorway|trunk|primary)$"]("+bbox+");'+
       'out geom;';
+    qRoads=qRoads.replace('"+bbox+"',bbox);
+    var q=qCams;
 
     line('\u2192 '+name+' \u2014 querying\u2026','var(--ice)');
     // The browser cannot reach Overpass directly \u2014 this page's Content-Security-Policy
@@ -617,21 +623,32 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
       });
     }
 
-    return go().then(function(d){
+    return go().then(function(camData){
+      line('   fetching the road network separately\u2026','var(--ash-dim)');
+      q=qRoads;
+      return go().then(function(roadData){
+        line('   \u2713 roads returned '+((roadData.elements||[]).length).toLocaleString()+' ways','var(--ash-dim)');
+        return {elements:(camData.elements||[]).concat(roadData.elements||[])};
+      }).catch(function(){
+        line('   \u26A0 roads unavailable \u2014 saving cameras only. Re-run later to add them.','#FFCB6B');
+        return camData;
+      });
+    }).then(function(d){
       var ops=[], types=[], oi={}, ti={}, pts=[], roads=[], rnames=[], rni={};
-      var RC={motorway:0,trunk:1,primary:2,secondary:3};
+      var RC={motorway:0,trunk:1,primary:2};
 
-      // simplify a polyline — drop points that add no shape at map scale
+      // Simplify a polyline. Overpass hands us [{lat,lon},…]; we emit [[lat,lon],…]
+      // and compare against what we have already emitted, not against the raw
+      // objects — mixing the two silently collapsed every road to a straight line.
       function thin(g,tol){
-        if(g.length<3) return g;
-        var out=[g[0]];
+        var out=[[+g[0].lat.toFixed(5), +g[0].lon.toFixed(5)]];
         for(var i=1;i<g.length-1;i++){
           var a=out[out.length-1];
-          if(Math.abs(g[i].lat-a[0])>tol||Math.abs(g[i].lon-a[1])>tol)
-            out.push([+g[i].lat.toFixed(5),+g[i].lon.toFixed(5)]);
+          if(Math.abs(g[i].lat-a[0])>tol || Math.abs(g[i].lon-a[1])>tol)
+            out.push([+g[i].lat.toFixed(5), +g[i].lon.toFixed(5)]);
         }
-        out.push([+g[g.length-1].lat.toFixed(5),+g[g.length-1].lon.toFixed(5)]);
-        if(typeof out[0]!=='object'||out[0].length!==2) out[0]=[+g[0].lat.toFixed(5),+g[0].lon.toFixed(5)];
+        var last=g[g.length-1];
+        out.push([+last.lat.toFixed(5), +last.lon.toFixed(5)]);
         return out;
       }
 
@@ -639,11 +656,11 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
         if(el.type==='way'&&el.tags&&el.tags.highway&&el.geometry){
           var cls=RC[el.tags.highway];
           if(cls===undefined) return;
-          var g=thin(el.geometry, cls<2?0.004:0.007);
+          var g=thin(el.geometry, cls<2?0.003:0.005);
           if(g.length<2) return;
           var nm=el.tags.ref||el.tags.name||'';
           if(!(nm in rni)){ rni[nm]=rnames.length; rnames.push(nm); }
-          roads.push([cls,rni[nm]].concat(g.map(function(p){return p[0];}).map(function(_,i){return g[i];})));
+          roads.push([cls,rni[nm]].concat(g));
           return;
         }
         var lat=el.lat!=null?el.lat:(el.center&&el.center.lat);
@@ -674,7 +691,8 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     }).catch(function(){
       line('\u2717 '+name+': every mirror refused. See the lines above for the exact reason.','#FF9E5E');
       line('   If they all say HTTP 400, the query is malformed \u2014 tell Claude.','var(--ash-dim)');
-      line('   If they say 429 or timed out, Overpass is overloaded \u2014 wait 10 minutes.','var(--ash-dim)');
+      line('   If they say 429, you are rate-limited \u2014 wait 2-10 minutes between states.','var(--ash-dim)');
+      line('   If they timed out, the region is too large right now \u2014 try again later.','var(--ash-dim)');
       line('   If they say unreachable or CSP block, /admin is missing its Overpass exception in _headers.','var(--ash-dim)');
       return false;
     });
@@ -688,7 +706,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     document.getElementById('mbuild').disabled=true;
     build(k).then(function(ok){
       document.getElementById('mbuild').disabled=false;
-      m(ok ? 'Done. Upload the downloaded file to mapdata/ in your repo, then redeploy.'
+      m(ok ? 'Done. Upload the downloaded file to mapdata/ in your repo, then redeploy. Wait a couple of minutes before building the next state \u2014 Overpass rate-limits by IP and will refuse back-to-back requests.'
            : 'That one failed \u2014 the log above says why. Overpass is often genuinely overloaded; waiting ten minutes usually fixes it.', ok?'ok':'err');
     });
   });
