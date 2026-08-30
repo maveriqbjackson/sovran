@@ -211,6 +211,8 @@ body::after{
       <div class="blk">
         <h3>The canary</h3>
         <div id="cbox"></div>
+        <input type="text" id="cfresh" placeholder="today's freshness token — a headline from today" autocomplete="off" spellcheck="false"
+               style="width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:14px 15px;font-family:'IBM Plex Sans',sans-serif;font-size:.9rem;margin-top:14px">
         <input type="password" id="ckey" placeholder="your canary signing key" autocomplete="off" spellcheck="false"
                style="width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:14px 15px;font-family:'IBM Plex Mono',monospace;font-size:.86rem;margin-top:14px">
         <div class="acts">
@@ -438,14 +440,16 @@ KEYIN.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefa
 
 document.getElementById('sign').addEventListener('click',function(){
   var ck=document.getElementById('ckey').value.trim();
+  var fr=document.getElementById('cfresh').value.trim();
   var m=document.getElementById('cmsg');
   if(!ck){ say(m,'Enter your canary signing key.','err'); return; }
+  if(fr.length<12){ say(m,'Enter a freshness token \u2014 a headline from today, at least a few words.','err'); return; }
   say(m,'Signing\u2026','ok');
-  call('sign',{canaryKey:ck}).then(function(res){
+  call('sign',{canaryKey:ck,freshness:fr}).then(function(res){
     if(!guard(res)) return;
     if(!res.ok){ say(m,res.d.error||'Failed.','err'); return; }
     say(m,'Signed as '+res.d.signed_by+'. The public page updates immediately.','ok');
-    document.getElementById('ckey').value='';
+    document.getElementById('ckey').value=''; document.getElementById('cfresh').value='';
     call('overview').then(function(r){ if(r.ok) render(r.d); });
   });
 });

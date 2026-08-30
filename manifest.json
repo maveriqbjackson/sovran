@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-30 22:31 UTC",
+ "generated": "2026-08-30 22:37 UTC",
  "note": "SHA-256 of every deployed file. robots.txt excluded - Cloudflare rewrites it.",
  "files": {
   "/404.html": {
@@ -15,16 +15,16 @@
    "bytes": 32812
   },
   "/admin.html": {
-   "sha256": "fce30e08fc99e28b85b5dd73e83bff4b10f020881ee7ffb65b7809bdac9570c5",
-   "bytes": 49580
+   "sha256": "618f8e8e5e94a420c28c7641804347b45de33307d6970b891db0e82c26a6ff41",
+   "bytes": 50179
   },
   "/audit.html": {
    "sha256": "52388074b941d13376c76ceefacd1b8ae6fb224292e33060a6a96b8a4da92805",
    "bytes": 45153
   },
   "/canary.html": {
-   "sha256": "4d6424fe91d73b99c393fe4c19a0d86dc29ec9e0888b025fda0f5104af821d1a",
-   "bytes": 24071
+   "sha256": "dc00ddc3c0da62b829216b285658056dcadd7f5e58871a26e078313a15ad5b05",
+   "bytes": 27998
   },
   "/charter.html": {
    "sha256": "b7784b2130270024ae07e5765d35254c21a7de867f1abd29b0397a595ab52a9f",
@@ -63,8 +63,8 @@
    "bytes": 45243
   },
   "/sign.html": {
-   "sha256": "63613d2e595325928f6035bbddf5205743223d4b5aa1f08e47e3589900243368",
-   "bytes": 22177
+   "sha256": "6dc7857bffc33c8e92e6450e509b23fb745302634eb6362224624c518907606d",
+   "bytes": 23438
   },
   "/sitemap.xml": {
    "sha256": "79ec80a704e1a457cf2b96215af5125700a280e364493211764b67b4272e3356",

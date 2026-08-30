@@ -192,6 +192,14 @@ body::after{
     <div class="box">
       <h3 style="margin-bottom:8px">Sign it</h3>
       <p style="color:var(--ash);font-size:.9rem;line-height:1.55;margin-bottom:16px">Paste your own signing key. Each signer has a different one. <b style="color:var(--bone)">Your identity is never published</b> &mdash; the public page shows only that it was signed, never by whom.</p>
+      <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Step one &mdash; today's freshness token</label>
+      <input type="text" id="fresh" placeholder="a news headline from today" autocomplete="off" spellcheck="false">
+      <p style="font-size:.84rem;color:var(--ash);line-height:1.55;margin:-4px 0 18px">
+        Type a headline from a major news site, today. Anything public that could not have been known
+        yesterday. This gets published with your signature and is what proves the statement was written
+        <b style="color:var(--bone)">today</b> rather than backdated by someone who got into our servers.
+      </p>
+      <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Step two &mdash; your key</label>
       <input type="password" id="key" placeholder="your signing key" autocomplete="off" spellcheck="false">
 
       <label class="chk"><input type="checkbox" id="ack"><span>I have read the statement above and, as far as I know, all of it is still true today.</span></label>
@@ -254,23 +262,25 @@ function load(){
     META.innerHTML=
       '<div><span>Last signed</span><span>'+fmt(signed)+' \u00b7 '+(days===0?'today':days+(days===1?' day':' days')+' ago')+'</span></div>'+
       '<div><span>Signed by</span><span>a designated signer</span></div>'+
-      '<div><span>Next due</span><span>'+fmt(next)+'</span></div>';
+      '<div><span>Next due</span><span>'+fmt(next)+'</span></div>'+
+      (d.freshness?'<div><span>Proof of date</span><span style="max-width:60%">'+esc(d.freshness)+'</span></div>':'');
   }).catch(function(){ LAB.textContent='Unavailable'; STMT.textContent='Could not read the canary right now.'; });
 }
 load();
 
 $('sign').addEventListener('click',function(){
-  var k=$('key').value.trim();
+  var k=$('key').value.trim(), fr=$('fresh').value.trim();
+  if(fr.length<12){ say('Enter a freshness token first \u2014 a headline from today, at least a few words.','err'); return; }
   if(!k){ say('Enter your signing key.','err'); return; }
   if(!$('ack').checked){ say('Please confirm you have read the statement and believe it is still true.','err'); return; }
   $('sign').disabled=true; say('Signing\u2026','busy');
-  fetch('/api/canary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k})})
+  fetch('/api/canary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k,freshness:fr})})
     .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
     .then(function(res){
       $('sign').disabled=false;
       if(!res.ok){ say(res.d.error||'That did not work.','err'); return; }
       say('Signed. The public page has already updated, and it does not name you.','ok');
-      $('key').value=''; $('ack').checked=false;
+      $('key').value=''; $('fresh').value=''; $('ack').checked=false;
       load();
     }).catch(function(){ $('sign').disabled=false; say('Could not reach the server. Try again in a moment.','err'); });
 });
