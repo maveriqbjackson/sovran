@@ -198,6 +198,9 @@ body::after{
     </div>
 
     <div id="panel">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+        <button class="btn ghost" id="isignout" style="font-size:.78rem;padding:10px 18px">Sign out</button>
+      </div>
       <div class="stats" id="stats"></div>
 
       <div class="blk">
@@ -279,7 +282,7 @@ body::after{
 'use strict';
 var KEYIN=document.getElementById('key'), MSG=document.getElementById('msg'),
     GATE=document.getElementById('gate'), PANEL=document.getElementById('panel');
-var key='', code='';
+var key='', code='', session='';
 
 function say(el,m,kind){ el.textContent=m; el.className='msg show '+kind; }
 function esc(s){ return String(s==null?'':s).replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];}); }
@@ -289,7 +292,11 @@ function when(t){
   return isNaN(d)?String(t):d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
 }
 function call(action,extra){
-  var b=Object.assign({key:key,code:code,action:action},extra||{});
+  // After the first successful unlock we hold a session token and stop sending
+// the rotating code — a 30-second code cannot authorise a click made a minute later.
+  var b = session
+    ? Object.assign({session:session,action:action},extra||{})
+    : Object.assign({key:key,code:code,action:action},extra||{});
   return fetch('/api/admin',{
     method:'POST',
     credentials:'same-origin',           // carry the Cloudflare Access cookie
@@ -309,6 +316,8 @@ function call(action,extra){
         }
         return {ok:false, d:{error:'The server replied with something that was not JSON (HTTP '+r.status+').'}};
       }
+      if(d && d.session) session=d.session;
+      if(d && d.expired){ session=''; }
       return {ok:r.ok, d:d};
     });
   });
@@ -343,6 +352,22 @@ function unlock(){
   });
 }
 
+function relock(msg){
+  session=''; key=''; code='';
+  document.getElementById('panel').classList.remove('show');
+  GATE.style.display='';
+  document.getElementById('code').value='';
+  say(MSG, msg || 'Session ended. Enter your key and a fresh code.', 'err');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function guard(res){
+  if(res && !res.ok && res.d && (res.d.expired || /not authorised/i.test(res.d.error||''))){
+    relock(res.d.error); return false;
+  }
+  return true;
+}
+
 function render(d){
   var t=d.totals||{};
   document.getElementById('stats').innerHTML=
@@ -358,6 +383,7 @@ function render(d){
       (d.access_verified?'\u2713  Cloudflare Access verified':'\u26A0  Cloudflare Access NOT present')+'</span></div>'+
       '<p style="color:var(--ash);font-size:.87rem;line-height:1.55">'+
       'Worker build: <b style="color:'+(d.build?'#3DE8A5':'#FF9E5E')+'">'+(d.build||'OLD \u2014 predates build stamps, replace functions/api/admin.js')+'</b><br>'+
+      'Session: <b style="color:#3DE8A5">'+(d.session_minutes||30)+' minutes</b><br>'+
       'Accounts: <b style="color:var(--bone)">'+(d.accounts||0)+'</b> \u00b7 '+
       'Failed admin attempts in 24h: <b style="color:'+((d.failed_24h||0)>0?'#FF9E5E':'var(--bone)')+'">'+(d.failed_24h||0)+'</b></p>'+
       (d.access_verified?'':'<p style="color:var(--alarm);font-size:.85rem;line-height:1.55;margin-top:10px">Set up Cloudflare Access on /admin, then set REQUIRE_ACCESS to true. Until then this panel is protected by key and code only.</p>');
@@ -405,6 +431,7 @@ document.getElementById('sign').addEventListener('click',function(){
   if(!ck){ say(m,'Enter your canary signing key.','err'); return; }
   say(m,'Signing\u2026','ok');
   call('sign',{canaryKey:ck}).then(function(res){
+    if(!guard(res)) return;
     if(!res.ok){ say(m,res.d.error||'Failed.','err'); return; }
     say(m,'Signed as '+res.d.signed_by+'. The public page updates immediately.','ok');
     document.getElementById('ckey').value='';
@@ -416,6 +443,7 @@ document.getElementById('csv').addEventListener('click',function(){
   var m=document.getElementById('emsg');
   say(m,'Building\u2026','ok');
   call('export').then(function(res){
+    if(!guard(res)) return;
     if(!res.ok){ say(m,res.d.error||'Failed.','err'); return; }
     var q=function(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; };
     var csv='email,interest,note,source,created_at\n'+
@@ -432,11 +460,16 @@ document.getElementById('rm').addEventListener('click',function(){
   var e=document.getElementById('rmEmail').value.trim(), m=document.getElementById('rmsg');
   if(!e){ say(m,'Enter an email address.','err'); return; }
   call('remove',{email:e}).then(function(res){
+    if(!guard(res)) return;
     if(!res.ok){ say(m,res.d.error||'Failed.','err'); return; }
     say(m,res.d.removed?'Removed. The row is gone.':'No row matched that address.',res.d.removed?'ok':'err');
     document.getElementById('rmEmail').value='';
     call('overview').then(function(r){ if(r.ok) render(r.d); });
   });
+});
+
+document.getElementById('isignout').addEventListener('click',function(){
+  call('signout').then(function(){ relock('Signed out.'); });
 });
 
 // Nothing is remembered. A rotating code expires in 30 seconds, so caching a
@@ -546,10 +579,14 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
 
   function build(code){
     var r=REGIONS[code], name=r[0], bb=[r[1],r[2],r[3],r[4]];
-    var q='[out:json][timeout:60];('+
-      'node["man_made"="surveillance"]('+bb.join(',')+');'+
-      'way["man_made"="surveillance"]('+bb.join(',')+');'+
-      ');out center;';
+    var bbox=bb.join(',');
+    var q='[out:json][timeout:90];('+
+      'node["man_made"="surveillance"]('+bbox+');'+
+      'way["man_made"="surveillance"]('+bbox+');'+
+      ');out center;'+
+      // major roads, so a dot sits on a road people recognise
+      'way["highway"~"^(motorway|trunk|primary|secondary)$"]('+bbox+');'+
+      'out geom;';
 
     line('\u2192 '+name+' \u2014 querying\u2026','var(--ice)');
     // The browser cannot reach Overpass directly \u2014 this page's Content-Security-Policy
@@ -581,8 +618,34 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     }
 
     return go().then(function(d){
-      var ops=[], types=[], oi={}, ti={}, pts=[];
+      var ops=[], types=[], oi={}, ti={}, pts=[], roads=[], rnames=[], rni={};
+      var RC={motorway:0,trunk:1,primary:2,secondary:3};
+
+      // simplify a polyline — drop points that add no shape at map scale
+      function thin(g,tol){
+        if(g.length<3) return g;
+        var out=[g[0]];
+        for(var i=1;i<g.length-1;i++){
+          var a=out[out.length-1];
+          if(Math.abs(g[i].lat-a[0])>tol||Math.abs(g[i].lon-a[1])>tol)
+            out.push([+g[i].lat.toFixed(5),+g[i].lon.toFixed(5)]);
+        }
+        out.push([+g[g.length-1].lat.toFixed(5),+g[g.length-1].lon.toFixed(5)]);
+        if(typeof out[0]!=='object'||out[0].length!==2) out[0]=[+g[0].lat.toFixed(5),+g[0].lon.toFixed(5)];
+        return out;
+      }
+
       (d.elements||[]).forEach(function(el){
+        if(el.type==='way'&&el.tags&&el.tags.highway&&el.geometry){
+          var cls=RC[el.tags.highway];
+          if(cls===undefined) return;
+          var g=thin(el.geometry, cls<2?0.004:0.007);
+          if(g.length<2) return;
+          var nm=el.tags.ref||el.tags.name||'';
+          if(!(nm in rni)){ rni[nm]=rnames.length; rnames.push(nm); }
+          roads.push([cls,rni[nm]].concat(g.map(function(p){return p[0];}).map(function(_,i){return g[i];})));
+          return;
+        }
         var lat=el.lat!=null?el.lat:(el.center&&el.center.lat);
         var lon=el.lon!=null?el.lon:(el.center&&el.center.lon);
         if(lat==null||lon==null) return;
@@ -594,7 +657,8 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
       });
 
       var out={region:code,name:name,built:new Date().toISOString().slice(0,10),
-               bbox:bb,ops:ops,types:types,pts:pts};
+               bbox:bb,ops:ops,types:types,pts:pts,
+               roadNames:rnames,roads:roads};
       var json=JSON.stringify(out);
       var alpr=pts.filter(function(p){return p[2]===0;}).length;
 

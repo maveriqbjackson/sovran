@@ -299,6 +299,8 @@ body::after{
         <span><i style="background:#FF9E5E"></i>Plate readers</span>
         <span><i style="background:#6BCBE8"></i>Cameras</span>
         <span><i style="background:#A8B0C8"></i>Other</span>
+        <span><i style="background:rgba(255,203,107,.55);border-radius:1px;width:14px;height:3px"></i>Highways</span>
+        <span><i style="background:rgba(168,200,255,.32);border-radius:1px;width:14px;height:3px"></i>Main roads &middot; appear as you zoom</span>
         <span style="margin-left:auto">Scroll or pinch to zoom &middot; drag to pan &middot; tap a dot for detail</span>
       </div>
     </div>
@@ -368,7 +370,7 @@ body::after{
 'use strict';
 var $=function(i){return document.getElementById(i);};
 var SEL=$('region'), PROG=$('prog'), ERR=$('err'), OUT=$('out');
-var rows=[], regionName='', blocked=false, diag=[], dataAge=null;
+var rows=[], regionName='', blocked=false, diag=[], dataAge=null, ROADS=[], ROADNAMES=[];
 
 // A blocked request throws a generic TypeError, which is indistinguishable from
 // a network failure. This event tells us which one actually happened.
@@ -434,6 +436,7 @@ $('go').addEventListener('click',function(){
   say('Loading '+regionName+' from this device\u2026');
   loadStatic(k).then(function(d){
     rows=expand(d);
+    ROADS=d.roads||[]; ROADNAMES=d.roadNames||[];
     var f=$('kind').value;
     if(f!=='all') rows=rows.filter(function(x){ return x.kind===f; });
     if(!rows.length){ offerLive(k,'<b>Nothing matched that filter in our copy of '+esc(regionName)+'.</b>'); return; }
@@ -681,6 +684,54 @@ function drawMap(){
         if(i===0) ctx.moveTo(q[0],q[1]); else ctx.lineTo(q[0],q[1]);
       });
       ctx.closePath(); ctx.fill(); ctx.stroke();
+    });
+  }
+
+  // major roads, drawn beneath the devices
+  if(ROADS.length){
+    var RS=[
+      {c:'rgba(255,203,107,.50)', w:2.6, min:0},    // motorway
+      {c:'rgba(255,203,107,.36)', w:2.1, min:0},    // trunk
+      {c:'rgba(168,200,255,.30)', w:1.6, min:1.4},  // primary
+      {c:'rgba(168,200,255,.20)', w:1.2, min:2.6}   // secondary
+    ];
+    var labelled={};
+    ROADS.forEach(function(r){
+      var cls=r[0], st=RS[cls]||RS[3];
+      if(T.k<st.min) return;
+      ctx.beginPath();
+      var on=false, first=null;
+      for(var i=2;i<r.length;i++){
+        var q=px(r[i][1],r[i][0]);
+        if(i===2){ ctx.moveTo(q[0],q[1]); first=q; }
+        else ctx.lineTo(q[0],q[1]);
+        if(q[0]>0&&q[0]<W&&q[1]>0&&q[1]<H) on=true;
+      }
+      if(!on) return;
+      ctx.strokeStyle=st.c;
+      ctx.lineWidth=st.w*Math.min(2.2,Math.sqrt(T.k));
+      ctx.lineCap='round'; ctx.lineJoin='round';
+      ctx.stroke();
+
+      // name it once, when zoomed enough to read
+      if(T.k>=3){
+        var nm=ROADNAMES[r[1]];
+        if(nm && !labelled[nm]){
+          var mid=r[Math.floor(r.length/2)];
+          var mq=px(mid[1],mid[0]);
+          if(mq[0]>40&&mq[0]<W-40&&mq[1]>16&&mq[1]<H-16){
+            labelled[nm]=1;
+            ctx.font='500 10px "IBM Plex Mono", monospace';
+            ctx.fillStyle='rgba(4,6,15,.8)';
+            var tw=ctx.measureText(nm).width;
+            ctx.fillRect(mq[0]-tw/2-4,mq[1]-7,tw+8,14);
+            ctx.fillStyle='rgba(255,203,107,.82)';
+            ctx.textAlign='center';
+            ctx.fillText(nm,mq[0],mq[1]);
+            ctx.textAlign='left';
+          }
+        }
+      }
     });
   }
 
