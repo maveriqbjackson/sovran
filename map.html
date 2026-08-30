@@ -263,7 +263,13 @@ ol.steps a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(2
 'use strict';
 var $=function(i){return document.getElementById(i);};
 var SEL=$('region'), PROG=$('prog'), ERR=$('err'), OUT=$('out');
-var rows=[], regionName='';
+var rows=[], regionName='', blocked=false;
+
+// A blocked request throws a generic TypeError, which is indistinguishable from
+// a network failure. This event tells us which one actually happened.
+document.addEventListener('securitypolicyviolation', function(e){
+  if(e.violatedDirective && e.violatedDirective.indexOf('connect-src')>-1) blocked=true;
+});
 
 var keys=Object.keys(REGIONS).sort(function(a,b){ return REGIONS[a][0]<REGIONS[b][0]?-1:1; });
 keys.forEach(function(k){
@@ -297,13 +303,25 @@ $('go').addEventListener('click',function(){
     'way["man_made"="surveillance"]('+s+','+w+','+n+','+e+');'+
     ');out center tags;';
 
-  fetch('https://overpass-api.de/api/interpreter',{
-    method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
-    body:'data='+encodeURIComponent(q)
-  }).then(function(res){
-    if(!res.ok) throw new Error('status '+res.status);
-    return res.json();
-  }).then(function(d){
+  // Two public mirrors. If the first is busy we try the second before giving up.
+  var HOSTS=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
+
+  function attempt(i){
+    if(i>=HOSTS.length) return Promise.reject(new Error('all-mirrors-failed'));
+    if(i>0) say('The first server was busy. Trying a mirror\u2026');
+    return fetch(HOSTS[i],{
+      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:'data='+encodeURIComponent(q)
+    }).then(function(res){
+      if(!res.ok) throw new Error('status '+res.status);
+      return res.json();
+    }).catch(function(e){
+      if(blocked) throw e;
+      return attempt(i+1);
+    });
+  }
+
+  attempt(0).then(function(d){
     rows=(d.elements||[]).map(function(el){
       var lat=el.lat!=null?el.lat:(el.center&&el.center.lat);
       var lon=el.lon!=null?el.lon:(el.center&&el.center.lon);
@@ -324,7 +342,15 @@ $('go').addEventListener('click',function(){
     PROG.classList.remove('show');
     render(s,w,n,e);
   }).catch(function(){
-    fail('Could not reach OpenStreetMap. The public service is free and sometimes busy \u2014 wait a minute and try again, or pick a smaller region. Nothing failed on SOVRAN\u2019s side, because SOVRAN was never involved in the request.');
+    if(blocked){
+      fail('<b>Blocked by this site\u2019s own security policy.</b><br><br>'+
+        'SOVRAN sends a Content-Security-Policy that forbids contacting any outside server, and the exception for the map is not being applied. '+
+        'That is a configuration problem on our side, not a problem with your connection or with OpenStreetMap.<br><br>'+
+        'If you are the site owner: the <code>_headers</code> file must not set a Content-Security-Policy on <code>/*</code>, '+
+        'because a browser enforces the intersection of every policy it receives \u2014 so a wildcard rule silently overrides the per-page exception.');
+      return;
+    }
+    fail('Could not reach OpenStreetMap, on either mirror. These are free public services and they are sometimes genuinely overloaded \u2014 wait a minute and try again, or choose a smaller region. Nothing failed on SOVRAN\u2019s side, because SOVRAN was never part of the request.');
   });
 });
 
