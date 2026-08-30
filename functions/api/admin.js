@@ -16,7 +16,7 @@
 // Env vars : ADMIN_KEY, ADMIN_TOTP_SECRET, CANARY_KEYS,
 //            REQUIRE_ACCESS ("true" once Cloudflare Access is configured)
 
-const BUILD_ID = "2026-08-30-overpass-proxy";
+const BUILD_ID = "2026-08-31-session-and-roads";
 
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), {
@@ -29,6 +29,42 @@ function sameSecret(a, b) {
   let d = 0;
   for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return d === 0;
+}
+
+/* ── Sessions ──
+   A TOTP code is valid for 30 seconds. Requiring one on every action meant the
+   panel worked for exactly one click. So authentication now happens once and
+   issues a short-lived random token; the token authorises later calls. The token
+   lives in the page's memory only, never in storage, so closing the tab ends it. */
+const SESSION_MINUTES = 30;
+
+function randomToken() {
+  const a = new Uint8Array(32);
+  crypto.getRandomValues(a);
+  return Array.from(a).map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+
+async function newSession(env) {
+  const token = randomToken();
+  await env.DB.prepare(
+    `INSERT INTO admin_sessions (token, expires_at)
+     VALUES (?1, datetime('now', '+${SESSION_MINUTES} minutes'))`
+  ).bind(token).run();
+  await env.DB.prepare("DELETE FROM admin_sessions WHERE expires_at < datetime('now')").run();
+  return token;
+}
+
+async function validSession(env, token) {
+  if (!token || typeof token !== "string" || token.length !== 64) return false;
+  const row = await env.DB.prepare(
+    "SELECT expires_at FROM admin_sessions WHERE token = ?1"
+  ).bind(token).first();
+  if (!row) return false;
+  if (new Date(row.expires_at.replace(" ", "T") + "Z") < new Date()) {
+    await env.DB.prepare("DELETE FROM admin_sessions WHERE token = ?1").bind(token).run();
+    return false;
+  }
+  return true;
 }
 
 /* ── TOTP (RFC 6238), verified against the authenticator on your phone ── */
@@ -115,26 +151,38 @@ export async function onRequestPost({ request, env }) {
     return json({ error: "Two-factor is not configured. Set ADMIN_TOTP_SECRET before using this panel." }, 500);
 
   const fp = await fingerprint(request);
-
-  /* ── LOCK 4: lockout ── */
-  if (await lockedOut(env, fp)) {
-    return json({ error: "Too many failed attempts. This client is locked out for an hour." }, 429);
-  }
-
-  /* ── LOCK 2: the key ── */
-  const keyOk = sameSecret(String(body.key || ""), env.ADMIN_KEY);
-  /* ── LOCK 3: the rotating code ── */
-  const totpOk = keyOk ? await totpValid(env.ADMIN_TOTP_SECRET, body.code) : false;
-
-  if (!keyOk || !totpOk) {
-    await record(env, fp, false);
-    await new Promise((r) => setTimeout(r, 500));
-    // deliberately identical message either way
-    return json({ error: "Not authorised." }, 401);
-  }
-  await record(env, fp, true);
-
   const action = String(body.action || "overview");
+
+  /* An existing session skips locks 2 and 3. Access and the lockout still apply. */
+  let sessionToken = null;
+  const presented = String(body.session || "");
+
+  if (await validSession(env, presented)) {
+    sessionToken = presented;
+  } else {
+    /* ── LOCK 4: lockout ── */
+    if (await lockedOut(env, fp)) {
+      return json({ error: "Too many failed attempts. This client is locked out for an hour." }, 429);
+    }
+
+    /* ── LOCK 2: the key ──  ── LOCK 3: the rotating code ── */
+    const keyOk = sameSecret(String(body.key || ""), env.ADMIN_KEY);
+    const totpOk = keyOk ? await totpValid(env.ADMIN_TOTP_SECRET, body.code) : false;
+
+    if (!keyOk || !totpOk) {
+      await record(env, fp, false);
+      await new Promise((r) => setTimeout(r, 500));
+      // deliberately identical message either way
+      return json({
+        error: presented
+          ? "Your session expired. Enter your key and a fresh code."
+          : "Not authorised.",
+        expired: !!presented,
+      }, 401);
+    }
+    await record(env, fp, true);
+    sessionToken = await newSession(env);
+  }
 
   try {
     if (action === "overview") {
@@ -159,6 +207,8 @@ export async function onRequestPost({ request, env }) {
       return json({
         ok: true,
         build: BUILD_ID,
+        session: sessionToken,
+        session_minutes: SESSION_MINUTES,
         totals: totals || {},
         accounts: accounts?.n || 0,
         interests: interests.results || [],
@@ -218,6 +268,11 @@ export async function onRequestPost({ request, env }) {
         }
       }
       return json({ error: "Every mirror failed.", tried }, 502);
+    }
+
+    if (action === "signout") {
+      await env.DB.prepare("DELETE FROM admin_sessions WHERE token = ?1").bind(sessionToken).run();
+      return json({ ok: true });
     }
 
     if (action === "export") {
