@@ -20,6 +20,16 @@
 /jszip.min.js
   Cache-Control: public, max-age=31536000, immutable
 
+/outlines/*
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/json
+
+/manifest.json
+  Cache-Control: no-store
+
+/cities.json
+  Cache-Control: public, max-age=31536000, immutable
+
 /mapdata/*
   Cache-Control: public, max-age=86400
   Content-Type: application/json
