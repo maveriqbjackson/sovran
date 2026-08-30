@@ -16,6 +16,8 @@
 // Env vars : ADMIN_KEY, ADMIN_TOTP_SECRET, CANARY_KEYS,
 //            REQUIRE_ACCESS ("true" once Cloudflare Access is configured)
 
+const BUILD_ID = "2026-08-30-overpass-proxy";
+
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), {
     status,
@@ -156,6 +158,7 @@ export async function onRequestPost({ request, env }) {
 
       return json({
         ok: true,
+        build: BUILD_ID,
         totals: totals || {},
         accounts: accounts?.n || 0,
         interests: interests.results || [],
