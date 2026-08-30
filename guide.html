@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Guide — SOVRAN</title>
 <meta name="description" content="Plain answers to what you can actually do about your data, your photos, your kids, and the surveillance around you. Searchable, free, and it runs entirely in your browser.">
-<meta name="theme-color" content="#080C1C">
+<meta name="theme-color" content="#04060F">
 <meta property="og:title" content="The Guide — SOVRAN">
 <meta property="og:description" content="Plain answers to what you can actually do about your data, your photos, your kids, and the surveillance around you.">
 <meta property="og:type" content="website">
@@ -30,13 +30,12 @@
 @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/plex-mono-400.woff2) format('woff2')}
 @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/plex-mono-500.woff2) format('woff2')}
 @font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/plex-mono-600.woff2) format('woff2')}
-:root{
-  --void:#080C1C; --void-2:#0C1226; --surface:#121A33; --surface-2:#1A2444;
-  --line:rgba(232,224,206,.12); --line-2:rgba(232,224,206,.22);
-  --bone:#EDE7DA; --ash:#9BA3BC; --ash-dim:#6E7791;
-  --gold:#D9AE5F; --gold-hi:#F2D9A0; --gold-deep:#8F6B27;
-  --bif-1:#9B7BF0; --bif-2:#5FDCEF; --bif-3:#D9AE5F; --ice:#5BB8D4;
-  --alarm:#FF9E5E; --clear:#3DE8A5;
+:root{--void:#04060F; --void-2:#070B18; --surface:#0C1424; --surface-2:#131E38;
+  --line:rgba(236,230,220,.13); --line-2:rgba(236,230,220,.24);
+  --bone:#F4F0E8; --ash:#A2AEC6; --ash-dim:#74809B;
+  --gold:#FFCB6B; --gold-hi:#FFEDC0; --gold-deep:#A87A22;
+  --bif-1:#A878FF; --bif-2:#5AF0FF; --bif-3:#FFCB6B; --bif-4:#FF7ABE;
+  --ice:#5AF0FF; --alarm:#FF9E5E; --clear:#3DE8A5;
   --r-lg:26px; --r-md:18px; --r-sm:11px;
   --pad:clamp(20px,5vw,32px); --maxw:900px;
 }
@@ -168,6 +167,65 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 .eyebrow::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
   width:8px;height:8px;border-radius:2px;
   background:linear-gradient(135deg,var(--bif-1),var(--bif-2),var(--bif-3))}
+
+.rule{opacity:.72 !important;height:2px !important}
+.cap::after,.blk::after,.pillar::after{opacity:.55}
+.cap:hover,.blk:hover{border-color:rgba(169,140,255,.34)}
+.eyebrow::before{width:9px;height:9px;box-shadow:0 0 10px rgba(169,140,255,.6)}
+h2{background:linear-gradient(96deg,var(--bone) 62%,rgba(169,140,255,.92));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.mark{text-shadow:0 0 22px rgba(169,140,255,.28)}
+
+/* ══════════════════════════════════════════════════════════════════
+   ASGARD · three stacked layers of sky, none of which cost a request
+     html::before  the Bifröst itself — curtains of light, drifting
+     body::before  starfield
+     body::after   vignette and the gold horizon beneath it
+   ══════════════════════════════════════════════════════════════════ */
+html{background:var(--void)}
+html::before{
+  content:'';position:fixed;inset:-30% -20%;z-index:0;pointer-events:none;
+  background:
+    linear-gradient(106deg, transparent 10%, rgba(168,120,255,.50) 23%, transparent 37%),
+    linear-gradient(97deg,  transparent 26%, rgba(90,240,255,.40)  40%, transparent 54%),
+    linear-gradient(116deg, transparent 42%, rgba(255,203,107,.36) 57%, transparent 71%),
+    linear-gradient(90deg,  transparent 60%, rgba(255,122,190,.22) 71%, transparent 84%);
+  filter:blur(64px);
+  opacity:.85;
+  animation:bifrost 46s ease-in-out infinite alternate;
+}
+@keyframes bifrost{
+  0%  {transform:translate3d(0,0,0) scale(1)}
+  50% {transform:translate3d(-3%,2%,0) scale(1.06)}
+  100%{transform:translate3d(2%,-2%,0) scale(1.02)}
+}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.75;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='760'%3E%3Cg fill='%23F4F0E8'%3E%3Ccircle cx='53' cy='88' r='.9' opacity='.62'/%3E%3Ccircle cx='188' cy='31' r='.7' opacity='.44'/%3E%3Ccircle cx='302' cy='142' r='1.1' opacity='.56'/%3E%3Ccircle cx='431' cy='67' r='.7' opacity='.38'/%3E%3Ccircle cx='588' cy='121' r='1' opacity='.5'/%3E%3Ccircle cx='97' cy='233' r='.8' opacity='.47'/%3E%3Ccircle cx='249' cy='298' r='.6' opacity='.35'/%3E%3Ccircle cx='389' cy='241' r='1' opacity='.53'/%3E%3Ccircle cx='522' cy='329' r='.7' opacity='.4'/%3E%3Ccircle cx='657' cy='266' r='.9' opacity='.45'/%3E%3Ccircle cx='31' cy='401' r='1' opacity='.5'/%3E%3Ccircle cx='166' cy='466' r='.65' opacity='.37'/%3E%3Ccircle cx='291' cy='412' r='.85' opacity='.45'/%3E%3Ccircle cx='447' cy='488' r='1.1' opacity='.55'/%3E%3Ccircle cx='611' cy='434' r='.7' opacity='.38'/%3E%3Ccircle cx='122' cy='597' r='.9' opacity='.47'/%3E%3Ccircle cx='268' cy='643' r='.7' opacity='.37'/%3E%3Ccircle cx='412' cy='581' r='.95' opacity='.5'/%3E%3Ccircle cx='559' cy='657' r='.65' opacity='.35'/%3E%3Ccircle cx='678' cy='533' r='1' opacity='.5'/%3E%3Ccircle cx='722' cy='711' r='.8' opacity='.42'/%3E%3Ccircle cx='84' cy='702' r='.7' opacity='.38'/%3E%3Ccircle cx='355' cy='23' r='.85' opacity='.44'/%3E%3Ccircle cx='497' cy='196' r='.7' opacity='.36'/%3E%3C/g%3E%3C/svg%3E");
+}
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    linear-gradient(180deg, transparent 58%, rgba(255,203,107,.13) 88%, rgba(255,203,107,.20) 100%),
+    radial-gradient(150ch 110ch at 50% 42%, transparent 42%, rgba(0,0,0,.60) 100%) !important;
+}
+
+/* structure lit by the bridge */
+.rule{height:2px !important;opacity:.9 !important;
+  background:linear-gradient(90deg,transparent,var(--bif-1) 18%,var(--bif-2) 44%,var(--bif-3) 72%,var(--bif-4) 88%,transparent) !important}
+.cap::after,.blk::after,.pillar::after{height:2px;opacity:.5;
+  background:linear-gradient(90deg,var(--bif-1),var(--bif-2) 46%,var(--bif-3))}
+.cap:hover::after,.blk:hover::after,.pillar:hover::after{opacity:1}
+.cap:hover,.blk:hover{border-color:rgba(168,120,255,.4);box-shadow:0 14px 44px rgba(0,0,0,.5),0 0 0 1px rgba(90,240,255,.08)}
+.eyebrow::before{width:9px;height:9px;box-shadow:0 0 12px rgba(168,120,255,.7);
+  background:linear-gradient(135deg,var(--bif-1),var(--bif-2),var(--bif-3))}
+.mark{text-shadow:0 0 26px rgba(168,120,255,.35)}
+.gilt{background:linear-gradient(150deg,var(--gold-hi) 4%,var(--gold) 40%,#E0A63C 74%,var(--gold-deep) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 22px rgba(255,203,107,.28))}
+.btn{box-shadow:0 0 0 1px rgba(255,237,192,.22) inset}
+.btn:hover{box-shadow:0 0 30px rgba(255,203,107,.34),0 0 0 1px rgba(255,237,192,.35) inset}
+@media(prefers-reduced-motion:reduce){html::before{animation:none}}
 </style>
 </head>
 <body>
@@ -175,7 +233,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
 <header>
   <div class="wrap bar">
     <a href="/" class="mark">
-      <svg class="bridge" viewBox="0 0 22 15" aria-hidden="true"><defs><linearGradient id="bg1" x1="0" x2="1"><stop offset="0" stop-color="#9B7BF0"/><stop offset=".5" stop-color="#5FDCEF"/><stop offset="1" stop-color="#D9AE5F"/></linearGradient></defs><path d="M1.5 13 Q11 2 20.5 13" stroke="url(#bg1)" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+      <svg class="bridge" viewBox="0 0 22 15" aria-hidden="true"><defs><linearGradient id="bg1" x1="0" x2="1"><stop offset="0" stop-color="#A98CFF"/><stop offset=".5" stop-color="#6FE8FF"/><stop offset="1" stop-color="#E5BC6E"/></linearGradient></defs><path d="M1.5 13 Q11 2 20.5 13" stroke="url(#bg1)" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
       SOVRAN
     </a>
     <a href="/" class="back">← Back</a>
@@ -190,7 +248,7 @@ a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(-
     <p class="lede">Not an explanation of the problem — a list of the moves. Every right below already exists and you can use all of it yourself today, for free, without us. Search it, or read the whole thing.</p>
 
     <div class="searchbox">
-      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.5" stroke="#9BA3BC" stroke-width="1.8"/><path d="M11.5 11.5L16 16" stroke="#9BA3BC" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <svg width="17" height="17" viewBox="0 0 17 17" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.5" stroke="#A8B0C8" stroke-width="1.8"/><path d="M11.5 11.5L16 16" stroke="#A8B0C8" stroke-width="1.8" stroke-linecap="round"/></svg>
       <input type="search" id="q" placeholder="Ask it something — &ldquo;photos of my kid&rdquo;, &ldquo;remove my address&rdquo;&hellip;" autocomplete="off">
     </div>
     <p class="qnote">Searching happens inside this page. Nothing you type is sent anywhere, logged, or seen by us — there is no server to send it to. Turn off your connection and this still works.</p>

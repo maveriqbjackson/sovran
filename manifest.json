@@ -1,70 +1,66 @@
 {
- "generated": "2026-08-30 17:43 UTC",
- "note": "SHA-256 of every deployed file. Regenerate after any deliberate change.",
+ "generated": "2026-08-30 18:12 UTC",
+ "note": "SHA-256 of every deployed file. robots.txt excluded - Cloudflare rewrites it with managed bot rules. Regenerate after any deliberate change.",
  "files": {
   "/404.html": {
-   "sha256": "7f5bbc03fb79c9e648ac9a796721880efbe6450ab7aa3a986061ce05fb9fbd1d",
-   "bytes": 6341
+   "sha256": "70d898f69840ad96ee68cae0738bce03c2fd623f87c23a4873686d874584c06d",
+   "bytes": 11180
   },
   "/access.html": {
-   "sha256": "8f150edbdd022a9d6b5fa43a1c00199133423c01c666a651d178eb00b823a206",
-   "bytes": 21733
+   "sha256": "6900bb3ccfe2b307870816101195465c2f7bacac77997b518bba008d78b1eb5a",
+   "bytes": 26601
   },
   "/account.html": {
-   "sha256": "3d17148f4222b6bf6c7a0d9bcfdc8f5054371c0436d8d99a81716a6836b116bd",
-   "bytes": 26813
+   "sha256": "e8fe1d46463bf0850ae54330505eec297857f3356eeee6181703c1691ead0f76",
+   "bytes": 31681
   },
   "/admin.html": {
-   "sha256": "b952037f61357d90d1e03da7ea8946d932a8757d5d65038cc3a01a2e5cb5a3a5",
-   "bytes": 38185
+   "sha256": "7b32bee9c83f791bd0535c048ee338c46f94cf4a28c099919647985288a162e6",
+   "bytes": 43165
   },
   "/audit.html": {
-   "sha256": "da22f1db4c9fa571416ef24eb972e192015cfc753e49889386d4dd74cd3b21cf",
-   "bytes": 39152
+   "sha256": "88e6aa945768c3c30ea5da4215d33b4514c7a33019fa3c9e856691b62dcb9c68",
+   "bytes": 44022
   },
   "/canary.html": {
-   "sha256": "35f6a1ef46a7b4076b8ff92be1f2a9b2d634009a8ee91b1cfab59211d4d606e4",
-   "bytes": 17462
+   "sha256": "80b5379cb322c0a78fb4abd7c06783cab4f9f589e954f240c8a0833caf3e7e96",
+   "bytes": 22330
   },
   "/cities.json": {
    "sha256": "3de19588ded4e7ad5bfbd97895dc4d943cb5bbe9883b3cd310cff0ee6989eab7",
    "bytes": 5594
   },
   "/guide.html": {
-   "sha256": "794c89c5d793f6b0d3cfa64bff0c38f0e64f57e30f0f1e42ebcbe4e0d0f357ae",
-   "bytes": 47584
+   "sha256": "41611c692df208e874dd849d365bfd05c61dcc885e1545dbb5da3248f5b3d824",
+   "bytes": 52437
   },
   "/index.html": {
-   "sha256": "f9f70eacb3eabeb7039c043cb48fcf0e572eb47944c82c2206941f09b975caff",
-   "bytes": 46861
+   "sha256": "5eb4890bbaf26df78315cf049bc2dc174fd0274bca9638420cceb6a611e3c1d0",
+   "bytes": 51750
   },
   "/jszip.min.js": {
    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",
    "bytes": 97630
   },
   "/map.html": {
-   "sha256": "bd1e7dc2f443432bc4d2ac15f77a313cfa70c43aad8f28df32b7c95aa42f3ec3",
-   "bytes": 49441
+   "sha256": "e0b1e14c5a3c21cb948f793d256cff1c6585894999d018962950d8270509cdb4",
+   "bytes": 54309
   },
   "/panel.html": {
-   "sha256": "d54e33b8d0da66adcd426db1e6987f90709e7a447a1e641f76d4eab1033cbabe",
-   "bytes": 22755
+   "sha256": "92967c378fca104dcb24da6a422a90828768b94ad5be6aaca7efd8afd1817fb9",
+   "bytes": 27623
   },
   "/passphrase.html": {
-   "sha256": "9be4ec13e168a9bc0a34c18747773c2a2396e551b10fe278f08d245ff105f248",
-   "bytes": 21642
+   "sha256": "954b7840591c0cf0681fe7cfcf1af82ca86a0844cfed82e7a5964ea9a7efc9df",
+   "bytes": 26510
   },
   "/photo.html": {
-   "sha256": "f662f045ed0f9da72b48d2cbcffda52c9d777351b89dbe48986c3c31bbfc5ce7",
-   "bytes": 39259
-  },
-  "/robots.txt": {
-   "sha256": "f6b1a7a2e876cebf965e856087a14c89c10337205a844112610ace27d9078090",
-   "bytes": 199
+   "sha256": "e4d941a0b66ac94c5d01fd75f1d23c105ea880f37c9f6573f8fff1c369561614",
+   "bytes": 44112
   },
   "/sign.html": {
-   "sha256": "3497071f4fabae8cdf3a1cdb691f91318851eed47e7cfad480d62999b902b49b",
-   "bytes": 17309
+   "sha256": "63613d2e595325928f6035bbddf5205743223d4b5aa1f08e47e3589900243368",
+   "bytes": 22177
   },
   "/sitemap.xml": {
    "sha256": "d23688be86d9577e2d57f68cd93529d2d47d56b1d44fb063bb2591c812c8b34c",
