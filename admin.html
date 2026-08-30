@@ -591,7 +591,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
   function build(code){
     var r=REGIONS[code], name=r[0], bb=[r[1],r[2],r[3],r[4]];
     var bbox=bb.join(',');
-    var qCams='[out:json][timeout:40];('+
+    var qCams='[out:json][timeout:18];('+
       'node["man_made"="surveillance"]('+bbox+');'+
       'way["man_made"="surveillance"]('+bbox+');'+
       ');out center;';
@@ -607,7 +607,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
       [bb[0],bb[1],midLat,midLon],[bb[0],midLon,midLat,bb[3]],
       [midLat,bb[1],bb[2],midLon],[midLat,midLon,bb[2],bb[3]]
     ].map(function(t){
-      return '[out:json][timeout:25];way["highway"~"^(motorway|trunk|primary)$"]('+t.join(',')+');out geom;';
+      return '[out:json][timeout:18];way["highway"~"^(motorway|trunk|primary)$"]('+t.join(',')+');out geom;';
     });
     var q=qCams;
 
