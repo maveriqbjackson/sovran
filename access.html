@@ -86,6 +86,39 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .big{background:linear-gradient(140deg,rgba(61,232,165,.10),rgba(79,195,217,.05));
   border:1px solid rgba(61,232,165,.3);border-radius:var(--r-lg);padding:clamp(24px,5vw,34px);margin-top:28px;position:relative;overflow:hidden}
 .big::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--bif-1),var(--bif-2),var(--bif-3))}
+.tiers{display:grid;gap:14px;margin-top:28px}
+@media(min-width:900px){.tiers{grid-template-columns:repeat(3,1fr)}}
+.tier{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(20px,3.5vw,26px);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.tier.hero{border-color:rgba(255,203,107,.42);box-shadow:0 0 0 1px rgba(255,203,107,.12)}
+.tier.hero::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--bif-1),var(--bif-2) 48%,var(--bif-3))}
+.tier.alt{border-color:rgba(61,232,165,.34)}
+.tier.alt::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#3DE8A5}
+.tlab{font-family:'IBM Plex Mono',monospace;font-size:.61rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ash-dim);margin-bottom:14px;display:block}
+.tlab.gold{color:var(--gold)} .tlab.green{color:#3DE8A5}
+.tprice{display:flex;align-items:baseline;gap:8px;margin-bottom:10px}
+.tprice b{font-family:'Archivo',sans-serif;font-weight:900;font-variation-settings:'wdth' 90;
+  font-size:clamp(2.4rem,7vw,3.1rem);line-height:1;letter-spacing:-.04em;color:var(--bone)}
+.tier.hero .tprice b{color:var(--gold)} .tier.alt .tprice b{color:#3DE8A5}
+.tprice i{font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--ash-dim);letter-spacing:.06em}
+.tsub{font-size:.85rem;color:var(--ash-dim);line-height:1.5;margin-bottom:16px}
+.tier ul{list-style:none;display:grid;gap:9px;margin-bottom:16px}
+.tier li{font-size:.87rem;color:var(--ash);line-height:1.5;padding-left:19px;position:relative}
+.tier li::before{content:'';position:absolute;left:0;top:.62em;width:9px;height:1.5px;background:var(--gold-deep)}
+.tier.alt li::before{background:rgba(61,232,165,.6)}
+.tnote{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);font-size:.84rem;
+  color:var(--ash);line-height:1.55}
+.tnote b{color:var(--bone)}
+.honest{background:linear-gradient(140deg,rgba(255,203,107,.10),transparent 72%);border:1px solid rgba(255,203,107,.3);
+  border-left:3px solid var(--gold);border-radius:var(--r-md);padding:20px 22px;margin-top:16px;
+  font-size:.93rem;color:var(--ash);line-height:1.62}
+.honest b{display:block;color:var(--gold);font-family:'IBM Plex Mono',monospace;font-size:.62rem;
+  letter-spacing:.15em;text-transform:uppercase;margin-bottom:9px}
+.honest a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.35)}
+.soon{margin-top:16px;font-size:.87rem;color:var(--ash-dim);line-height:1.6;max-width:74ch}
+.soon a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.35)}
 .pct{font-family:'Archivo',sans-serif;font-weight:900;font-variation-settings:'wdth' 86;
   font-size:clamp(3.2rem,13vw,5.4rem);line-height:1;letter-spacing:-.045em;color:var(--clear);display:block}
 .big h2{margin:14px 0 14px}
@@ -218,7 +251,58 @@ body::after{
   <div class="wrap">
     <span class="eyebrow">Access &middot; Our commitment</span>
     <h1>Nobody is turned away<br>for <span class="gilt">lack of money</span>.</h1>
-    <p class="lede">The people who most need protection are very often the people least able to pay for it. Any product that forgets this ends up defending the people who were already safest.</p>
+    <p class="lede">Two prices, and a very large amount that stays free. The people who most need protection are very often the people least able to pay for it, and any product that forgets this ends up defending the people who were already safest.</p>
+
+    <div class="tiers">
+      <div class="tier">
+        <span class="tlab">Free forever</span>
+        <div class="tprice"><b>$0</b></div>
+        <p class="tsub">No account. No card. No trial that ends.</p>
+        <ul>
+          <li>The Photo Check, The Audit, The Map, The Guide, The Passphrase, Your Panel</li>
+          <li>Knowing what is exposed about you</li>
+          <li>Knowing every right you hold and how to use it yourself</li>
+          <li>Every removal route, filed by hand, for nothing</li>
+        </ul>
+        <p class="tnote">Everything that costs us nothing to run is free, permanently. Paywalling knowledge would mean selling you the right itself.</p>
+      </div>
+
+      <div class="tier hero">
+        <span class="tlab gold">SOVRAN+ &middot; ongoing</span>
+        <div class="tprice"><b>$8</b><i>/ month</i></div>
+        <p class="tsub">One price. No annual discount &mdash; we are not going to reward you for committing to us.</p>
+        <ul>
+          <li>Every broker deletion filed for you, and chased to a real answer</li>
+          <li>Refiled automatically when they quietly repopulate</li>
+          <li>Takedowns for photos you own and images posted without consent</li>
+          <li>Alerts when something new appears about you</li>
+          <li>The successor switch, and your panel synced across devices</li>
+        </ul>
+        <p class="tnote"><b>For a life that keeps generating records.</b> You move, you vote, you register a car. Every one of those repopulates the brokers within months. Removal is not a task you finish &mdash; it is one you maintain.</p>
+      </div>
+
+      <div class="tier alt">
+        <span class="tlab green">The Clean Break &middot; once</span>
+        <div class="tprice"><b>$129</b><i>one payment</i></div>
+        <p class="tsub">Paid once. No subscription, no renewal, no relationship afterwards.</p>
+        <ul>
+          <li>The entire removal sweep in one pass &mdash; every broker, every route</li>
+          <li>Everything a year of SOVRAN+ would file, done at once</li>
+          <li>A written record of what was removed and where</li>
+          <li>Then it is finished. We do not keep your file.</li>
+        </ul>
+        <p class="tnote"><b>For a life that is about to stop generating them.</b> Leaving the country. Going properly off-grid. Closing a chapter and not opening another. If there is nothing new for the brokers to find, one sweep holds.</p>
+      </div>
+    </div>
+
+    <div class="honest">
+      <b>We will tell you which one you need</b>
+      Describe your situation and if the honest answer is &ldquo;the one-time sweep is enough for you&rdquo;, that is what we will say &mdash; even though the subscription is worth more to us over time. A privacy company that upsells you is telling you something about itself.
+      <br><br>
+      And if the answer is &ldquo;you do not need either of these yet&rdquo;, we will say that too. Most people are better served by an afternoon with <a href="/guide">The Guide</a> than by paying anyone.
+    </div>
+
+    <p class="soon">Neither paid tier is open yet. These prices are what we intend to charge, written down now so you can hold us to them. <a href="/#waitlist">Join the waitlist</a> and founding members keep this rate permanently, whatever happens later.</p>
 
     <div class="big">
       <span class="pct">10%</span>
@@ -276,26 +360,6 @@ body::after{
       <li><b>You paste the code into your account.</b> Your account record then says one thing: <i>paid until this date</i>.</li>
       <li><b>Nothing joins them.</b> Handed both databases, we could not tell you which customer is which user. Neither could anyone who took them from us.</li>
     </ol>
-
-    <h3 style="margin:30px 0 14px">Two shapes, because two things are being bought</h3>
-    <div class="shapes">
-      <div>
-        <span class="sh">SOVRAN+ &middot; ongoing</span>
-        <p><b>For a life that keeps generating records.</b> You move, you vote, you register a car, you get a licence renewed. Every one of those events repopulates the broker databases within months. Removal is not a task you finish, it is a task you maintain &mdash; so this is filing, chasing, and refiling, month after month.</p>
-      </div>
-      <div>
-        <span class="sh alt">The Clean Break &middot; one payment</span>
-        <p><b>For a life that is about to stop generating them.</b> Leaving the country. Going properly off-grid. Closing a chapter and not opening another. You pay once, we run the whole removal sweep &mdash; every broker, every takedown route, everything we would do in a year, done in one pass &mdash; and then it is finished. No subscription, no renewal, no relationship.</p>
-      </div>
-    </div>
-
-    <div class="key"><b>Why a one-time sweep is a real thing and not a lesser one</b>
-      Brokers repopulate from <i>new</i> public records. If you are still living an ordinary documented life, a single sweep decays in months, and we would be taking your money for something we knew would not hold.
-      <br><br>
-      But if you are about to leave the country, or shut down your accounts, or stop feeding the machine &mdash; there is very little new for them to find. The same sweep that decays in six months for one person holds for years for another. The difference is not the service. It is what happens next in your life.
-      <br><br>
-      <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">We will tell you which one you need.</b> If you describe your situation and the honest answer is "the one-time sweep is enough for you", that is what we will say, even though the subscription is worth more to us. A privacy company that upsells you is telling you something about itself.
-    </div>
 
     <h3 style="margin:30px 0 14px">Ways to pay, from ordinary to invisible</h3>
     <div class="pay">
