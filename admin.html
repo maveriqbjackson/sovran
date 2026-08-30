@@ -286,7 +286,9 @@ function render(d){
     sec.innerHTML='<div class="cstat"><span class="cdot" style="background:'+(d.access_verified?'#3DE8A5':'#FF9E5E')+'"></span>'+
       '<span style="color:'+(d.access_verified?'#3DE8A5':'#FF9E5E')+'">'+
       (d.access_verified?'\u2713  Cloudflare Access verified':'\u26A0  Cloudflare Access NOT present')+'</span></div>'+
-      '<p style="color:var(--ash);font-size:.87rem;line-height:1.55">Accounts: <b style="color:var(--bone)">'+(d.accounts||0)+'</b> \u00b7 '+
+      '<p style="color:var(--ash);font-size:.87rem;line-height:1.55">'+
+      'Worker build: <b style="color:'+(d.build?'#3DE8A5':'#FF9E5E')+'">'+(d.build||'OLD \u2014 predates build stamps, replace functions/api/admin.js')+'</b><br>'+
+      'Accounts: <b style="color:var(--bone)">'+(d.accounts||0)+'</b> \u00b7 '+
       'Failed admin attempts in 24h: <b style="color:'+((d.failed_24h||0)>0?'#FF9E5E':'var(--bone)')+'">'+(d.failed_24h||0)+'</b></p>'+
       (d.access_verified?'':'<p style="color:var(--alarm);font-size:.85rem;line-height:1.55;margin-top:10px">Set up Cloudflare Access on /admin, then set REQUIRE_ACCESS to true. Until then this panel is protected by key and code only.</p>');
   }
@@ -426,9 +428,18 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     function go(){
       return call('overpass',{query:q}).then(function(res){
         if(!res.ok){
-          (res.d && res.d.tried ? res.d.tried : ['no detail returned']).forEach(function(t){
-            line('   \u2717 '+t,'#FF9E5E');
-          });
+          if(res.d && res.d.tried && res.d.tried.length){
+            res.d.tried.forEach(function(t){ line('   \u2717 '+t,'#FF9E5E'); });
+          } else if(res.d && res.d.error){
+            line('   \u2717 server said: '+res.d.error,'#FF9E5E');
+            if(/unknown action/i.test(res.d.error)){
+              line('   \u2192 The deployed functions/api/admin.js is an OLD version.','#FF9E5E');
+              line('     It does not know the "overpass" action yet. Replace that file','var(--ash-dim)');
+              line('     in the repo and redeploy \u2014 uploading admin.html alone is not enough.','var(--ash-dim)');
+            }
+          } else {
+            line('   \u2717 no detail returned by the server','#FF9E5E');
+          }
           throw new Error('overpass-failed');
         }
         line('   \u2713 answered by '+(res.d.host||'a mirror'),'var(--ash-dim)');
@@ -474,6 +485,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
 
   document.getElementById('mbuild').addEventListener('click',function(){
     var k=SEL.value; if(!k) return;
+    document.getElementById('mlog').innerHTML='';
     stop=false;
     m('Building '+REGIONS[k][0]+'\u2026 this can take up to a minute.','busy');
     document.getElementById('mbuild').disabled=true;
