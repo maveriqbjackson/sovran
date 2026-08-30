@@ -97,6 +97,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .err{display:none;margin-top:20px;background:rgba(224,132,79,.09);border:1px solid rgba(224,132,79,.34);
   color:var(--alarm);border-radius:var(--r-md);padding:16px 18px;font-size:.9rem;line-height:1.55}
 .err.show{display:block}
+.err b{color:var(--bone)}
+.err code{font-family:'IBM Plex Mono',monospace;font-size:.82rem;background:var(--void);border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+.err li{font-size:.86rem;line-height:1.5}
 #out{display:none} #out.show{display:block}
 .stats{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);margin-bottom:20px}
 @media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
@@ -263,7 +266,7 @@ ol.steps a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(2
 'use strict';
 var $=function(i){return document.getElementById(i);};
 var SEL=$('region'), PROG=$('prog'), ERR=$('err'), OUT=$('out');
-var rows=[], regionName='', blocked=false;
+var rows=[], regionName='', blocked=false, diag=[];
 
 // A blocked request throws a generic TypeError, which is indistinguishable from
 // a network failure. This event tells us which one actually happened.
@@ -298,25 +301,47 @@ $('go').addEventListener('click',function(){
 
   say('Asking OpenStreetMap for surveillance devices in '+regionName+'\u2026<br>Large regions can take up to a minute. Nothing is being sent to SOVRAN.');
 
-  var q='[out:json][timeout:90];('+
-    'node["man_made"="surveillance"]('+s+','+w+','+n+','+e+');'+
-    'way["man_made"="surveillance"]('+s+','+w+','+n+','+e+');'+
-    ');out center tags;';
+  var bbox=s+','+w+','+n+','+e;
+  var q='[out:json][timeout:60];('+
+    'node["man_made"="surveillance"]('+bbox+');'+
+    'way["man_made"="surveillance"]('+bbox+');'+
+    ');out center;';
 
   // Two public mirrors. If the first is busy we try the second before giving up.
   var HOSTS=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
 
+  diag=[];
   function attempt(i){
     if(i>=HOSTS.length) return Promise.reject(new Error('all-mirrors-failed'));
-    if(i>0) say('The first server was busy. Trying a mirror\u2026');
+    if(i>0) say('That server did not answer. Trying mirror '+(i+1)+' of '+HOSTS.length+'\u2026');
+
+    var ctrl = ('AbortController' in window) ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function(){ ctrl.abort(); }, 75000) : null;
+    var host = HOSTS[i].replace(/^https:\/\//,'').replace(/\/.*$/,'');
+
     return fetch(HOSTS[i],{
-      method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:'data='+encodeURIComponent(q)
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:'data='+encodeURIComponent(q),
+      signal: ctrl ? ctrl.signal : undefined
     }).then(function(res){
-      if(!res.ok) throw new Error('status '+res.status);
-      return res.json();
+      if(timer) clearTimeout(timer);
+      if(!res.ok){
+        return res.text().catch(function(){return '';}).then(function(t){
+          diag.push(host+' returned HTTP '+res.status+(t?' \u2014 '+t.replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().slice(0,180):''));
+          throw new Error('http-'+res.status);
+        });
+      }
+      return res.json().catch(function(){
+        diag.push(host+' replied but the response was not valid JSON');
+        throw new Error('bad-json');
+      });
     }).catch(function(e){
+      if(timer) clearTimeout(timer);
       if(blocked) throw e;
+      if(e && e.name==='AbortError') diag.push(host+' timed out after 75 seconds');
+      else if(!diag.length || diag[diag.length-1].indexOf(host)!==0)
+        diag.push(host+' could not be reached at all (network error, DNS, or the server refused the connection)');
       return attempt(i+1);
     });
   }
@@ -350,7 +375,13 @@ $('go').addEventListener('click',function(){
         'because a browser enforces the intersection of every policy it receives \u2014 so a wildcard rule silently overrides the per-page exception.');
       return;
     }
-    fail('Could not reach OpenStreetMap, on either mirror. These are free public services and they are sometimes genuinely overloaded \u2014 wait a minute and try again, or choose a smaller region. Nothing failed on SOVRAN\u2019s side, because SOVRAN was never part of the request.');
+    fail('<b>Could not get data from OpenStreetMap.</b><br><br>'+
+      'These are free public services run on donated hardware, and they are genuinely overloaded a lot of the time. '+
+      'Waiting a few minutes and trying again works more often than not. A smaller state also helps, because the query is billed by area.<br><br>'+
+      '<b>Exactly what happened:</b><ul style="margin:8px 0 0 18px;padding:0">'+
+      (diag.length ? diag.map(function(d){ return '<li style="margin-bottom:5px">'+esc(d)+'</li>'; }).join('')
+                   : '<li>No detail was returned.</li>')+
+      '</ul><br>Nothing failed on SOVRAN\u2019s side \u2014 the request goes from your browser straight to OpenStreetMap and never passes through us.');
   });
 });
 
