@@ -632,25 +632,36 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     // talks to this domain. Same result, no exception to the security policy.
     line('   asking our server to query OpenStreetMap\u2026','var(--ash-dim)');
 
+    // The Worker streams Overpass's response through untouched, so we parse it
+    // here rather than there. Several megabytes of JSON is nothing for a browser
+    // and far more than a Pages Function is allowed to spend CPU on.
     function go(){
-      return call('overpass',{query:q}).then(function(res){
-        if(!res.ok){
-          if(res.d && res.d.tried && res.d.tried.length){
-            res.d.tried.forEach(function(t){ line('   \u2717 '+t,'#FF9E5E'); });
-          } else if(res.d && res.d.error){
-            line('   \u2717 server said: '+res.d.error,'#FF9E5E');
-            if(/unknown action/i.test(res.d.error)){
-              line('   \u2192 The deployed functions/api/admin.js is an OLD version.','#FF9E5E');
-              line('     It does not know the "overpass" action yet. Replace that file','var(--ash-dim)');
-              line('     in the repo and redeploy \u2014 uploading admin.html alone is not enough.','var(--ash-dim)');
-            }
-          } else {
-            line('   \u2717 no detail returned by the server','#FF9E5E');
-          }
-          throw new Error('overpass-failed');
+      var body = session
+        ? {session:session, action:'overpass', query:q}
+        : {key:key, code:code, action:'overpass', query:q};
+
+      return fetch('/api/admin',{
+        method:'POST', credentials:'same-origin',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(body)
+      }).then(function(r){
+        var host=r.headers.get('X-Overpass-Host');
+        if(!r.ok){
+          return r.text().then(function(t){
+            var d=null; try{ d=JSON.parse(t); }catch(e){}
+            if(d && d.tried && d.tried.length) d.tried.forEach(function(x){ line('   \u2717 '+x,'#FF9E5E'); });
+            else if(d && d.error) line('   \u2717 server said: '+d.error,'#FF9E5E');
+            else line('   \u2717 HTTP '+r.status+' from our own server \u2014 the query was probably too large','#FF9E5E');
+            throw new Error('overpass-failed');
+          });
         }
-        line('   \u2713 answered by '+(res.d.host||'a mirror'),'var(--ash-dim)');
-        return {elements:res.d.elements||[]};
+        return r.json().then(function(d){
+          if(host) line('   \u2713 answered by '+host,'var(--ash-dim)');
+          return {elements:d.elements||[]};
+        }).catch(function(){
+          line('   \u2717 response was not valid JSON','#FF9E5E');
+          throw new Error('bad-json');
+        });
       });
     }
 
