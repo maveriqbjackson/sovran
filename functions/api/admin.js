@@ -309,11 +309,32 @@ export async function onRequestPost({ request, env }) {
       if (!statement) return json({ error: "No statement to sign." }, 400);
 
       const freshness = String(body.freshness || "").trim().slice(0, 300);
-      if (!freshness || freshness.length < 12) {
-        return json({ error: "A freshness token is required — something public from today." }, 400);
+      if (!freshness || freshness.length < 15) {
+        return json({ error: "Type a headline from today — a few words at least, not a link." }, 400);
       }
-      await env.DB.prepare("INSERT INTO canary (statement, signed_by, note, freshness) VALUES (?1, ?2, ?3, ?4)")
-        .bind(statement, signer, String(body.note || "").slice(0, 500) || null, freshness).run();
+      if (/^https?:\/\/\S+$/i.test(freshness) || /^www\./i.test(freshness)) {
+        return json({ error: "Paste the headline text, not a URL. A link proves nothing about when it was written." }, 400);
+      }
+      if (freshness.split(/\s+/).length < 4) {
+        return json({ error: "Too short to be a headline. Four words or more." }, 400);
+      }
+      const oldYear = freshness.match(/\b(19|20)\d{2}\b/);
+      if (oldYear && Number(oldYear[0]) < new Date().getUTCFullYear()) {
+        return json({ error: `That mentions ${oldYear[0]}. If it is not from today, do not use it.` }, 400);
+      }
+      let anchor = null;
+      try {
+        const c = new AbortController();
+        const t = setTimeout(() => c.abort(), 6000);
+        const r = await fetch("https://blockchain.info/latestblock", { signal: c.signal })
+          .finally(() => clearTimeout(t));
+        if (r.ok) {
+          const b = await r.json();
+          if (b && b.height && b.hash) anchor = `bitcoin block ${b.height} · ${String(b.hash).slice(0, 24)}`;
+        }
+      } catch (e) {}
+      await env.DB.prepare("INSERT INTO canary (statement, signed_by, note, freshness, anchor) VALUES (?1, ?2, ?3, ?4, ?5)")
+        .bind(statement, signer, String(body.note || "").slice(0, 500) || null, freshness, anchor).run();
       return json({ ok: true, signed_by: signer });
     }
 

@@ -24,7 +24,7 @@ const json = (obj, status = 200) =>
 export async function onRequestGet({ env }) {
   try {
     const row = await env.DB.prepare(
-      "SELECT statement, signed_by, signed_at, note, freshness FROM canary ORDER BY id DESC LIMIT 1"
+      "SELECT statement, signed_by, signed_at, note, freshness, anchor FROM canary ORDER BY id DESC LIMIT 1"
     ).first();
 
     if (!row) return json({ error: "No statement has been signed yet." }, 404);
@@ -39,6 +39,7 @@ export async function onRequestGet({ env }) {
       signed_by: row.signed_by,
       signed_at: row.signed_at,
       freshness: row.freshness || null,
+      anchor: row.anchor || null,
       note: row.note || null,
       history: results || [],
       // how long before the page should call it overdue
@@ -92,21 +93,53 @@ export async function onRequestPost({ request, env }) {
 
   const note = String(body.note || "").slice(0, 500) || null;
 
-  // A freshness token is something that could not have been known before today.
-  // Without it, a signing date is just a number our own server wrote, and anyone
-  // who controlled the server could backdate it. With it, the statement is
-  // provably composed after a public event that anyone can check.
+  /* ── Freshness ──
+     Two separate things, because they prove different things.
+
+     1. The signer types a headline. NOTHING can verify this automatically —
+        a server cannot know what today's news is. It is verified by READERS,
+        who can check whether that headline is from the date shown. A stale one
+        does not fail here; it fails publicly, in front of everyone.
+
+     2. The server independently fetches a public blockchain tip and records it.
+        That value could not have existed before that block was mined, so it
+        proves the row was written after a specific, checkable moment. The
+        signer cannot influence or backdate it.                              */
   const freshness = String(body.freshness || "").trim().slice(0, 300);
-  if (!freshness || freshness.length < 12) {
+
+  if (!freshness || freshness.length < 15) {
+    return json({ error: "Type a headline from today — a few words at least, not a link." }, 400);
+  }
+  if (/^https?:\/\/\S+$/i.test(freshness) || /^www\./i.test(freshness)) {
     return json({
-      error: "A freshness token is required — something public from today that could not have been known earlier. A news headline works.",
+      error: "Paste the headline text itself, not a URL. A link proves nothing about when it was written, and readers check this by reading it.",
     }, 400);
   }
+  if (freshness.split(/\s+/).length < 4) {
+    return json({ error: "That is too short to be a headline. Four words or more, please." }, 400);
+  }
+  // An old date typed into the box is the most likely honest mistake.
+  const yr = freshness.match(/\b(19|20)\d{2}\b/);
+  if (yr && Number(yr[0]) < new Date().getUTCFullYear()) {
+    return json({ error: `That headline mentions ${yr[0]}. If it is not from today, do not use it.` }, 400);
+  }
+
+  let anchor = null;
+  try {
+    const c = new AbortController();
+    const t = setTimeout(() => c.abort(), 6000);
+    const r = await fetch("https://blockchain.info/latestblock", { signal: c.signal })
+      .finally(() => clearTimeout(t));
+    if (r.ok) {
+      const b = await r.json();
+      if (b && b.height && b.hash) anchor = `bitcoin block ${b.height} · ${String(b.hash).slice(0, 24)}`;
+    }
+  } catch (e) { /* the canary must still be signable if this is unreachable */ }
 
   try {
     await env.DB.prepare(
-      "INSERT INTO canary (statement, signed_by, note, freshness) VALUES (?1, ?2, ?3, ?4)"
-    ).bind(statement, signer, note, freshness).run();
+      "INSERT INTO canary (statement, signed_by, note, freshness, anchor) VALUES (?1, ?2, ?3, ?4, ?5)"
+    ).bind(statement, signer, note, freshness, anchor).run();
   } catch {
     return json({ error: "Could not record the signature." }, 500);
   }
