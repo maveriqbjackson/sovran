@@ -16,7 +16,7 @@
 // Env vars : ADMIN_KEY, ADMIN_TOTP_SECRET, CANARY_KEYS,
 //            REQUIRE_ACCESS ("true" once Cloudflare Access is configured)
 
-const BUILD_ID = "2026-08-31-fast-fail";
+const BUILD_ID = "2026-08-31-streaming-proxy";
 
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), {
@@ -267,9 +267,19 @@ export async function onRequestPost({ request, env }) {
             continue;
           }
 
-          const data = await res.json().catch(() => null);
-          if (!data) { tried.push(`${host}: replied but not with JSON`); continue; }
-          return json({ ok: true, host, elements: data.elements || [] });
+          /* Stream the body straight through without touching it.
+             Parsing several megabytes of JSON here and re-serialising it costs
+             far more CPU than a Pages Function is allowed, and Cloudflare
+             answers that by killing the request and returning its own 502.
+             The browser can parse it for free, so let the browser do it. */
+          return new Response(res.body, {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-store",
+              "X-Overpass-Host": host,
+            },
+          });
         } catch (e) {
           tried.push(`${host}: ${
             e && e.name === "AbortError"
