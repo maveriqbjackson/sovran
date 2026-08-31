@@ -268,11 +268,11 @@ body::after{
       that server could set it to whatever they liked. So each signature carries two things instead, and
       they prove different things.
       <br><br>
-      <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">Typed by the signer</b>
-      &mdash; a news headline from that day. <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">No
-      software checks this, and none can.</b> A server cannot know what today's news is. <i>You</i> check it:
-      look at the headline, look at the date, and see whether they match. If they do not, the signature is
-      worthless and everyone can see that at a glance. This is the part that fails in public rather than quietly.
+      <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">A dated news link</b>
+      &mdash; from an outlet that puts the publication date in the address, so it can be checked rather than
+      trusted. We parse that date and compare it to the clock; a story from last week is refused at the moment
+      of signing rather than sitting here afterwards looking like proof. You can click it and confirm the date
+      for yourself.
       <br><br>
       <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">Recorded automatically</b>
       &mdash; the most recent Bitcoin block at the moment of signing, fetched by us, not chosen by the signer.
@@ -296,6 +296,7 @@ body::after{
         <a href="/guide">The Guide</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
       </div>
       <div><span>Understand</span>
+        <a href="/consent">Face consent</a>
         <a href="/charter">The Charter</a><a href="/access">Access &amp; cost</a><a href="/canary">The Canary</a>
       </div>
       <div><span>Account</span>
@@ -313,6 +314,12 @@ body::after{
 var BOX=document.getElementById('status'), LAB=document.getElementById('slabel'),
     STMT=document.getElementById('stmt'), META=document.getElementById('meta');
 
+function linkify(v){
+  var t=String(v||''), i=t.indexOf('http');
+  if(i<0) return esc(t);
+  var label=t.slice(0,i).replace(/[\u2014\-\s]+$/,''), url=t.slice(i).trim();
+  return esc(label)+'<br><a href="'+esc(url)+'" target="_blank" rel="noopener nofollow" style="color:var(--gold);font-size:.72rem;word-break:break-all">check it yourself &rarr;</a>';
+}
 function esc(s){ return String(s).replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];}); }
 function fmt(d){
   try{ return d.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'}); }

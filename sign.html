@@ -91,7 +91,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .meta span:last-child{color:var(--bone);text-align:right}
 .box{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(20px,4vw,28px);margin-top:14px}
 .box input{width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);
-  padding:15px 16px;font-family:'IBM Plex Mono',monospace;font-size:.92rem;margin-bottom:12px}
+  padding:15px 16px;font-family:'IBM Plex Mono',monospace;font-size:1rem;margin-bottom:12px}
 .box input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,174,95,.16)}
 .msg{display:none;margin-top:14px;font-size:.9rem;border-radius:var(--r-sm);padding:13px 15px;line-height:1.55}
 .msg.show{display:block}
@@ -101,6 +101,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .warnbox{background:linear-gradient(140deg,rgba(255,158,94,.09),transparent 72%);border:1px solid rgba(255,158,94,.3);
   border-left:3px solid #FF9E5E;border-radius:var(--r-md);padding:17px 19px;margin-top:20px;font-size:.9rem;color:var(--ash);line-height:1.6}
 .warnbox b{display:block;color:#FF9E5E;font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}
+.srcs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.srcs a{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--ash);text-decoration:none;
+  background:var(--void);border:1px solid var(--line-2);border-radius:99px;padding:7px 13px;transition:all .18s}
+.srcs a:hover{border-color:var(--gold);color:var(--gold)}
 .chk{display:flex;gap:11px;align-items:flex-start;margin:18px 0;cursor:pointer}
 .chk input{width:17px;height:17px;margin:3px 0 0;accent-color:var(--gold);flex:none}
 .chk span{font-size:.89rem;color:var(--ash);line-height:1.5}
@@ -164,6 +168,14 @@ body::after{
 .btn{box-shadow:0 0 0 1px rgba(255,237,192,.22) inset}
 .btn:hover{box-shadow:0 0 30px rgba(255,203,107,.34),0 0 0 1px rgba(255,237,192,.35) inset}
 @media(prefers-reduced-motion:reduce){html::before{animation:none}}
+@media(max-width:640px){
+  .box{padding:20px 18px}
+  .box input{font-size:16px;padding:16px 15px}
+  .srcs a{font-size:.68rem;padding:8px 12px}
+  .meta div{flex-direction:column;gap:3px}
+  .meta span:last-child{text-align:left;max-width:100% !important}
+  .status{padding:20px 18px}
+}
 </style>
 </head>
 <body>
@@ -192,18 +204,27 @@ body::after{
     <div class="box">
       <h3 style="margin-bottom:8px">Sign it</h3>
       <p style="color:var(--ash);font-size:.9rem;line-height:1.55;margin-bottom:16px">Paste your own signing key. Each signer has a different one. <b style="color:var(--bone)">Your identity is never published</b> &mdash; the public page shows only that it was signed, never by whom.</p>
-      <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Step one &mdash; today's freshness token</label>
-      <input type="text" id="fresh" placeholder="paste a headline from today — the words, not a link" autocomplete="off" spellcheck="false">
+      <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Step one &mdash; a news link from today</label>
+      <input type="url" id="fresh" placeholder="https://..." autocomplete="off" spellcheck="false">
       <p style="font-size:.84rem;color:var(--ash);line-height:1.55;margin:-4px 0 10px">
-        Open a news site and copy a headline from <b style="color:var(--bone)">today</b>. The words themselves,
-        not a link. It gets published alongside your signature.
+        Open any of these, click into <b style="color:var(--bone)">a story published today</b>, and paste the full address.
+        These outlets put the date in the link, so we can check it automatically &mdash; a story from
+        last week will be refused rather than quietly accepted.
       </p>
-      <div style="background:rgba(255,158,94,.08);border:1px solid rgba(255,158,94,.3);border-radius:var(--r-sm);padding:13px 15px;margin-bottom:18px;font-size:.84rem;color:var(--ash);line-height:1.55">
-        <b style="color:#FF9E5E;display:block;margin-bottom:5px;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase">Nothing here can check this for you</b>
-        No server can know what today's news is. <b style="color:var(--bone)">Readers</b> verify this &mdash; they look at
-        the headline and the date and see whether they match. An old headline does not fail quietly; it fails
-        in public, and it makes the signature worthless. Use today's, or do not sign.
+      <div class="srcs">
+        <a href="https://www.cnn.com" target="_blank" rel="noopener">CNN</a>
+        <a href="https://www.npr.org" target="_blank" rel="noopener">NPR</a>
+        <a href="https://www.theguardian.com/us" target="_blank" rel="noopener">The Guardian</a>
+        <a href="https://www.nytimes.com" target="_blank" rel="noopener">NYT</a>
+        <a href="https://www.washingtonpost.com" target="_blank" rel="noopener">Washington Post</a>
+        <a href="https://www.politico.com" target="_blank" rel="noopener">Politico</a>
+        <a href="https://www.axios.com" target="_blank" rel="noopener">Axios</a>
+        <a href="https://www.aljazeera.com" target="_blank" rel="noopener">Al Jazeera</a>
       </div>
+      <p style="font-size:.8rem;color:var(--ash-dim);line-height:1.5;margin:0 0 18px">
+        The link should look like <code style="font-family:'IBM Plex Mono',monospace;color:var(--gold-hi)">cnn.com/2026/08/31/...</code>
+        &mdash; if there is no date in it, you are on a section page rather than an article.
+      </p>
       <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Step two &mdash; your key</label>
       <input type="password" id="key" placeholder="your signing key" autocomplete="off" spellcheck="false">
 
@@ -276,7 +297,7 @@ load();
 
 $('sign').addEventListener('click',function(){
   var k=$('key').value.trim(), fr=$('fresh').value.trim();
-  if(fr.length<12){ say('Enter a freshness token first \u2014 a headline from today, at least a few words.','err'); return; }
+  if(!/^https?:\/\//i.test(fr)){ say('Paste a full news link from today, starting with https://','err'); return; }
   if(!k){ say('Enter your signing key.','err'); return; }
   if(!$('ack').checked){ say('Please confirm you have read the statement and believe it is still true.','err'); return; }
   $('sign').disabled=true; say('Signing\u2026','busy');

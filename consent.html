@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Start here — SOVRAN</title>
-<meta name="description" content="Six free tools, none requiring an account. Find the one that matches why you came, and start there.">
+<title>Face consent — SOVRAN</title>
+<meta name="description" content="What we would ask you to agree to before measuring your face. Published before the feature exists.">
 <meta name="theme-color" content="#04060F">
 <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/plex-sans-var.woff2" as="font" type="font/woff2" crossorigin>
@@ -72,29 +72,43 @@ footer a:hover{color:var(--gold);border-color:var(--gold)}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 
-.paths{display:grid;gap:13px;margin-top:26px}
-@media(min-width:800px){.paths{grid-template-columns:repeat(2,1fr)}}
-.path{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
-  padding:clamp(20px,4vw,26px);display:flex;flex-direction:column}
-.path .t{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.15em;
-  text-transform:uppercase;color:var(--gold);margin-bottom:12px}
-.path h3{margin-bottom:9px}
-.path p{font-size:.9rem;color:var(--ash);line-height:1.6;margin-bottom:14px}
-.path ol{list-style:none;counter-reset:p;display:grid;gap:9px;margin-bottom:18px}
-.path li{counter-increment:p;padding-left:30px;position:relative;font-size:.87rem;color:var(--ash);line-height:1.5}
-.path li::before{content:counter(p);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;
-  background:rgba(255,203,107,.13);border:1px solid rgba(255,203,107,.3);color:var(--gold);
-  font-family:'IBM Plex Mono',monospace;font-size:.63rem;font-weight:600;display:flex;align-items:center;justify-content:center}
-.path li a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.35)}
-.path .go{margin-top:auto}
-.mins{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.12em;
-  text-transform:uppercase;color:#3DE8A5;background:rgba(61,232,165,.1);border:1px solid rgba(61,232,165,.3);
-  border-radius:99px;padding:4px 10px;margin-left:8px}
-.noacct{background:linear-gradient(140deg,rgba(61,232,165,.10),transparent 72%);border:1px solid rgba(61,232,165,.32);
-  border-radius:var(--r-lg);padding:22px 24px;margin-top:26px}
-.noacct p{color:var(--ash);font-size:.95rem;line-height:1.62;max-width:62ch}
-.noacct b{color:#3DE8A5;font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.15em;
-  text-transform:uppercase;display:block;margin-bottom:9px}
+.cbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(20px,4vw,28px);margin-top:20px;position:relative;overflow:hidden}
+.cbox::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--bif-1),var(--bif-2) 48%,var(--bif-3))}
+.cbox h3{margin-bottom:12px}
+.cbox p{font-size:.94rem;color:var(--ash);line-height:1.64;margin-bottom:12px;max-width:66ch}
+.cbox p:last-child{margin-bottom:0}
+.cbox b{color:var(--bone)}
+.cbox code{font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--gold-hi);
+  background:var(--void);border:1px solid var(--line);border-radius:6px;padding:2px 7px}
+.plain{display:grid;gap:0;margin:18px 0;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+.plain>div{display:grid;grid-template-columns:minmax(140px,32%) 1fr;gap:0;border-bottom:1px solid var(--line)}
+.plain>div:last-child{border-bottom:0}
+.plain dt,.plain dd{padding:15px 17px;margin:0}
+.plain dt{background:var(--void);font-family:'IBM Plex Mono',monospace;font-size:.66rem;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--gold);align-self:stretch;display:flex;align-items:center}
+.plain dd{font-size:.92rem;color:var(--ash);line-height:1.58}
+.plain dd b{color:var(--bone)}
+@media(max-width:600px){.plain>div{grid-template-columns:1fr}.plain dt{padding-bottom:6px}}
+.never{background:linear-gradient(140deg,rgba(61,232,165,.09),transparent 72%);
+  border:1px solid rgba(61,232,165,.3);border-radius:var(--r-lg);padding:22px 24px;margin-top:20px}
+.never h4{color:#3DE8A5;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.15em;
+  text-transform:uppercase;margin-bottom:14px}
+.never ul{list-style:none;display:grid;gap:10px}
+.never li{font-size:.93rem;color:var(--ash);line-height:1.55;padding-left:26px;position:relative}
+.never li::before{content:'\2717';position:absolute;left:0;top:0;color:#3DE8A5;font-weight:700}
+.never b{color:var(--bone)}
+.consent-form{background:var(--surface);border:1px solid rgba(255,203,107,.34);border-radius:var(--r-lg);
+  padding:clamp(20px,4vw,28px);margin-top:26px}
+.ck{display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.ck:last-of-type{border-bottom:0}
+.ck input{width:19px;height:19px;margin:2px 0 0;accent-color:var(--gold);flex:none}
+.ck span{font-size:.91rem;color:var(--ash);line-height:1.55}
+.ck b{color:var(--bone)}
+.notyet{font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--gold);background:rgba(255,203,107,.1);border:1px solid rgba(255,203,107,.3);
+  border-radius:99px;padding:7px 14px;display:inline-block;margin-bottom:18px}
 
 /* ══════════════════════════════════════════════════════════════════
    ASGARD · three stacked layers of sky, none of which cost a request
@@ -168,125 +182,71 @@ body::after{
 <main>
 <section class="intro">
   <div class="wrap">
-    <span class="eyebrow">Start here</span>
-    <h1>Pick the one that<br>sounds like <span class="gilt">you</span>.</h1>
-    <p class="lede">Seven tools, all free, and the list keeps growing. None of them need an account. You do not have to read the whole site. Find the sentence below that matches why you came, and start there.</p>
-
-    <div class="noacct">
-      <b>Before you go further</b>
-      <p>Nothing on this page requires signing up, paying, or giving us an email address. Every tool runs inside your browser &mdash; turn off your connection first if you want to prove it. An account exists and is also free, but it only syncs a checklist between your devices, and most people do not need one.</p>
-    </div>
+    <span class="eyebrow">Consent &middot; Face matching</span>
+    <h1>Before your face is<br>measured at <span class="gilt">all</span>.</h1>
+    <p class="lede">Face geometry is a biometric identifier. Illinois, Texas and Washington regulate it specifically, and they are right to. This page is what we would ask you to agree to &mdash; written in full, before the feature exists, so you can judge it without a signup form in the way.</p>
+    <span class="notyet">Not built yet &middot; published early on purpose</span>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="paths">
-
-      <div class="path">
-        <span class="t">&ldquo;I have five minutes and no idea where to start&rdquo;</span>
-        <h3>Check one photo<span class="mins">3 min</span></h3>
-        <p>The fastest way to understand the problem is to see it in something of your own. Pick a picture from your camera roll and find out what is written inside it.</p>
-        <ol>
-          <li>Open <a href="/photo">The Photo Check</a></li>
-          <li>Drop in a photo taken on your phone with location on</li>
-          <li>Read the precision ladder &mdash; it shows what your coordinates actually pin down</li>
-          <li>Download the clean copy if you want one</li>
-        </ol>
-        <div class="go"><a href="/photo" class="btn">Check a photo &rarr;</a></div>
-      </div>
-
-      <div class="path">
-        <span class="t">&ldquo;I want my address off the internet&rdquo;</span>
-        <h3>Start the removals<span class="mins">30 min, then ongoing</span></h3>
-        <p>People-search sites publish your home address, your phone number, and your relatives' names to anyone who types your name. Removal is free everywhere legitimate, and tedious &mdash; which is why almost nobody finishes.</p>
-        <ol>
-          <li>Open <a href="/guide#brokers">the broker section of The Guide</a></li>
-          <li>If you are in California, submit one DROP request &mdash; it covers 500+ brokers at once</li>
-          <li>Otherwise work the checklist; it remembers your progress on this device</li>
-          <li>Set a reminder for six months. They repopulate.</li>
-        </ol>
-        <div class="go"><a href="/guide#brokers" class="btn">Open the checklist &rarr;</a></div>
-      </div>
-
-      <div class="path">
-        <span class="t">&ldquo;What is watching my street?&rdquo;</span>
-        <h3>Look at the map<span class="mins">5 min</span></h3>
-        <p>Plate readers photograph every car that passes and log where it was, and when. Most were approved in a routine council vote with nobody in the room.</p>
-        <ol>
-          <li>Open <a href="/map">The Map</a> and choose your state</li>
-          <li>Zoom into your area &mdash; roads and towns appear as you go</li>
-          <li>Tap any device to see who runs it, or that nobody has said</li>
-          <li>Use the generated letter to ask your council the questions that get answers</li>
-        </ol>
-        <div class="go"><a href="/map" class="btn">See what sees you &rarr;</a></div>
-      </div>
-
-      <div class="path">
-        <span class="t">&ldquo;I want to know what I have already published&rdquo;</span>
-        <h3>Audit your own export<span class="mins">Request today, run tomorrow</span></h3>
-        <p>Every platform must hand you a full archive of your data on request. Most people have never looked at theirs. It is the single most complete document about you that exists.</p>
-        <ol>
-          <li>Request your download from Instagram, TikTok, or Facebook &mdash; choose <b>JSON</b></li>
-          <li>It arrives by email in a few hours</li>
-          <li>Drop the file into <a href="/audit">The Audit</a>. It is read entirely on your device</li>
-          <li>Look at the repeated coordinates first. Those are your home, work, and routine.</li>
-        </ol>
-        <div class="go"><a href="/audit" class="btn">Open The Audit &rarr;</a></div>
-      </div>
-
-      <div class="path">
-        <span class="t">&ldquo;I am worried about my kids&rdquo;</span>
-        <h3>Audit what you posted<span class="mins">20 min</span></h3>
-        <p>By the time a child can consent, thousands of images of them are public &mdash; nearly all posted by adults who love them. The fix is about what you publish, never about monitoring them.</p>
-        <ol>
-          <li>Read <a href="/guide#kids">the family section</a> &mdash; start with the school directory opt-out</li>
-          <li>Run your own social export through <a href="/audit">The Audit</a> to find the geotags</li>
-          <li>Use <a href="/photo">The Photo Check</a> before sharing the next picture</li>
-          <li>Ask grandparents to tighten their accounts. They are usually the largest source.</li>
-        </ol>
-        <div class="go"><a href="/guide#kids" class="btn">For families &rarr;</a></div>
-      </div>
-
-      <div class="path" style="border-color:rgba(255,158,94,.34)">
-        <span class="t" style="color:#FF9E5E">&ldquo;Someone is trying to find me&rdquo;</span>
-        <h3>Read this before changing anything<span class="mins">Do not rush</span></h3>
-        <p>Different rules apply when the threat is a specific person. Suddenly locking everything down can signal that you know &mdash; and the period right after someone realises they are losing control is the most dangerous one.</p>
-        <ol>
-          <li>Talk to an advocate before you change settings. They help you sequence it safely.</li>
-          <li>National Domestic Violence Hotline: <b>1-800-799-7233</b>, or text <b>START</b> to <b>88788</b></li>
-          <li>For the technology side specifically, <a href="/guide#risk">techsafety.org</a> is the best resource there is</li>
-          <li>If the device you are reading this on might be monitored, use a different one</li>
-        </ol>
-        <div class="go"><a href="/guide#risk" class="btn">Resources and numbers &rarr;</a></div>
-      </div>
-
+    <div class="cbox">
+      <h3>What actually happens</h3>
+      <p>Your camera opens. You are asked to blink, turn your head, and follow a dot &mdash; a liveness check, so that a photograph held up to the lens will not pass. A model running <b>inside your browser</b> converts your face into a list of numbers, typically 128 or 512 of them, called an embedding.</p>
+      <p>That list is not a photograph and cannot be turned back into one. It is closer to a fingerprint of proportions &mdash; distances and ratios between features &mdash; than to an image.</p>
+      <p><b>No frame of video is kept. No photograph is saved. Nothing is uploaded.</b> The model file downloads to your device and the work happens there, the same way the Photo Check and the Audit already work.</p>
     </div>
-  </div>
-</section>
 
-<hr class="rule">
-
-<section>
-  <div class="wrap">
-    <h2>Everything, in one list</h2>
-    <p class="body">All free, permanently. Six of the seven need no account at all, and every one of them works with your connection switched off.</p>
-    <div class="paths" style="grid-template-columns:1fr">
-      <div class="path" style="padding:0;background:none;border:0">
-        <ol style="gap:12px">
-          <li><a href="/photo"><b>The Photo Check</b></a> &mdash; the coordinates and camera serial hidden inside a photo, and a clean copy to replace it</li>
-          <li><a href="/audit"><b>The Audit</b></a> &mdash; your whole social export read on your device, with every location and routine you have published</li>
-          <li><a href="/map"><b>The Map</b></a> &mdash; plate readers and cameras near you, with a letter to your council written from the real numbers</li>
-          <li><a href="/guide"><b>The Guide</b></a> &mdash; what you can actually do, searchable, with a broker checklist that remembers where you got to</li>
-          <li><a href="/passphrase"><b>The Passphrase</b></a> &mdash; a key strong enough for your email, your bank, or an encrypted backup</li>
-          <li><a href="/panel"><b>Your Panel</b></a> &mdash; the whole plan as a checklist, stored only in your browser, with a one-click erase</li>
-          <li><a href="/account"><b>Your Account</b></a> &mdash; optional, free, and encrypted with a key we never receive. Only worth it if you use SOVRAN on more than one device</li>
-        </ol>
-      </div>
+    <div class="plain">
+      <div><dt>What is measured</dt><dd>The geometry of your face, expressed as a list of numbers. <b>Not a photo.</b></dd></div>
+      <div><dt>Why</dt><dd>So that when we search people-search sites for your name, <b>your device</b> can tell which of the returned profile photos are actually you, rather than someone who shares your name.</dd></div>
+      <div><dt>Where it is computed</dt><dd>In your browser, on your hardware. The model runs locally.</dd></div>
+      <div><dt>Where it is stored</dt><dd>Your choice. Either encrypted in your vault with the key we never receive, or held only until you close the tab.</dd></div>
+      <div><dt>Who can access it</dt><dd><b>Only you.</b> If you store it in the vault, it is encrypted with a key derived from your passphrase. We hold ciphertext we cannot open.</dd></div>
+      <div><dt>How long it is kept</dt><dd>Until you delete it. There is no retention schedule because there is nothing on our side to retain.</dd></div>
+      <div><dt>How to delete it</dt><dd>One button in your account, or close the tab if you chose not to store it. Deleting your account removes it with everything else.</dd></div>
+      <div><dt>Is it shared</dt><dd>No. Not with partners, not with processors, not with law enforcement &mdash; because we never have it.</dd></div>
+      <div><dt>Is it sold</dt><dd>No. Article V, permanently.</dd></div>
     </div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px">
-      <a href="/charter" class="btn ghost">What we cannot do to you &rarr;</a>
-      <a href="/access" class="btn ghost">What costs money, and what never will &rarr;</a>
+
+    <div class="never">
+      <h4>What we will never do with it</h4>
+      <ul>
+        <li><b>We will never upload it.</b> There is no endpoint that accepts a face embedding. Not disabled &mdash; not built.</li>
+        <li><b>We will never build an index of faces.</b> Not yours, and not the strangers whose photos appear on the sites we search. That index is what Clearview AI built and it is the thing this project exists to argue against.</li>
+        <li><b>We will never let anyone search for a face that is not their own.</b> There is no upload path, so there is nothing to abuse &mdash; not by us, not by a customer, not by anyone who takes our servers.</li>
+        <li><b>We will never use it to identify you to ourselves.</b> We do not know your name. A face embedding does not give us one.</li>
+        <li><b>We will never require it.</b> Every other tool works without this. It is one optional feature, not a gate.</li>
+      </ul>
+    </div>
+
+    <div class="cbox">
+      <h3>The risks, stated plainly</h3>
+      <p><b>A biometric is permanent.</b> You can change a password. You cannot change your face. That is precisely why it deserves this much text, and why our answer is to never hold it rather than to hold it carefully.</p>
+      <p><b>Your device could be compromised.</b> If someone controls your phone, they can reach anything on it, including this. That is true of your photos and your messages too, but it should be said.</p>
+      <p><b>Matching is not perfect.</b> Faces change with age, weight, lighting and hair. Expect some misses, and occasionally a false match on a stranger who genuinely resembles you. You confirm every result before anything is filed &mdash; nothing is submitted on a match alone.</p>
+      <p><b>You may not need this at all.</b> Most people are exposed through their name, address and phone number, not their photograph. <a href="/guide#brokers">The free broker checklist</a> addresses most of it. Use this only if a photograph of you is the specific problem.</p>
+    </div>
+
+    <div class="consent-form">
+      <h3 style="margin-bottom:6px">What you would be agreeing to</h3>
+      <p style="color:var(--ash-dim);font-size:.86rem;line-height:1.55;margin-bottom:6px">Each item separately, because a single blanket checkbox is not consent &mdash; it is a formality people click through.</p>
+
+      <label class="ck"><input type="checkbox" disabled><span>I understand that <b>face geometry is a biometric identifier</b> and that it is permanent in a way a password is not.</span></label>
+      <label class="ck"><input type="checkbox" disabled><span>I understand it is computed <b>on my own device</b> and is never transmitted to SOVRAN.</span></label>
+      <label class="ck"><input type="checkbox" disabled><span>I choose whether it is <b>stored encrypted in my vault</b> or discarded when I close the tab.</span></label>
+      <label class="ck"><input type="checkbox" disabled><span>I can <b>delete it at any time</b>, and deleting my account removes it entirely.</span></label>
+      <label class="ck"><input type="checkbox" disabled><span>I understand matching is <b>imperfect</b>, and that I confirm every result before anything is filed on my behalf.</span></label>
+      <label class="ck"><input type="checkbox" disabled><span>This is <b>my own face</b>. I am not enrolling anyone else, and I understand the liveness check exists to enforce that.</span></label>
+
+      <p style="color:var(--ash-dim);font-size:.84rem;line-height:1.55;margin-top:16px">Checkboxes are disabled because the feature does not exist yet. When it ships, all six must be ticked individually, and this page will be shown before the camera is ever requested &mdash; not linked from a footer afterwards.</p>
+    </div>
+
+    <div class="cbox">
+      <h3>Why this page exists before the feature does</h3>
+      <p>Consent screens are normally written by lawyers after a product ships, to protect the company. This one is published first, so that anyone can read it and tell us it is not good enough while there is still time to change it.</p>
+      <p>If something here reads as weasel wording, or a promise that could be quietly walked back, <!--email_off--><a href="mailto:maveriqbjackson@proton.me?subject=Consent%20page%20feedback" style="color:var(--gold)">say so</a><!--/email_off-->. That is a more useful contribution than most bug reports.</p>
     </div>
   </div>
 </section>
@@ -307,7 +267,7 @@ body::after{
         <a href="/account">Sign in or create</a><a href="/#waitlist">Join the waitlist</a>
       </div>
     </nav>
-    <p style="margin-bottom:12px;max-width:62ch;line-height:1.55">Start here is part of <a href="/">SOVRAN</a>, a concept by <a href="https://aetherandash.digital" target="_blank" rel="noopener">Aether &amp; Ash</a>.</p>
+    <p style="margin-bottom:12px;max-width:62ch;line-height:1.55">Part of <a href="/">SOVRAN</a>. See also <a href="/charter">the Charter</a>, which this page implements.</p>
     <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--> &middot; No cookies. No trackers. No analytics.</p>
   </div>
 </footer>

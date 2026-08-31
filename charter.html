@@ -157,6 +157,12 @@ body::after{
   text-transform:uppercase;color:var(--gold);margin-bottom:4px}
 .fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content}
 .fnav a:hover{color:var(--gold)}
+
+@media(max-width:520px){
+  .art{grid-template-columns:1fr;gap:8px}
+  .art .num{padding-top:0;font-size:.8rem}
+  .chk>div,.pre{padding:16px 17px}
+}
 </style>
 </head>
 <body>
@@ -183,10 +189,10 @@ body::after{
     </div>
 
     <div class="arts">
-      <div class="art"><span class="num">I</span><div><h3>Your photographs stay on your device</h3><p>Faces are matched locally. The image is never uploaded, and there is no copy of it to lose. This is also what makes searching for a face ethical rather than dangerous: we can only ever look for yours.</p></div></div>
-      <div class="art"><span class="num">II</span><div><h3>We never ask who you are</h3><p>No name, no address, no phone number, no date of birth, no government document. An account is an email address you choose and a passphrase you generate. If you use an alias, we will not check &mdash; there is nothing here to check it against.</p></div></div>
+      <div class="art"><span class="num">I</span><div><h3>Your photographs stay on your device</h3><p>Faces are matched locally. The image is never uploaded, and there is no copy of it to lose.</p><p style="margin-top:10px">This is also what makes searching for a face ethical rather than dangerous. <strong>We do not build an index of faces.</strong> A search begins with a name you give us, returns candidate listings to your device, and your device decides which are you. There is no stored face geometry belonging to anyone &mdash; not you, and not the strangers whose photos those sites published without asking.</p></div></div>
+      <div class="art"><span class="num">II</span><div><h3>We never ask who you are</h3><p>No name, no address, no phone number, no date of birth, no government document. An account is an email address you choose and a passphrase you generate. If you use an alias, we will not check &mdash; there is nothing here to check it against.</p><p style="margin-top:12px"><b style="color:var(--bone)">One honest exception, stated rather than buried.</b> Searching people-search sites requires a name, because those sites are indexed by name. So you type one in and we search for it. That name is used for that search and discarded &mdash; not written to a database, not attached to your account, not kept afterwards. <em>You are telling us something for a moment; we are not collecting it.</em> If you would rather we never saw it at all, do not use that feature. Everything else works without it.</p></div></div>
       <div class="art"><span class="num">III</span><div><h3>Your notes are sealed before they leave you</h3><p>Encrypted with a key derived from your passphrase, in your browser, before anything is sent. We hold ciphertext and cannot open it &mdash; not for a court, not for ourselves. The cost of that being real is that a lost passphrase cannot be recovered by anybody. We would rather say so plainly than offer a reset that proves we could have read it all along.</p></div></div>
-      <div class="art"><span class="num">IV</span><div><h3>Nothing you search for is written down</h3><p>No query logs. No history. No behavioural profile. There is no record of your use to hand to anyone, which is why we will not add an AI assistant &mdash; the questions people would ask it are the most sensitive sentences they will write all year.</p></div></div>
+      <div class="art"><span class="num">IV</span><div><h3>Nothing you search for is written down</h3><p>No query logs. No history. No behavioural profile. There is no record of your use to hand to anyone, which is why we will not add an AI assistant &mdash; the questions people would ask it are the most sensitive sentences they will write all year.</p><p style="margin-top:12px"><b style="color:var(--bone)">Where a search must touch our servers, we keep counts and never terms.</b> Some things cannot run entirely on your device &mdash; querying hundreds of broker sites is one of them. For those, we record that a request happened and nothing about what it contained. A number like &ldquo;forty searches from this address today&rdquo; is enough to stop abuse and to keep the service standing up. The words you typed are not stored, not logged, and not recoverable afterwards. We would rather write that limit down than let you find it later.</p></div></div>
       <div class="art"><span class="num">V</span><div><h3>We never sell, and never take money from anyone who does</h3><p>No advertising. No data brokers. No investment from anyone whose interests require us to reverse this later.</p></div></div>
       <div class="art"><span class="num">VI</span><div><h3>You can end it completely</h3><p>Delete your account and everything goes with it. Not flagged, not moved to a suppression list, not kept for compliance. The row is gone, because there was almost nothing in it to begin with.</p></div></div>
       <div class="art"><span class="num">VII</span><div><h3>We never block you for how you connect</h3><p>Use a VPN. Use Tor. Use a borrowed phone on someone else's wifi. We will not throttle you, challenge you, or treat you as suspicious for it. Protecting yourself is not suspicious behaviour &mdash; it is the behaviour we recommend.</p></div></div>
@@ -233,6 +239,7 @@ body::after{
         <a href="/guide">The Guide</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
       </div>
       <div><span>Understand</span>
+        <a href="/consent">Face consent</a>
         <a href="/charter">The Charter</a><a href="/access">Access &amp; cost</a><a href="/canary">The Canary</a>
       </div>
       <div><span>Account</span>

@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-31 11:11 UTC",
+ "generated": "2026-08-31 16:59 UTC",
  "note": "SHA-256 of every deployed file. robots.txt excluded - Cloudflare rewrites it.",
  "files": {
   "/404.html": {
@@ -7,72 +7,76 @@
    "bytes": 11180
   },
   "/access.html": {
-   "sha256": "05fe0cc59879ea115d43322cbea6b33629ae998c8e650ea6d82c1f705d8ff088",
-   "bytes": 34676
+   "sha256": "297e554bb0463286c0c5d82ad595b082e35853114fde5809a0100232a60c73dc",
+   "bytes": 34720
   },
   "/account.html": {
-   "sha256": "be624cf3354130cc1118445beab450be274ece1f8c51530c92696784a53d2893",
-   "bytes": 32813
+   "sha256": "3ea62dbbdb2846fa3a3a224e6c6141558e96e2248e40bf2776033aaf895b2137",
+   "bytes": 32857
   },
   "/admin.html": {
-   "sha256": "618f8e8e5e94a420c28c7641804347b45de33307d6970b891db0e82c26a6ff41",
-   "bytes": 50179
+   "sha256": "e1a838afb54d092f116a316a14a0910110fb25fed58794a133b6664805cf0af6",
+   "bytes": 50213
   },
   "/audit.html": {
-   "sha256": "52388074b941d13376c76ceefacd1b8ae6fb224292e33060a6a96b8a4da92805",
-   "bytes": 45153
+   "sha256": "ae4be77dd083c2559a4ae5ac188dfcb0eba0650c8f5a7e9c2806672cb89a523f",
+   "bytes": 45197
   },
   "/canary.html": {
-   "sha256": "ac3a2a861d21a0d123472edc65190aa9c698f124e820307a5339262ebab3d0e3",
-   "bytes": 28762
+   "sha256": "2d9216d8a41ceefd00cd636594fff61c8ccc8c7122ab5e0385a30ad0a3992aab",
+   "bytes": 29030
   },
   "/charter.html": {
-   "sha256": "b7784b2130270024ae07e5765d35254c21a7de867f1abd29b0397a595ab52a9f",
-   "bytes": 21719
+   "sha256": "b1cbcf592cdafd4c3acec34a6cd735cdaff8d64299f1c6abf3dbf2c9e718a16b",
+   "bytes": 23377
   },
   "/cities.json": {
    "sha256": "3de19588ded4e7ad5bfbd97895dc4d943cb5bbe9883b3cd310cff0ee6989eab7",
    "bytes": 5594
   },
+  "/consent.html": {
+   "sha256": "0dd2078df1aa6c3c22c3165d1a266e35626a708ff37b560ec7fea9fc020cc8d9",
+   "bytes": 23393
+  },
   "/guide.html": {
-   "sha256": "80ee6674000472c4818880e5ff3708b7c4c5a0e5fd6f8ed1eb8bed8ab31f7b74",
-   "bytes": 53568
+   "sha256": "5cd7a36fac50b0fe5baaacf8fde4aee399848a45ea67105fc0ef42ad6a043416",
+   "bytes": 53612
   },
   "/index.html": {
-   "sha256": "ca6180e6c48739c3fc9fc593d3df8603b9f3da4bacdad6676d7387179e49551a",
-   "bytes": 59037
+   "sha256": "d2c3528332f94ab515df9f524e6b4d837694c7df85502346def63b0607d0a642",
+   "bytes": 59760
   },
   "/jszip.min.js": {
    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",
    "bytes": 97630
   },
   "/map.html": {
-   "sha256": "323477cf3d9019f5fc12278b4f83e9e3d0ab178d91323c8ac301e112dbf6f44e",
-   "bytes": 71948
+   "sha256": "b22c4ac6062fd36a2a5351793fbc8ec13790ff4153002c76037652e045627095",
+   "bytes": 71993
   },
   "/panel.html": {
-   "sha256": "750ecc92079c4a2362c89db0d338a1ea1071508f88c3a3f3053f716ff34463ab",
-   "bytes": 28754
+   "sha256": "32e9b72ff7d660e2343b66294713f39bdd2978e29cc895c7d6ef163deb1dc007",
+   "bytes": 28798
   },
   "/passphrase.html": {
-   "sha256": "89d1d19201c5b62c654548b6805f6c61e5b4f0fdb8def2ecc7ede5e1a114f47b",
-   "bytes": 27641
+   "sha256": "c04227eeeb7c4b12424ac55bda518d3502418502110e8f963bd2bfa2edf8d04f",
+   "bytes": 27685
   },
   "/photo.html": {
-   "sha256": "b20a99870e57f32dba68935f856e2bd940d122540aeba829e5ffc0c1a6384549",
-   "bytes": 45243
+   "sha256": "a92d5cd088962d4a7c4b343f54effe258ef5b7ff315d1aaef7fc2ee4cede9bfd",
+   "bytes": 45287
   },
   "/sign.html": {
-   "sha256": "ac5efd0e5e0f29a4d23d98694b4f1d0981a4e4ec4bbcecd9e2933e245a41098e",
-   "bytes": 24206
+   "sha256": "9dffb6cb88c59de50f76cb4f2ec94f1f12a7f86f1782cf4422faaa4376c10136",
+   "bytes": 25198
   },
   "/sitemap.xml": {
-   "sha256": "79ec80a704e1a457cf2b96215af5125700a280e364493211764b67b4272e3356",
-   "bytes": 893
+   "sha256": "eb5b262ffa13bec7704042b70344e8e365761ed033f5ab763f87a898ad7b7c1b",
+   "bytes": 973
   },
   "/start.html": {
-   "sha256": "8bdd5b6cd85dcf62a600a5c7d3faad5a99cb5499d20d8e3851622a226573ec0d",
-   "bytes": 23288
+   "sha256": "87b4b672c0a2256d00f0e416c56d738ce828008db21b3db619b832a85fa49d73",
+   "bytes": 23332
   },
   "/sv-crypto.js": {
    "sha256": "cd32d57c89f86c8ef5f87154c7903e2f1e6f7490faf3a62f6e4160c2b02a4a79",
