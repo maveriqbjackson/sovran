@@ -609,6 +609,15 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     function tileQuery(t){
       return '[out:json][timeout:18];way["highway"~"^(motorway|trunk|primary|secondary)$"]('+t.join(',')+');out geom;';
     }
+    // Every street within 400m of a surveillance device. Not every street in the
+    // state — that is hundreds of megabytes of empty countryside. This returns
+    // detail exactly where there is something to look at, and nothing elsewhere.
+    function localQuery(t){
+      return '[out:json][timeout:22];'+
+        'node["man_made"="surveillance"]('+t.join(',')+')->.cams;'+
+        'way(around.cams:400)["highway"~"^(residential|unclassified|tertiary|living_street|service|pedestrian|footway|cycleway)$"];'+
+        'out geom;';
+    }
     function split(t){
       var mLat=(t[0]+t[2])/2, mLon=(t[1]+t[3])/2;
       return [[t[0],t[1],mLat,mLon],[t[0],mLon,mLat,t[3]],
@@ -650,11 +659,11 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
         line('   roads skipped by choice','var(--ash-dim)');
         return camData;
       }
-      var acc=[], okTiles=0, failTiles=0, seen={};
+      var acc=[], okTiles=0, failTiles=0, seen={}, localMode=false;
       var MAXDEPTH=3;
 
       function fetchTile(t, depth){
-        q=tileQuery(t);
+        q = localMode ? localQuery(t) : tileQuery(t);
         return go().then(function(r){
           (r.elements||[]).forEach(function(el){ if(!seen[el.id]){ seen[el.id]=1; acc.push(el); } });
           okTiles++;
@@ -677,21 +686,32 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
         function next(){
           if(i>=list.length) return Promise.resolve();
           var t=list[i++];
-          if(depth===0) line('   roads: region '+i+' of '+list.length+'\u2026','var(--ash-dim)');
+          if(depth===0) line('   '+(localMode?'streets':'roads')+': region '+i+' of '+list.length+'\u2026','var(--ash-dim)');
           return fetchTile(t, depth).then(next);
         }
         return next();
       }
 
       return runTiles(split(bb),0).then(function(){
-        if(!acc.length) line('   \u26A0 no roads returned \u2014 saving cameras only','#FFCB6B');
-        else line('   \u2713 roads: '+acc.length.toLocaleString()+' ways from '+okTiles+' tiles'+
-                  (failTiles?' ('+failTiles+' skipped)':' (all fetched)'),'#3DE8A5');
-        return {elements:(camData.elements||[]).concat(acc)};
+        if(!acc.length) line('   \u26A0 no arterials returned','#FFCB6B');
+        else line('   \u2713 arterials: '+acc.length.toLocaleString()+' ways from '+okTiles+' tiles','#3DE8A5');
+
+        // second pass: streets around the devices themselves
+        line('   now fetching streets near each device\u2026','var(--ash-dim)');
+        localMode=true; okTiles=0; failTiles=0;
+        var before=acc.length;
+        return runTiles(split(bb),0).then(function(){
+          var got=acc.length-before;
+          if(!got) line('   \u26A0 no local streets returned','#FFCB6B');
+          else line('   \u2713 local streets: '+got.toLocaleString()+' ways near devices','#3DE8A5');
+          return {elements:(camData.elements||[]).concat(acc)};
+        });
       });
     }).then(function(d){
       var ops=[], types=[], oi={}, ti={}, pts=[], roads=[], rnames=[], rni={};
-      var RC={motorway:0,trunk:1,primary:2,secondary:3};
+      var RC={motorway:0,trunk:1,primary:2,secondary:3,
+              tertiary:4,residential:4,unclassified:4,living_street:4,
+              service:5,pedestrian:5,footway:5,cycleway:5};
 
       // Simplify a polyline. Overpass hands us [{lat,lon},…]; we emit [[lat,lon],…]
       // and compare against what we have already emitted, not against the raw
@@ -715,7 +735,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
           seenWay[el.id]=1;
           var cls=RC[el.tags.highway];
           if(cls===undefined) return;
-          var g=thin(el.geometry, cls<2?0.002:0.004);
+          var g=thin(el.geometry, cls<2?0.002:(cls<4?0.003:0.00025));
           if(g.length<2) return;
           var nm=el.tags.ref||el.tags.name||'';
           if(!(nm in rni)){ rni[nm]=rnames.length; rnames.push(nm); }
