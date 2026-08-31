@@ -308,20 +308,66 @@ export async function onRequestPost({ request, env }) {
       }
       if (!statement) return json({ error: "No statement to sign." }, 400);
 
-      const freshness = String(body.freshness || "").trim().slice(0, 300);
-      if (!freshness || freshness.length < 15) {
-        return json({ error: "Type a headline from today — a few words at least, not a link." }, 400);
+// Outlets that put a publication date in the URL path. Each is checked against
+      // the server's own clock, so a stale link cannot pass.
+      const DATED_SOURCES = [
+        { host:/(^|\.)cnn\.com$/,            re:/\/(\d{4})\/(\d{2})\/(\d{2})\//,        name:"CNN" },
+        { host:/(^|\.)npr\.org$/,            re:/\/(\d{4})\/(\d{2})\/(\d{2})\//,        name:"NPR" },
+        { host:/(^|\.)nytimes\.com$/,        re:/\/(\d{4})\/(\d{2})\/(\d{2})\//,        name:"The New York Times" },
+        { host:/(^|\.)washingtonpost\.com$/, re:/\/(\d{4})\/(\d{2})\/(\d{2})\//,        name:"The Washington Post" },
+        { host:/(^|\.)politico\.com$/,       re:/\/(\d{4})\/(\d{2})\/(\d{2})\//,        name:"Politico" },
+        { host:/(^|\.)axios\.com$/,          re:/\/(\d{4})\/(\d{2})\/(\d{2})\//,        name:"Axios" },
+        { host:/(^|\.)aljazeera\.com$/,      re:/\/(\d{4})\/(\d{1,2})\/(\d{1,2})\//,    name:"Al Jazeera" },
+        { host:/(^|\.)theguardian\.com$/,    re:/\/(\d{4})\/([a-z]{3})\/(\d{1,2})\//i,  name:"The Guardian", month:"abbr" },
+      ];
+      const MON = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+      
+      function checkDatedLink(raw){
+        var url;
+        try { url = new URL(raw.trim()); } catch(e){ return { ok:false, reason:"not-a-url" }; }
+        if(!/^https?:$/.test(url.protocol)) return { ok:false, reason:"not-a-url" };
+      
+        var host = url.hostname.replace(/^www\./,"");
+        var src = DATED_SOURCES.find(function(s){ return s.host.test(host); });
+        if(!src) return { ok:false, reason:"unsupported-source", host:host };
+      
+        var m = url.pathname.match(src.re);
+        if(!m) return { ok:false, reason:"no-date-in-url", name:src.name };
+      
+        var y = +m[1];
+        var mo = src.month === "abbr" ? MON[m[2].toLowerCase()] : +m[2];
+        var d = +m[3];
+        if(!y || !mo || !d) return { ok:false, reason:"no-date-in-url", name:src.name };
+      
+        var published = Date.UTC(y, mo-1, d);
+        var today = Date.now();
+        var days = Math.floor((today - published) / 86400000);
+      
+        // One day of slack each way: a reader west of UTC late at night is already
+        // "tomorrow" by the server's clock, and some outlets date-stamp ahead.
+        if(days > 1)  return { ok:false, reason:"too-old", days:days, name:src.name,
+                               date:y+"-"+String(mo).padStart(2,"0")+"-"+String(d).padStart(2,"0") };
+        if(days < -1) return { ok:false, reason:"future", name:src.name };
+      
+        return { ok:true, name:src.name,
+                 date:y+"-"+String(mo).padStart(2,"0")+"-"+String(d).padStart(2,"0"),
+                 label:src.name+" · "+y+"-"+String(mo).padStart(2,"0")+"-"+String(d).padStart(2,"0") };
       }
-      if (/^https?:\/\/\S+$/i.test(freshness) || /^www\./i.test(freshness)) {
-        return json({ error: "Paste the headline text, not a URL. A link proves nothing about when it was written." }, 400);
+
+      const link = String(body.freshness || "").trim().slice(0, 400);
+      const fresh = checkDatedLink(link);
+      if (!fresh.ok) {
+        const msg = {
+          "not-a-url": "Paste a full news link from today, including https://",
+          "unsupported-source": `Cannot verify dates on ${fresh.host || "that site"}. Use CNN, NPR, The Guardian, NYT, Washington Post, Politico, Axios or Al Jazeera.`,
+          "no-date-in-url": "That link has no date in its address. Open the article, not a section page.",
+          "too-old": `That story is from ${fresh.date}, ${fresh.days} days ago. Use one from today.`,
+          "future": "That link is dated in the future.",
+        }[fresh.reason] || "That link could not be verified.";
+        return json({ error: msg }, 400);
       }
-      if (freshness.split(/\s+/).length < 4) {
-        return json({ error: "Too short to be a headline. Four words or more." }, 400);
-      }
-      const oldYear = freshness.match(/\b(19|20)\d{2}\b/);
-      if (oldYear && Number(oldYear[0]) < new Date().getUTCFullYear()) {
-        return json({ error: `That mentions ${oldYear[0]}. If it is not from today, do not use it.` }, 400);
-      }
+      const freshness = `${fresh.label} — ${link}`;
+
       let anchor = null;
       try {
         const c = new AbortController();
