@@ -354,6 +354,8 @@ body::after{
         <div class="dacts">
           <button class="btn" id="dask">Draft a records request about this one</button>
           <button class="btn ghost" id="dcopy">Copy coordinates</button>
+          <button class="btn ghost" id="dplace">Copy the location</button>
+          <button class="btn ghost" id="ddir">Directions</button>
           <button class="btn ghost" id="dfix">This is wrong or missing</button>
         </div>
         <div class="draft" id="draft"></div>
@@ -685,22 +687,72 @@ document.getElementById('dask').addEventListener('click',function(){
   box.scrollIntoView({behavior:'smooth',block:'nearest'});
 });
 
+function copyText(t, done){
+  if(navigator.clipboard) navigator.clipboard.writeText(t).then(done||function(){}).catch(function(){});
+  else { var a=document.createElement('textarea'); a.value=t; document.body.appendChild(a);
+         a.select(); try{document.execCommand('copy');}catch(e){} document.body.removeChild(a); if(done) done(); }
+}
+
+document.getElementById('dplace').addEventListener('click',function(){
+  if(!SELECTED) return;
+  var place=approxPlace(SELECTED);
+  var t=(place?place+'\n':'')+SELECTED.lat.toFixed(6)+', '+SELECTED.lon.toFixed(6);
+  copyText(t);
+  var b=document.getElementById('dplace'), o=b.textContent;
+  b.textContent='Copied'; setTimeout(function(){ b.textContent=o; },1600);
+});
+
+document.getElementById('ddir').addEventListener('click',function(){
+  if(!SELECTED) return;
+  var la=SELECTED.lat.toFixed(6), lo=SELECTED.lon.toFixed(6);
+  var box=document.getElementById('draft');
+  box.innerHTML =
+    '<p class="dhint"><b>Opening any of these leaves SOVRAN.</b> They are your own map apps, and they will '+
+    'receive the coordinates you are navigating to &mdash; that is how directions work. We are not sending '+
+    'anything; you are choosing to. If you would rather not, use <b>Copy coordinates</b> and paste them '+
+    'wherever you like.</p>'+
+    '<div class="dl" style="margin-top:6px">'+
+      '<a class="btn ghost" href="https://maps.apple.com/?daddr='+la+','+lo+'&amp;dirflg=d" target="_blank" rel="noopener nofollow">Apple Maps</a>'+
+      '<a class="btn ghost" href="https://www.google.com/maps/dir/?api=1&amp;destination='+la+','+lo+'" target="_blank" rel="noopener nofollow">Google Maps</a>'+
+      '<a class="btn ghost" href="https://www.openstreetmap.org/directions?to='+la+'%2C'+lo+'" target="_blank" rel="noopener nofollow">OpenStreetMap</a>'+
+      '<a class="btn ghost" href="geo:'+la+','+lo+'?q='+la+','+lo+'">Default map app</a>'+
+    '</div>'+
+    '<p class="dhint" style="margin-top:14px;color:var(--ash-dim);font-size:.82rem">'+
+    '<b style="color:var(--bone)">Going to look at it in person?</b> Note it from the pavement, never from private property, '+
+    'and do not confront anyone. Photographing infrastructure from a public place is lawful in the US. '+
+    'An argument helps nobody and makes the next person&rsquo;s job harder.</p>';
+  box.classList.add('show');
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
 document.getElementById('dcopy').addEventListener('click',function(){
   if(!SELECTED) return;
-  var t=SELECTED.lat.toFixed(6)+', '+SELECTED.lon.toFixed(6);
-  if(navigator.clipboard) navigator.clipboard.writeText(t).catch(function(){});
+  copyText(SELECTED.lat.toFixed(6)+', '+SELECTED.lon.toFixed(6));
+  var b=document.getElementById('dcopy'), o=b.textContent;
+  b.textContent='Copied'; setTimeout(function(){ b.textContent=o; },1600);
 });
 
 document.getElementById('dfix').addEventListener('click',function(){
   if(!SELECTED) return;
   var box=document.getElementById('draft');
-  box.innerHTML='<p class="dhint"><b>The map is only as good as the people editing it.</b> '+
+  var place=approxPlace(SELECTED);
+  box.innerHTML=(place?'<p class="dhint"><b>Roughly:</b> '+esc(place)+' &mdash; '+
+    '<button class="btn ghost" id="dfixcopy" style="font-size:.74rem;padding:7px 13px;margin-left:4px">copy this</button></p>':'')+
+    '<p class="dhint"><b>The map is only as good as the people editing it.</b> '+
     'If this device has moved, been removed, or the operator is wrong, the fix belongs in OpenStreetMap '+
     'where everyone benefits from it \u2014 not in a form we hold.</p>'+
     '<p class="dhint">Its coordinates are <b>'+SELECTED.lat.toFixed(6)+', '+SELECTED.lon.toFixed(6)+'</b>. '+
     'Open <a href="https://www.openstreetmap.org" target="_blank" rel="noopener" style="color:var(--gold)">openstreetmap.org</a>, '+
-    'find that spot, press Edit, and correct or delete the point. Scroll down on this page for the tags that matter.</p>';
+    'find that spot, press Edit, and correct or delete the point. Scroll down on this page for the tags that matter.</p>'+
+    '<p class="dhint" style="color:var(--ash-dim);font-size:.83rem"><b style="color:var(--bone)">The most useful thing you can add is the operator.</b> '+
+    'If a name is on the housing, or a city or agency logo, put it in the <code style="font-family:\'IBM Plex Mono\',monospace;color:var(--gold-hi)">operator=</code> tag. '+
+    'That single field is blank on most devices and it is the one that makes a records request possible.</p>';
   box.classList.add('show');
+  var fc=document.getElementById('dfixcopy');
+  if(fc) fc.addEventListener('click',function(){
+    copyText((place?place+'\n':'')+SELECTED.lat.toFixed(6)+', '+SELECTED.lon.toFixed(6));
+    fc.textContent='copied'; setTimeout(function(){ fc.textContent='copy this'; },1600);
+  });
 });
 
 document.getElementById('council').addEventListener('click',function(){
@@ -795,25 +847,37 @@ function sizeCanvas(){
   cv.cssW=w; cv.cssH=h;
 }
 
-// Longitude is compressed by latitude, so scale it or the state looks stretched.
+/* ── Web Mercator ──
+   The same projection OSM, Google and Apple use. A flat latitude scale looks
+   fine at a glance but drifts — across Colorado it puts Denver about 3km from
+   where it belongs, which at street zoom is the wrong side of a neighbourhood.
+   This is exact.                                                             */
+function mercY(lat){
+  var l=Math.max(-85.05112878, Math.min(85.05112878, lat));
+  return Math.log(Math.tan(Math.PI/4 + l*Math.PI/360));
+}
+function invMercY(y){
+  return (Math.atan(Math.exp(y)) - Math.PI/4) * 360/Math.PI;
+}
+
 function fit(){
   var b=view.bbox, s=b[0],w=b[1],n=b[2],e=b[3];
-  var midLat=(s+n)/2, kx=Math.cos(midLat*Math.PI/180);
-  var gw=(e-w)*kx, gh=(n-s);
+  var mTop=mercY(n), mBot=mercY(s);
+  var gw=(e-w)*Math.PI/180, gh=(mTop-mBot);
   var pad=28;
   var scale=Math.min((cv.cssW-pad*2)/gw,(cv.cssH-pad*2)/gh);
-  base={w:w,s:s,n:n,e:e,kx:kx,scale:scale,
+  base={w:w,s:s,n:n,e:e,mTop:mTop,mBot:mBot,scale:scale,
         ox:(cv.cssW-gw*scale)/2, oy:(cv.cssH-gh*scale)/2};
   T={k:1,x:0,y:0};
 }
 
 function px(lon,lat){
-  return [ base.ox+(lon-base.w)*base.kx*base.scale*T.k + T.x,
-           base.oy+(base.n-lat)*base.scale*T.k + T.y ];
+  return [ base.ox + (lon-base.w)*Math.PI/180*base.scale*T.k + T.x,
+           base.oy + (base.mTop-mercY(lat))*base.scale*T.k + T.y ];
 }
 function unpx(x,y){
-  return [ base.w+((x-T.x-base.ox)/(base.scale*T.k*base.kx)),
-           base.n-((y-T.y-base.oy)/(base.scale*T.k)) ];
+  return [ base.w + (x-T.x-base.ox)/(base.scale*T.k) * 180/Math.PI,
+           invMercY(base.mTop - (y-T.y-base.oy)/(base.scale*T.k)) ];
 }
 
 function drawMap(){
@@ -824,7 +888,8 @@ function drawMap(){
 
   // graticule
   ctx.strokeStyle='rgba(232,224,206,.045)'; ctx.lineWidth=1;
-  var stepLat=gridStep((base.n-base.s)/T.k);
+  var vis=[unpx(0,0), unpx(W,H)];
+  var stepLat=gridStep(Math.abs(vis[0][1]-vis[1][1]));
   for(var la=Math.ceil(base.s/stepLat)*stepLat; la<=base.n; la+=stepLat){
     var a=px(base.w,la), b2=px(base.e,la);
     ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b2[0],b2[1]); ctx.stroke();
@@ -955,10 +1020,12 @@ function gridStep(span){
 
 function drawScale(){
   var el=document.getElementById('scaleline'), tx=document.getElementById('scaletxt');
-  if(!el) return;
-  var kmPerDeg=111.32*base.kx;
-  var pxPerKm=(base.scale*T.k*base.kx)/(111.32*base.kx)*base.kx;
-  pxPerKm=(base.scale*T.k)/111.32;
+  if(!el||!base) return;
+  // Mercator stretches with latitude, so measure at the centre of what is shown.
+  var centreLat=unpx(cv.cssW/2, cv.cssH/2)[1];
+  var kmPerDegLon=111.32*Math.cos(centreLat*Math.PI/180);
+  var pxPerDegLon=Math.PI/180*base.scale*T.k;
+  var pxPerKm=pxPerDegLon/kmPerDegLon;
   var targets=[1,2,5,10,25,50,100,200,500];
   var km=targets[0];
   for(var i=0;i<targets.length;i++){ if(targets[i]*pxPerKm<=110) km=targets[i]; }
@@ -1052,6 +1119,50 @@ function nearest(x,y,r2){
   return best;
 }
 
+/* Distance from a point to a line segment, in metres. Used to work out which
+   street a device sits on — from the road data already on this device, so no
+   geocoding service is contacted and nothing about the location leaves here. */
+function segDist(plat,plon, alat,alon, blat,blon){
+  var kx=111320*Math.cos(plat*Math.PI/180), ky=110540;
+  var px_=(plon-alon)*kx, py=(plat-alat)*ky;
+  var bx=(blon-alon)*kx, by=(blat-alat)*ky;
+  var L=bx*bx+by*by;
+  var t = L ? Math.max(0,Math.min(1,(px_*bx+py*by)/L)) : 0;
+  var dx=px_-bx*t, dy=py-by*t;
+  return Math.sqrt(dx*dx+dy*dy);
+}
+
+function nearestStreet(d){
+  var best=null, bd=260;   // metres — beyond this we say nothing rather than guess
+  for(var i=0;i<ROADS.length;i++){
+    var r=ROADS[i], nm=ROADNAMES[r[1]];
+    if(!nm) continue;
+    for(var j=2;j<r.length-1;j++){
+      var dist=segDist(d.lat,d.lon, r[j][0],r[j][1], r[j+1][0],r[j+1][1]);
+      if(dist<bd){ bd=dist; best={name:nm, m:Math.round(dist), cls:r[0]}; }
+    }
+  }
+  return best;
+}
+
+function nearestTown(d){
+  var best=null, bd=1e9;
+  (view.cities||[]).forEach(function(c){
+    var dx=(c[3]-d.lon)*111.32*Math.cos(d.lat*Math.PI/180), dy=(c[2]-d.lat)*111.32;
+    var km=Math.sqrt(dx*dx+dy*dy);
+    if(km<bd){ bd=km; best={name:c[0], state:c[1], km:km}; }
+  });
+  return best;
+}
+
+function approxPlace(d){
+  var st=nearestStreet(d), tn=nearestTown(d);
+  if(st && tn) return st.name+', '+tn.name+', '+tn.state;
+  if(st)       return st.name;
+  if(tn)       return 'near '+tn.name+', '+tn.state;
+  return '';
+}
+
 function kindLabel(k){
   return k==='alpr' ? 'Licence plate reader'
        : k==='camera' ? 'Surveillance camera' : 'Surveillance device';
@@ -1076,7 +1187,11 @@ function openDetail(x,y){
     return {n:c[0], d:Math.hypot((c[2]-d.lat)*111, (c[3]-d.lon)*111*Math.cos(d.lat*Math.PI/180))};
   }).sort(function(a,b){return a.d-b.d;})[0];
 
+  var st=nearestStreet(d), place=approxPlace(d);
+
   document.getElementById('drows').innerHTML =
+    (place?'<div class="drow"><span>Roughly</span><span>'+esc(place)+
+      (st?' <em style="color:var(--ash-dim);font-style:normal">&middot; '+st.m+' m from the road line</em>':'')+'</span></div>':'')+
     '<div class="drow"><span>Operator</span><span>'+(d.op?esc(d.op):'not recorded')+'</span></div>'+
     (d.type?'<div class="drow"><span>Type</span><span>'+esc(d.type)+'</span></div>':'')+
     '<div class="drow"><span>Coordinates</span><span>'+d.lat.toFixed(6)+', '+d.lon.toFixed(6)+'</span></div>'+

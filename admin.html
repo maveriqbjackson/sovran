@@ -735,7 +735,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
           seenWay[el.id]=1;
           var cls=RC[el.tags.highway];
           if(cls===undefined) return;
-          var g=thin(el.geometry, cls<2?0.002:(cls<4?0.003:0.00025));
+          var g=thin(el.geometry, cls<2?0.002:(cls<4?0.003:0.00008));
           if(g.length<2) return;
           var nm=el.tags.ref||el.tags.name||'';
           if(!(nm in rni)){ rni[nm]=rnames.length; rnames.push(nm); }

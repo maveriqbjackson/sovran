@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-31 22:32 UTC",
+ "generated": "2026-08-31 22:41 UTC",
  "note": "SHA-256 of every deployed file. robots.txt excluded - Cloudflare rewrites it.",
  "files": {
   "/404.html": {
@@ -15,7 +15,7 @@
    "bytes": 32857
   },
   "/admin.html": {
-   "sha256": "0041f423de6512d2088c8b9d2248c7c99c885ff943b973e91b7b349d1737bb05",
+   "sha256": "551b79f694beaf43327255cb5c2c48cfb6a46969dde26afa3a80530345af1748",
    "bytes": 51387
   },
   "/audit.html": {
@@ -51,8 +51,8 @@
    "bytes": 97630
   },
   "/map.html": {
-   "sha256": "cb6030865555f99ca5c12fef487b4f9da0f0a3319275275e87504f90629c2a2f",
-   "bytes": 73133
+   "sha256": "b185bc5c04dd540fef67e50e9a7f1be3bac8c2c0795795d21922c442e3a36e02",
+   "bytes": 79205
   },
   "/panel.html": {
    "sha256": "32e9b72ff7d660e2343b66294713f39bdd2978e29cc895c7d6ef163deb1dc007",
