@@ -193,12 +193,17 @@ body::after{
       <h3 style="margin-bottom:8px">Sign it</h3>
       <p style="color:var(--ash);font-size:.9rem;line-height:1.55;margin-bottom:16px">Paste your own signing key. Each signer has a different one. <b style="color:var(--bone)">Your identity is never published</b> &mdash; the public page shows only that it was signed, never by whom.</p>
       <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Step one &mdash; today's freshness token</label>
-      <input type="text" id="fresh" placeholder="a news headline from today" autocomplete="off" spellcheck="false">
-      <p style="font-size:.84rem;color:var(--ash);line-height:1.55;margin:-4px 0 18px">
-        Type a headline from a major news site, today. Anything public that could not have been known
-        yesterday. This gets published with your signature and is what proves the statement was written
-        <b style="color:var(--bone)">today</b> rather than backdated by someone who got into our servers.
+      <input type="text" id="fresh" placeholder="paste a headline from today — the words, not a link" autocomplete="off" spellcheck="false">
+      <p style="font-size:.84rem;color:var(--ash);line-height:1.55;margin:-4px 0 10px">
+        Open a news site and copy a headline from <b style="color:var(--bone)">today</b>. The words themselves,
+        not a link. It gets published alongside your signature.
       </p>
+      <div style="background:rgba(255,158,94,.08);border:1px solid rgba(255,158,94,.3);border-radius:var(--r-sm);padding:13px 15px;margin-bottom:18px;font-size:.84rem;color:var(--ash);line-height:1.55">
+        <b style="color:#FF9E5E;display:block;margin-bottom:5px;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase">Nothing here can check this for you</b>
+        No server can know what today's news is. <b style="color:var(--bone)">Readers</b> verify this &mdash; they look at
+        the headline and the date and see whether they match. An old headline does not fail quietly; it fails
+        in public, and it makes the signature worthless. Use today's, or do not sign.
+      </div>
       <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Step two &mdash; your key</label>
       <input type="password" id="key" placeholder="your signing key" autocomplete="off" spellcheck="false">
 
@@ -263,7 +268,8 @@ function load(){
       '<div><span>Last signed</span><span>'+fmt(signed)+' \u00b7 '+(days===0?'today':days+(days===1?' day':' days')+' ago')+'</span></div>'+
       '<div><span>Signed by</span><span>a designated signer</span></div>'+
       '<div><span>Next due</span><span>'+fmt(next)+'</span></div>'+
-      (d.freshness?'<div><span>Proof of date</span><span style="max-width:60%">'+esc(d.freshness)+'</span></div>':'');
+      (d.freshness?'<div><span>Typed by signer</span><span style="max-width:60%">'+esc(d.freshness)+'</span></div>':'')+
+      (d.anchor?'<div><span>Recorded by us</span><span style="max-width:60%;color:var(--gold-hi)">'+esc(d.anchor)+'</span></div>':'');
   }).catch(function(){ LAB.textContent='Unavailable'; STMT.textContent='Could not read the canary right now.'; });
 }
 load();

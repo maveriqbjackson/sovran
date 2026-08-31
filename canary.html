@@ -264,15 +264,23 @@ body::after{
     <p class="body">Neither of those makes it worthless. A signal that is hard to fake and easy to check is worth having even when it is not a guarantee &mdash; and there is no version of this that is stronger. What we can do is keep it current, name the limits plainly, and let you judge.</p>
 
     <div class="key"><b>How you know the date is real</b>
-      A timestamp on its own proves nothing &mdash; it is a number our own server wrote, and anyone who
-      controlled that server could set it to whatever they liked. So every signature is published with a
-      <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">freshness token</b>:
-      a public event from the day it was signed, typed in by the person signing.
+      A timestamp proves nothing on its own. It is a number our own server wrote, and anyone controlling
+      that server could set it to whatever they liked. So each signature carries two things instead, and
+      they prove different things.
       <br><br>
-      You can check it yourself. If the token refers to something that happened on the date shown, the
-      statement was composed on or after that day. It cannot have been written in advance and held, and
-      it cannot be backdated later. That single detail is the difference between a canary you have to
-      trust and one you can verify.
+      <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">Typed by the signer</b>
+      &mdash; a news headline from that day. <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">No
+      software checks this, and none can.</b> A server cannot know what today's news is. <i>You</i> check it:
+      look at the headline, look at the date, and see whether they match. If they do not, the signature is
+      worthless and everyone can see that at a glance. This is the part that fails in public rather than quietly.
+      <br><br>
+      <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">Recorded automatically</b>
+      &mdash; the most recent Bitcoin block at the moment of signing, fetched by us, not chosen by the signer.
+      That value could not have existed before that block was mined, so it proves this entry was written after
+      a specific, publicly checkable moment. Look up the block number on any explorer and read its timestamp.
+      <br><br>
+      Together: one that a human verifies and a machine cannot, and one that a machine records and a human
+      can look up. Neither is sufficient alone. Both are visible above.
     </div>
 
     <div class="key"><b>More than one person can sign</b>Several people hold a signing key, so illness, travel, or anything worse cannot cause a false alarm on its own, and no single person can be pressured into keeping it alive.<br><br><b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">We do not publish who they are.</b> Not their names, and not which one signed on any given day. A pattern of who signs and when is itself information, and the people doing this favour should not become a target list because of it.</div>
