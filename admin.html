@@ -664,39 +664,80 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     // talks to this domain. Same result, no exception to the security policy.
     line('   asking our server to query OpenStreetMap\u2026','var(--ash-dim)');
 
-    // The Worker streams Overpass's response through untouched, so we parse it
-    // here rather than there. Several megabytes of JSON is nothing for a browser
-    // and far more than a Pages Function is allowed to spend CPU on.
-    function go(){
-      var body = session
-        ? {session:session, action:'overpass', query:q}
-        : {key:key, code:code, action:'overpass', query:q};
+    /* Two routes to Overpass, and we prefer the one that cannot fail on our side.
 
-      return fetch('/api/admin',{
-        method:'POST', credentials:'same-origin',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify(body)
+       DIRECT: this page's Content-Security-Policy already permits the three
+       Overpass hosts, so the browser can call them itself. No Worker, no
+       Cloudflare CPU or duration limit, no 502 page. This is now the default.
+
+       PROXY: if the direct call is blocked, we fall back to routing through
+       /api/admin. That path works but sits inside a Pages Function, which has
+       been dying on responses of any real size.                              */
+    var HOSTS=['https://overpass-api.de/api/interpreter',
+               'https://overpass.kumi.systems/api/interpreter',
+               'https://overpass.private.coffee/api/interpreter'];
+    var directBlocked=false, routeNoted=false;
+
+    document.addEventListener('securitypolicyviolation', function(e){
+      if(e.violatedDirective && e.violatedDirective.indexOf('connect-src')>-1) directBlocked=true;
+    });
+
+    function viaBrowser(i){
+      i=i||0;
+      if(i>=HOSTS.length) return Promise.reject(new Error('exhausted'));
+      var host=HOSTS[i].replace(/^https:\/\//,'').replace(/\/.*$/,'');
+      var c=new AbortController(), t=setTimeout(function(){c.abort();},25000);
+      return fetch(HOSTS[i],{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:'data='+encodeURIComponent(q),
+        signal:c.signal
       }).then(function(r){
-        var host=r.headers.get('X-Overpass-Host');
-        if(!r.ok){
-          return r.text().then(function(t){
-            var d=null; try{ d=JSON.parse(t); }catch(e){}
-            if(d && d.rateLimited){
-              var e=new Error('rate-limited'); e.rateLimited=true; e.detail=d.detail||''; throw e;
-            }
-            if(d && d.tried && d.tried.length) d.tried.forEach(function(x){ line('   \u2717 '+x,'#FF9E5E'); });
-            else if(d && d.error) line('   \u2717 server said: '+d.error,'#FF9E5E');
-            else line('   \u2717 HTTP '+r.status+' from our own server \u2014 the query was probably too large','#FF9E5E');
-            throw new Error('overpass-failed');
-          });
-        }
-        return r.json().then(function(d){
-          if(host) line('   \u2713 answered by '+host,'var(--ash-dim)');
-          return {elements:d.elements||[]};
-        }).catch(function(){
-          line('   \u2717 response was not valid JSON','#FF9E5E');
-          throw new Error('bad-json');
+        clearTimeout(t);
+        if(r.status===429) { var e=new Error('rate-limited'); e.rateLimited=true; throw e; }
+        if(!r.ok) return r.text().catch(function(){return '';}).then(function(txt){
+          if(/rate.?limit|too many|slot|blocked/i.test(txt)){ var e=new Error('rate-limited'); e.rateLimited=true; throw e; }
+          throw new Error('http-'+r.status);
         });
+        return r.json();
+      }).then(function(d){
+        if(!routeNoted){ line('   fetched straight from your browser \u2014 no server involved','var(--ash-dim)'); routeNoted=true; }
+        return {elements:d.elements||[]};
+      }).catch(function(e){
+        clearTimeout(t);
+        if(e && e.rateLimited) throw e;
+        if(directBlocked) throw e;
+        if(i+1<HOSTS.length) return viaBrowser(i+1);
+        throw e;
+      });
+    }
+
+    function viaProxy(){
+      var body = session ? {session:session, action:'overpass', query:q}
+                         : {key:key, code:code, action:'overpass', query:q};
+      return fetch('/api/admin',{method:'POST',credentials:'same-origin',
+        headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+        .then(function(r){
+          if(!r.ok){
+            return r.text().then(function(t){
+              var d=null; try{ d=JSON.parse(t); }catch(e){}
+              if(d && d.rateLimited){ var e2=new Error('rate-limited'); e2.rateLimited=true; throw e2; }
+              throw new Error('proxy-'+r.status);
+            });
+          }
+          return r.json().then(function(d){ return {elements:d.elements||[]}; });
+        });
+    }
+
+    function go(){
+      if(directBlocked) return viaProxy();
+      return viaBrowser().catch(function(e){
+        if(e && e.rateLimited) throw e;
+        if(directBlocked){
+          if(!routeNoted){ line('   browser blocked from calling out \u2014 using the server instead','#FFCB6B'); routeNoted=true; }
+          return viaProxy();
+        }
+        throw e;
       });
     }
 
@@ -708,7 +749,9 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     // Overpass runs on donated hardware and enforces fair use per IP. Depth 3
     // could fire 80+ requests in a couple of minutes, which is what earned an
     // hour-long block. Two levels and a slower pace stays inside their limits.
-    var MAXDEPTH=2, PAUSE=4000, requests=0, MAXREQ=45, stopped=false;
+    // The browser has no CPU or duration ceiling, so tiles can be larger and
+    // fewer. Fewer requests is also what keeps us inside Overpass's fair use.
+    var MAXDEPTH=2, PAUSE=3000, requests=0, MAXREQ=40, stopped=false;
 
     function fetchTile(t, depth){
       if(stopped) return Promise.reject(Object.assign(new Error('stopped'),{stopped:true}));
