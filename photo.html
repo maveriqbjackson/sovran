@@ -259,6 +259,18 @@ body::after{
   text-transform:uppercase;color:var(--gold);margin-bottom:4px}
 .fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content}
 .fnav a:hover{color:var(--gold)}
+
+/* Nothing may force the page sideways on a phone. Wide content scrolls inside
+   its own container instead of dragging the whole layout with it. */
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,canvas,video{max-width:100%;height:auto}
+pre,code{overflow-wrap:anywhere}
+@media(max-width:420px){
+  .wrap{padding-left:16px;padding-right:16px}
+  h1{font-size:clamp(1.9rem,10vw,3rem)}
+  .btn{width:100%;justify-content:center}
+  .dl .btn,.dacts .btn,.form .btn{width:auto}
+}
 </style>
 </head>
 <body>

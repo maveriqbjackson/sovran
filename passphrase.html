@@ -192,6 +192,22 @@ body::after{
   text-transform:uppercase;color:var(--gold);margin-bottom:4px}
 .fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content}
 .fnav a:hover{color:var(--gold)}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px;padding:0 4px}
+.tablewrap table{min-width:420px}
+.tablewrap::-webkit-scrollbar{height:5px}
+.tablewrap::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:99px}
+
+/* Nothing may force the page sideways on a phone. Wide content scrolls inside
+   its own container instead of dragging the whole layout with it. */
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,canvas,video{max-width:100%;height:auto}
+pre,code{overflow-wrap:anywhere}
+@media(max-width:420px){
+  .wrap{padding-left:16px;padding-right:16px}
+  h1{font-size:clamp(1.9rem,10vw,3rem)}
+  .btn{width:100%;justify-content:center}
+  .dl .btn,.dacts .btn,.form .btn{width:auto}
+}
 </style>
 </head>
 <body>
@@ -259,7 +275,7 @@ body::after{
     <h2>Why not just a long sentence?</h2>
     <p class="body">This is the most common and most reasonable-sounding mistake in password advice, so it is worth being precise about. A fifteen-word sentence you invented, with capital letters in odd places and punctuation sprinkled through, <strong>feels</strong> far stronger than six random words. It is usually much weaker.</p>
 
-    <table class="cmp">
+    <div class="tablewrap"><table class="cmp">
       <tr><th>Approach</th><th>Strength</th><th>Why</th></tr>
       <tr>
         <td><b>A sentence you made up</b><br>15 words, mid-word capitals, punctuation</td>
@@ -271,7 +287,7 @@ body::after{
         <td class="good">Very strong</td>
         <td>No grammar, no pattern, nothing to narrow the guess. Every word is one of 7,776 possibilities chosen by a cryptographic random number generator. That is about 78 bits of entropy &mdash; beyond any realistic attack.</td>
       </tr>
-    </table>
+    </table></div>
 
     <div class="key"><b>The rule underneath all of it</b>Length beats complexity, and randomness beats cleverness. The reason mangled sentences fail is not that they are short &mdash; it is that a human chose them. You are not a random number generator, and everything you invent carries your fingerprints.</div>
 

@@ -132,6 +132,18 @@ body::after{
 .btn{box-shadow:0 0 0 1px rgba(255,237,192,.22) inset}
 .btn:hover{box-shadow:0 0 30px rgba(255,203,107,.34),0 0 0 1px rgba(255,237,192,.35) inset}
 @media(prefers-reduced-motion:reduce){html::before{animation:none}}
+
+/* Nothing may force the page sideways on a phone. Wide content scrolls inside
+   its own container instead of dragging the whole layout with it. */
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,canvas,video{max-width:100%;height:auto}
+pre,code{overflow-wrap:anywhere}
+@media(max-width:420px){
+  .wrap{padding-left:16px;padding-right:16px}
+  h1{font-size:clamp(1.9rem,10vw,3rem)}
+  .btn{width:100%;justify-content:center}
+  .dl .btn,.dacts .btn,.form .btn{width:auto}
+}
 </style>
 </head>
 <body>
