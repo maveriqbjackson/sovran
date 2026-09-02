@@ -631,7 +631,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     function localQuery(t){
       return '[out:json][timeout:22];'+
         'node["man_made"="surveillance"]('+t.join(',')+')->.cams;'+
-        'way(around.cams:400)["highway"~"^(residential|unclassified|tertiary|living_street|service|pedestrian|footway|cycleway)$"];'+
+        'way(around.cams:250)["highway"~"^(residential|unclassified|tertiary|living_street)$"];'+
         'out geom;';
     }
     function split(t){
@@ -743,8 +743,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     }).then(function(d){
       var ops=[], types=[], oi={}, ti={}, pts=[], roads=[], rnames=[], rni={};
       var RC={motorway:0,trunk:1,primary:2,secondary:3,
-              tertiary:4,residential:4,unclassified:4,living_street:4,
-              service:5,pedestrian:5,footway:5,cycleway:5};
+              tertiary:4,residential:4,unclassified:4,living_street:4};
 
       // Simplify a polyline. Overpass hands us [{lat,lon},…]; we emit [[lat,lon],…]
       // and compare against what we have already emitted, not against the raw
@@ -768,7 +767,10 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
           seenWay[el.id]=1;
           var cls=RC[el.tags.highway];
           if(cls===undefined) return;
-          var g=thin(el.geometry, cls<2?0.002:(cls<4?0.003:0.00008));
+          // Thinning tuned per class. Motorways need shape; a residential
+          // street needs its two ends and its corners and nothing else.
+          var tol = cls<2 ? 0.0015 : cls===2 ? 0.0025 : cls===3 ? 0.004 : 0.00012;
+          var g=thin(el.geometry, tol);
           if(g.length<2) return;
           var nm=el.tags.ref||el.tags.name||'';
           if(!(nm in rni)){ rni[nm]=rnames.length; rnames.push(nm); }
@@ -791,6 +793,12 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
       var json=JSON.stringify(out);
       var alpr=pts.filter(function(p){return p[2]===0;}).length;
 
+      var mb=json.length/1048576;
+      if(mb>8){
+        line('   \u26A0 '+mb.toFixed(1)+' MB is too large to serve to visitors.','#FFCB6B');
+        line('     Rebuilding without local streets would give you a usable file.','var(--ash-dim)');
+        line('     Uncheck "include roads", or tell Claude the state is too dense.','var(--ash-dim)');
+      }
       var blob=new Blob([json],{type:'application/json'});
       var u=URL.createObjectURL(blob), a=document.createElement('a');
       a.href=u; a.download=code+'.json';
