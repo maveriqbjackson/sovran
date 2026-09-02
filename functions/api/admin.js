@@ -16,7 +16,7 @@
 // Env vars : ADMIN_KEY, ADMIN_TOTP_SECRET, CANARY_KEYS,
 //            REQUIRE_ACCESS ("true" once Cloudflare Access is configured)
 
-const BUILD_ID = "2026-09-02-time-budget";
+const BUILD_ID = "2026-09-02-backoff";
 
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), {
@@ -276,6 +276,21 @@ export async function onRequestPost({ request, env }) {
           if (!res.ok) {
             const txt = (await res.text().catch(() => "")).replace(/<[^>]*>/g, " ")
               .replace(/\s+/g, " ").trim().slice(0, 200);
+
+            /* Rate limiting is not a "try harder" signal. Splitting the tile and
+               retrying makes four more requests against a service that has just
+               said stop, which is how an hour-long block happens. Report it
+               distinctly so the builder can back off instead. */
+            const limited = res.status === 429 ||
+              /too many requests|rate.?limit|slot|blocked|please do not|excessive/i.test(txt);
+            if (limited) {
+              return json({
+                error: "rate-limited",
+                rateLimited: true,
+                host,
+                detail: txt || `HTTP ${res.status}`,
+              }, 429);
+            }
             tried.push(`${host}: HTTP ${res.status}${txt ? " — " + txt : ""}`);
             continue;
           }
