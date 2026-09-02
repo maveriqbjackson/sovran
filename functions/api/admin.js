@@ -16,7 +16,7 @@
 // Env vars : ADMIN_KEY, ADMIN_TOTP_SECRET, CANARY_KEYS,
 //            REQUIRE_ACCESS ("true" once Cloudflare Access is configured)
 
-const BUILD_ID = "2026-09-02-tiled-cameras";
+const BUILD_ID = "2026-09-02-time-budget";
 
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), {
@@ -240,7 +240,20 @@ export async function onRequestPost({ request, env }) {
       ];
       const tried = [];
 
+      /* Cloudflare kills a Pages Function well before three sequential 20-second
+         attempts can finish, and answers with its own HTML 502 — which is much
+         harder to diagnose than our own error. So the whole invocation gets a
+         budget, and we stop trying mirrors before Cloudflare stops us. */
+      const started = Date.now();
+      const TOTAL_BUDGET_MS = 22000;
+      const PER_MIRROR_MS = 8000;
+
       for (const url of mirrors) {
+        const remaining = TOTAL_BUDGET_MS - (Date.now() - started);
+        if (remaining < 2500) {
+          tried.push("ran out of time before trying the remaining mirrors");
+          break;
+        }
         const host = url.replace(/^https:\/\//, "").replace(/\/.*$/, "");
         try {
           // Give up before Cloudflare gives up on us. An edge timeout returns an
@@ -248,7 +261,7 @@ export async function onRequestPost({ request, env }) {
           const ctrl = new AbortController();
           // Cloudflare cuts a Pages Function off well before 45s and answers with an
           // HTML error page. Bail at 20s so the failure is ours, clean, and in JSON.
-          const timer = setTimeout(() => ctrl.abort(), 20000);
+          const timer = setTimeout(() => ctrl.abort(), Math.min(PER_MIRROR_MS, remaining - 500));
           const res = await fetch(url, {
             method: "POST",
             headers: {
@@ -283,7 +296,7 @@ export async function onRequestPost({ request, env }) {
         } catch (e) {
           tried.push(`${host}: ${
             e && e.name === "AbortError"
-              ? "no answer within 20s — the area is too large for one request"
+              ? "no answer in time — the area is too large or the mirror is busy"
               : String((e && e.message) || "unreachable")
           }`);
         }
