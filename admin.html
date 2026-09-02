@@ -304,7 +304,7 @@ var key='', code='', session='';
 // Bumped in lockstep with BUILD_ID in functions/api/admin.js. If these disagree,
 // one of the two files did not deploy — which has cost us several rounds of
 // guessing, so the panel now says which one.
-var EXPECT_BUILD='2026-09-02-time-budget';
+var EXPECT_BUILD='2026-09-02-backoff';
 
 function say(el,m,kind){ el.textContent=m; el.className='msg show '+kind; }
 function esc(s){ return String(s==null?'':s).replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];}); }
@@ -681,6 +681,9 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
         if(!r.ok){
           return r.text().then(function(t){
             var d=null; try{ d=JSON.parse(t); }catch(e){}
+            if(d && d.rateLimited){
+              var e=new Error('rate-limited'); e.rateLimited=true; e.detail=d.detail||''; throw e;
+            }
             if(d && d.tried && d.tried.length) d.tried.forEach(function(x){ line('   \u2717 '+x,'#FF9E5E'); });
             else if(d && d.error) line('   \u2717 server said: '+d.error,'#FF9E5E');
             else line('   \u2717 HTTP '+r.status+' from our own server \u2014 the query was probably too large','#FF9E5E');
@@ -702,22 +705,36 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
        .then() callback while being called from outside it, which threw before
        any promise existed — so the panel just sat there saying "building". */
     var acc=[], okTiles=0, failTiles=0, seen={}, mode='cams';
-    var MAXDEPTH=3;
+    // Overpass runs on donated hardware and enforces fair use per IP. Depth 3
+    // could fire 80+ requests in a couple of minutes, which is what earned an
+    // hour-long block. Two levels and a slower pace stays inside their limits.
+    var MAXDEPTH=2, PAUSE=4000, requests=0, MAXREQ=45, stopped=false;
 
     function fetchTile(t, depth){
+      if(stopped) return Promise.reject(Object.assign(new Error('stopped'),{stopped:true}));
+      if(++requests > MAXREQ){
+        stopped=true;
+        line('   \u26A0 stopping at '+MAXREQ+' requests to stay inside Overpass\u2019s fair use.','#FFCB6B');
+        line('     You will get what has been fetched so far.','var(--ash-dim)');
+        return Promise.reject(Object.assign(new Error('cap'),{stopped:true}));
+      }
       q = mode==='cams' ? camQuery(t) : mode==='local' ? localQuery(t) : tileQuery(t);
       return go().then(function(r){
         (r.elements||[]).forEach(function(el){ if(!seen[el.id]){ seen[el.id]=1; acc.push(el); } });
         okTiles++;
-        return new Promise(function(res){ setTimeout(res,1200); });
-      }).catch(function(){
+        return new Promise(function(res){ setTimeout(res,PAUSE); });
+      }).catch(function(err){
+        // A rate limit means stop, not try harder. Splitting here is what turns
+        // a short throttle into an hour-long block.
+        if(err && err.rateLimited){ stopped=true; throw err; }
+        if(stopped) throw err;
         if(depth>=MAXDEPTH){
           failTiles++;
           line('   \u26A0 a dense area could not be fetched even split small \u2014 skipping it','#FFCB6B');
-          return new Promise(function(res){ setTimeout(res,1500); });
+          return new Promise(function(res){ setTimeout(res,PAUSE);});
         }
         line('   too dense \u2014 splitting into 4 smaller tiles','var(--ash-dim)');
-        return new Promise(function(res){ setTimeout(res,1500); }).then(function(){
+        return new Promise(function(res){ setTimeout(res,PAUSE);}).then(function(){
           return runTiles(split(t), depth+1);
         });
       });
@@ -833,7 +850,15 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
       return true;
     }).catch(function(err){
       var msg=(err && err.message)||'';
-      if(/overpass-failed|bad-json|exhausted/.test(msg)){
+      if(err && err.rateLimited){
+        line('\u2717 '+name+': Overpass has rate limited us and the build stopped.','#FF9E5E');
+        if(err.detail) line('   they said: '+err.detail,'var(--ash-dim)');
+        line('   This is a shared free service on donated hardware. A block usually','var(--ash-dim)');
+        line('   lasts up to an hour. Wait it out \u2014 retrying now makes it longer.','var(--ash-dim)');
+        line('   Building without roads uses a fraction of the requests.','var(--ash-dim)');
+        return false;
+      }
+      if(/overpass-failed|bad-json|exhausted|stopped|cap/.test(msg)){
         line('\u2717 '+name+': every mirror refused. See the lines above for the exact reason.','#FF9E5E');
       } else {
         // Not a network problem. Say so, rather than sending you to check mirrors.
