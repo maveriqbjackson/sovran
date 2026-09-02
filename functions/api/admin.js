@@ -16,7 +16,7 @@
 // Env vars : ADMIN_KEY, ADMIN_TOTP_SECRET, CANARY_KEYS,
 //            REQUIRE_ACCESS ("true" once Cloudflare Access is configured)
 
-const BUILD_ID = "2026-08-31-streaming-proxy";
+const BUILD_ID = "2026-09-02-tiled-cameras";
 
 const json = (obj, status = 200) =>
   new Response(JSON.stringify(obj), {
@@ -289,6 +289,11 @@ export async function onRequestPost({ request, env }) {
         }
       }
       return json({ error: "Every mirror failed.", tried }, 502);
+    }
+
+    if (action === "ping") {
+      // Cheap round trip, so a failure can be told apart from a slow query.
+      return json({ ok: true, build: BUILD_ID, at: new Date().toISOString() });
     }
 
     if (action === "signout") {
