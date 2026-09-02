@@ -301,6 +301,10 @@ pre,code{overflow-wrap:anywhere}
 var KEYIN=document.getElementById('key'), MSG=document.getElementById('msg'),
     GATE=document.getElementById('gate'), PANEL=document.getElementById('panel');
 var key='', code='', session='';
+// Bumped in lockstep with BUILD_ID in functions/api/admin.js. If these disagree,
+// one of the two files did not deploy — which has cost us several rounds of
+// guessing, so the panel now says which one.
+var EXPECT_BUILD='2026-09-02-time-budget';
 
 function say(el,m,kind){ el.textContent=m; el.className='msg show '+kind; }
 function esc(s){ return String(s==null?'':s).replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];}); }
@@ -407,7 +411,19 @@ function render(d){
       '<span style="color:'+(d.access_verified?'#3DE8A5':'#FF9E5E')+'">'+
       (d.access_verified?'\u2713  Cloudflare Access verified':'\u26A0  Cloudflare Access NOT present')+'</span></div>'+
       '<p style="color:var(--ash);font-size:.87rem;line-height:1.55">'+
-      'Worker build: <b style="color:'+(d.build?'#3DE8A5':'#FF9E5E')+'">'+(d.build||'OLD \u2014 predates build stamps, replace functions/api/admin.js')+'</b><br>'+
+      'Worker build: <b style="color:'+(d.build===EXPECT_BUILD?'#3DE8A5':'#FF9E5E')+'">'+
+        (d.build||'OLD \u2014 predates build stamps')+'</b><br>'+
+      (d.build===EXPECT_BUILD?'':
+        '<span style="display:block;margin:10px 0;padding:12px 14px;background:rgba(255,158,94,.1);'+
+        'border:1px solid rgba(255,158,94,.4);border-radius:8px;color:#FF9E5E;font-size:.86rem;line-height:1.5">'+
+        '<b style="color:#FF9E5E">These two files disagree.</b><br>'+
+        'This page expects <code>'+EXPECT_BUILD+'</code> but the server is running <code>'+
+        (d.build||'an unstamped build')+'</code>.<br><br>'+
+        '<b style="color:var(--bone)">Your <code>functions/api/admin.js</code> did not deploy.</b> '+
+        'Editing it in place on GitHub is more reliable than uploading: open the file, press the pencil, '+
+        'select all, paste, then scroll down and press <b style="color:var(--bone)">Commit changes</b>. '+
+        'Then check Deployments in Cloudflare and confirm the newest one is after your commit.'+
+        '</span>')+
       'Session: <b style="color:#3DE8A5">'+(d.session_minutes||30)+' minutes</b><br>'+
       'Accounts: <b style="color:var(--bone)">'+(d.accounts||0)+'</b> \u00b7 '+
       'Failed admin attempts in 24h: <b style="color:'+((d.failed_24h||0)>0?'#FF9E5E':'var(--bone)')+'">'+(d.failed_24h||0)+'</b></p>'+
