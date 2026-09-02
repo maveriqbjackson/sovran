@@ -655,7 +655,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
       return [[t[0],t[1],mLat,mLon],[t[0],mLon,mLat,t[3]],
               [mLat,t[1],t[2],mLon],[mLat,mLon,t[2],t[3]]];
     }
-    var q=qCams;
+    var q='';
 
     line('\u2192 '+name+' \u2014 querying\u2026','var(--ice)');
     // The browser cannot reach Overpass directly \u2014 this page's Content-Security-Policy
@@ -697,55 +697,62 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
       });
     }
 
+    /* All three passes share one tiler, one accumulator and one mode flag, and
+       they must all live at this level. They were previously declared inside a
+       .then() callback while being called from outside it, which threw before
+       any promise existed — so the panel just sat there saying "building". */
     var acc=[], okTiles=0, failTiles=0, seen={}, mode='cams';
+    var MAXDEPTH=3;
 
+    function fetchTile(t, depth){
+      q = mode==='cams' ? camQuery(t) : mode==='local' ? localQuery(t) : tileQuery(t);
+      return go().then(function(r){
+        (r.elements||[]).forEach(function(el){ if(!seen[el.id]){ seen[el.id]=1; acc.push(el); } });
+        okTiles++;
+        return new Promise(function(res){ setTimeout(res,1200); });
+      }).catch(function(){
+        if(depth>=MAXDEPTH){
+          failTiles++;
+          line('   \u26A0 a dense area could not be fetched even split small \u2014 skipping it','#FFCB6B');
+          return new Promise(function(res){ setTimeout(res,1500); });
+        }
+        line('   too dense \u2014 splitting into 4 smaller tiles','var(--ash-dim)');
+        return new Promise(function(res){ setTimeout(res,1500); }).then(function(){
+          return runTiles(split(t), depth+1);
+        });
+      });
+    }
+
+    function runTiles(list, depth){
+      var i=0;
+      function next(){
+        if(i>=list.length) return Promise.resolve();
+        var t=list[i++];
+        if(depth===0) line('   '+(mode==='cams'?'devices':mode==='local'?'streets':'roads')+
+                           ': region '+i+' of '+list.length+'\u2026','var(--ash-dim)');
+        return fetchTile(t, depth).then(next);
+      }
+      return next();
+    }
+
+    // pass 1 — devices, tiled
     return runTiles(split(bb),0).then(function(){
       line('   \u2713 devices: '+acc.length.toLocaleString()+' found across '+okTiles+' tiles','#3DE8A5');
       var camData={elements:acc.slice()};
-      acc=[]; okTiles=0; failTiles=0; mode='arterial';
+      acc=[]; seen={}; okTiles=0; failTiles=0; mode='arterial';
       return camData;
+
+    // pass 2 — arterials
     }).then(function(camData){
       if(!document.getElementById('mroads').checked){
         line('   roads skipped by choice','var(--ash-dim)');
         return camData;
       }
-      var MAXDEPTH=3;
-
-      function fetchTile(t, depth){
-        q = mode==='cams' ? camQuery(t) : mode==='local' ? localQuery(t) : tileQuery(t);
-        return go().then(function(r){
-          (r.elements||[]).forEach(function(el){ if(!seen[el.id]){ seen[el.id]=1; acc.push(el); } });
-          okTiles++;
-          return new Promise(function(res){ setTimeout(res,1200); });
-        }).catch(function(){
-          if(depth>=MAXDEPTH){
-            failTiles++;
-            line('   \u26A0 a dense area could not be fetched even split small \u2014 skipping it','#FFCB6B');
-            return new Promise(function(res){ setTimeout(res,1500); });
-          }
-          line('   too dense \u2014 splitting into 4 smaller tiles','var(--ash-dim)');
-          return new Promise(function(res){ setTimeout(res,1500); }).then(function(){
-            return runTiles(split(t), depth+1);
-          });
-        });
-      }
-
-      function runTiles(list, depth){
-        var i=0;
-        function next(){
-          if(i>=list.length) return Promise.resolve();
-          var t=list[i++];
-          if(depth===0) line('   '+(mode==='cams'?'devices':mode==='local'?'streets':'roads')+': region '+i+' of '+list.length+'\u2026','var(--ash-dim)');
-          return fetchTile(t, depth).then(next);
-        }
-        return next();
-      }
-
       return runTiles(split(bb),0).then(function(){
         if(!acc.length) line('   \u26A0 no arterials returned','#FFCB6B');
         else line('   \u2713 arterials: '+acc.length.toLocaleString()+' ways from '+okTiles+' tiles','#3DE8A5');
 
-        // second pass: streets around the devices themselves
+        // pass 3 — streets around the devices themselves
         line('   now fetching streets near each device\u2026','var(--ash-dim)');
         mode='local'; okTiles=0; failTiles=0;
         var before=acc.length;
@@ -824,8 +831,17 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
       line('\u2713 '+name+': '+pts.length.toLocaleString()+' devices ('+alpr.toLocaleString()+' plate readers) \u00b7 '+
            Math.round(json.length/1024)+' KB \u2192 downloaded as '+code+'.json','var(--clear)');
       return true;
-    }).catch(function(){
-      line('\u2717 '+name+': every mirror refused. See the lines above for the exact reason.','#FF9E5E');
+    }).catch(function(err){
+      var msg=(err && err.message)||'';
+      if(/overpass-failed|bad-json|exhausted/.test(msg)){
+        line('\u2717 '+name+': every mirror refused. See the lines above for the exact reason.','#FF9E5E');
+      } else {
+        // Not a network problem. Say so, rather than sending you to check mirrors.
+        line('\u2717 '+name+': the data came back but processing it failed.','#FF9E5E');
+        line('   '+(err && err.name ? err.name+': ' : '')+msg,'#FF9E5E');
+        line('   That is a bug on our side, not Overpass. Send this line to Claude.','var(--ash-dim)');
+        return false;
+      }
       line('   If they all say HTTP 400, the query is malformed \u2014 tell Claude.','var(--ash-dim)');
       line('   If they say 429, you are rate-limited \u2014 wait 2-10 minutes between states.','var(--ash-dim)');
       line('   If they timed out, the region is too large right now \u2014 try again later.','var(--ash-dim)');
