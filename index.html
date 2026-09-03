@@ -145,6 +145,15 @@ pre,code{overflow-wrap:anywhere}
   .btn{width:100%;justify-content:center}
   .dl .btn,.dacts .btn,.form .btn{width:auto}
 }
+
+.acct{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;
+  font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);
+  text-decoration:none;border:1px solid var(--line-2);border-radius:99px;padding:8px 14px;
+  transition:all .18s;white-space:nowrap}
+.acct:hover{border-color:var(--gold);color:var(--gold)}
+.acct.in{border-color:rgba(61,232,165,.42);color:#3DE8A5}
+@media(max-width:560px){.acct span{display:none}.acct{padding:9px 11px}}
+.bar{gap:12px}
 </style>
 <style>
 :root{--void:#04060F; --void-2:#070B18; --surface:#0C1424; --surface-2:#131E38;
@@ -361,6 +370,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
       <svg class="bridge" viewBox="0 0 22 15" aria-hidden="true"><defs><linearGradient id="bg1" x1="0" x2="1"><stop offset="0" stop-color="#A98CFF"/><stop offset=".5" stop-color="#6FE8FF"/><stop offset="1" stop-color="#E5BC6E"/></linearGradient></defs><path d="M1.5 13 Q11 2 20.5 13" stroke="url(#bg1)" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
       SOVRAN
     </a>
+    <a href="/account" class="acct" id="acctlink"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="5.2" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M2.6 14c0-3 2.4-4.6 5.4-4.6S13.4 11 13.4 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span id="acctlabel">Account</span></a>
     <div class="byline">A concept by<br><a href="https://aetherandash.digital" target="_blank" rel="noopener">Aether &amp; Ash</a></div>
   </div>
 </header>
@@ -384,10 +394,9 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     <p class="lede">Your face, your address, your habits, your children — collected by people you never met and sold to people you'll never see. SOVRAN finds it, takes it down, and shows you the surveillance you move through every day.</p>
 
     <div class="livebar">
-      <span class="livebar-h"><i></i>Eight tools, built and free to use right now &mdash; and growing</span>
+      <span class="livebar-h"><i></i>Seven tools, built and free to use right now &mdash; and growing</span>
       <p style="font-size:.88rem;color:var(--ash);margin-bottom:14px">New here? <a href="/start" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.4)">Start here instead</a> &mdash; it asks why you came and points you at one thing.</p>
       <div class="livegrid">
-        <a href="/breach"><b>The Breach Check</b><span>Where an email address has already leaked, and what leaked with it. <em>Use it to find out which passwords to change first.</em></span></a>
         <a href="/photo"><b>The Photo Check</b><span>Find the GPS coordinates and camera serial hidden in any photo, then download a clean copy. <em>Use it before you send a picture to anyone you don&rsquo;t know.</em></span></a>
         <a href="/audit"><b>The Audit</b><span>Drop in your own Instagram or TikTok export and see every location and routine you&rsquo;ve published. <em>Use it once to find out what&rsquo;s already out there.</em></span></a>
         <a href="/guide"><b>The Guide</b><span>Step-by-step answers with a broker opt-out checklist. <em>Use it when you want your address off people-search sites.</em></span></a>
@@ -463,7 +472,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="eyebrow">What it does</span>
-      <h2>Eleven ways to take yourself back.</h2>
+      <h2>Ten ways to take yourself back.</h2>
       <p class="body">Rights you already hold are scattered across a dozen agencies and hundreds of forms. SOVRAN turns them into one place you actually check. <strong>Seven are live and free today.</strong> The rest are honestly labelled as launching soon — we would rather tell you that than imply otherwise.</p>
     </div>
     <div class="caps">
@@ -492,15 +501,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
         <a href="/audit" class="btn" style="width:auto;display:inline-block;text-decoration:none;margin-top:22px;padding:15px 30px">Run the audit &rarr;</a>
       </div>
 
-      <div class="cap reveal">
-        <span class="cap-tag t-live">Free forever · Live now</span>
-        <h3>Find out where you have already leaked</h3>
-        <p>Companies get breached and the contents circulate for years. Most people have no idea their old password, home address or date of birth is sitting in a dump from 2019. Check an email against every publicly known breach, see exactly what leaked in each, and get the order to deal with them in.</p>
-        <p style="margin-top:12px;font-size:.9rem"><strong>Free permanently.</strong> Checking once costs us almost nothing &mdash; and charging you to find out you were harmed would be a strange way to run a privacy company.</p>
-        <a href="/breach" class="btn" style="width:auto;display:inline-block;text-decoration:none;margin-top:20px;padding:14px 26px;font-size:.88rem">Check an address &rarr;</a>
-      </div>
-
-      <div class="cap reveal">
+            <div class="cap reveal">
         <span class="cap-tag t-live">Free forever · Live now</span>
         <h3>Check a single photo in five seconds</h3>
         <p>Drop in any photo and see the coordinates, timestamp, and camera serial number written inside it — then download a clean copy with the metadata cut out and every pixel untouched.</p>
@@ -649,7 +650,6 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
     <nav class="fnav">
       <div><span>Use now</span>
         <a href="/start">Start here</a>
-        <a href="/breach">The Breach Check</a>
         <a href="/photo">The Photo Check</a><a href="/audit">The Audit</a><a href="/map">The Map</a>
         <a href="/guide">The Guide</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
       </div>
@@ -780,6 +780,20 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   }).catch(function(){
     document.getElementById('cbtext').textContent='A public statement that we have not been secretly ordered to hand over your data.';
   });
+})();
+</script>
+<script>
+(function(){
+  // The account page stores a marker locally when signed in. This only changes
+  // the label — it proves nothing and grants nothing.
+  try{
+    var a=document.getElementById('acctlink');
+    if(a && localStorage.getItem('sv-signed-in')==='1'){
+      a.classList.add('in');
+      a.href='/panel';
+      var l=document.getElementById('acctlabel'); if(l) l.textContent='Your panel';
+    }
+  }catch(e){}
 })();
 </script>
 </body>

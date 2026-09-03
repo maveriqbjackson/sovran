@@ -399,10 +399,12 @@ function guard(res){
 
 function render(d){
   var t=d.totals||{};
+  // Waitlist and accounts are different things. Somebody creating an account
+  // does not join the waitlist, and the panel used to make that easy to misread.
   document.getElementById('stats').innerHTML=
-    '<div class="st"><span class="v">'+(t.total||0)+'</span><span class="l">On the waitlist</span></div>'+
-    '<div class="st"><span class="v">'+(t.week||0)+'</span><span class="l">Joined this week</span></div>'+
-    '<div class="st"><span class="v">'+(t.today||0)+'</span><span class="l">Joined today</span></div>'+
+    '<div class="st"><span class="v">'+(t.total||0)+'</span><span class="l">On the waitlist<br><i style="font-style:normal;color:var(--ash-dim);font-size:.92em">all time</i></span></div>'+
+    '<div class="st"><span class="v">'+(t.week||0)+'</span><span class="l">Waitlist signups<br><i style="font-style:normal;color:var(--ash-dim);font-size:.92em">last 7 days</i></span></div>'+
+    '<div class="st"><span class="v" style="color:'+((d.accounts||0)?'#3DE8A5':'var(--ash-dim)')+'">'+(d.accounts||0)+'</span><span class="l">Accounts created<br><i style="font-style:normal;color:var(--ash-dim);font-size:.92em">separate from the waitlist</i></span></div>'+
     '<div class="st"><span class="v">'+(t.with_notes||0)+'</span><span class="l">Left you a note</span></div>';
 
   var sec=document.getElementById('secbox');
@@ -751,15 +753,22 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     // hour-long block. Two levels and a slower pace stays inside their limits.
     // The browser has no CPU or duration ceiling, so tiles can be larger and
     // fewer. Fewer requests is also what keeps us inside Overpass's fair use.
-    var MAXDEPTH=2, PAUSE=3000, requests=0, MAXREQ=40, stopped=false;
+    // The browser route has no server cost, so the only limit that matters is
+    // Overpass's fair use. 70 requests at a 2.5s pace is about three minutes of
+    // polite traffic, and enough for three passes over a dense state.
+    var MAXDEPTH=2, PAUSE=2500, requests=0, MAXREQ=70, stopped=false;
 
     function fetchTile(t, depth){
-      if(stopped) return Promise.reject(Object.assign(new Error('stopped'),{stopped:true}));
+      if(stopped) return Promise.resolve();   // cap already reached; skip quietly
       if(++requests > MAXREQ){
-        stopped=true;
-        line('   \u26A0 stopping at '+MAXREQ+' requests to stay inside Overpass\u2019s fair use.','#FFCB6B');
-        line('     You will get what has been fetched so far.','var(--ash-dim)');
-        return Promise.reject(Object.assign(new Error('cap'),{stopped:true}));
+        if(!stopped){
+          stopped=true;
+          line('   \u26A0 stopping at '+MAXREQ+' requests to stay inside Overpass\u2019s fair use.','#FFCB6B');
+          line('     Saving everything fetched up to this point.','var(--ash-dim)');
+        }
+        // Resolve, do not reject. The cap is a stopping point, not a failure —
+        // rejecting here threw away a complete device pass and 51,767 roads.
+        return Promise.resolve();
       }
       q = mode==='cams' ? camQuery(t) : mode==='local' ? localQuery(t) : tileQuery(t);
       return go().then(function(r){
@@ -770,7 +779,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
         // A rate limit means stop, not try harder. Splitting here is what turns
         // a short throttle into an hour-long block.
         if(err && err.rateLimited){ stopped=true; throw err; }
-        if(stopped) throw err;
+        if(stopped) return Promise.resolve();
         if(depth>=MAXDEPTH){
           failTiles++;
           line('   \u26A0 a dense area could not be fetched even split small \u2014 skipping it','#FFCB6B');
@@ -819,7 +828,8 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
         return runTiles(split(bb),0).then(function(){
           var got=acc.length-before;
           if(!got) line('   \u26A0 no local streets returned','#FFCB6B');
-          else line('   \u2713 local streets: '+got.toLocaleString()+' ways near devices','#3DE8A5');
+          else line('   \u2713 local streets: '+got.toLocaleString()+' ways near devices'+
+                    (stopped?' (pass cut short at the request cap)':''),'#3DE8A5');
           return {elements:(camData.elements||[]).concat(acc)};
         });
       });

@@ -165,6 +165,14 @@ pre,code{overflow-wrap:anywhere}
   .btn{width:100%;justify-content:center}
   .dl .btn,.dacts .btn,.form .btn{width:auto}
 }
+
+.acct{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;
+  font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);
+  text-decoration:none;border:1px solid var(--line-2);border-radius:99px;padding:8px 14px;
+  transition:all .18s;white-space:nowrap;margin-left:auto}
+.acct:hover{border-color:var(--gold);color:var(--gold)}
+.acct.in{border-color:rgba(61,232,165,.42);color:#3DE8A5}
+@media(max-width:560px){.acct span{display:none}.acct{padding:9px 11px}}
 </style>
 </head>
 <body>
@@ -175,6 +183,7 @@ pre,code{overflow-wrap:anywhere}
       SOVRAN
     </a>
     <a href="/" class="back">&larr; Back</a>
+      <a href="/account" class="acct" id="acctlink"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="5.2" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M2.6 14c0-3 2.4-4.6 5.4-4.6S13.4 11 13.4 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span id="acctlabel">Account</span></a>
   </div>
 </header>
 <main>
@@ -182,7 +191,7 @@ pre,code{overflow-wrap:anywhere}
   <div class="wrap">
     <span class="eyebrow">Start here</span>
     <h1>Pick the one that<br>sounds like <span class="gilt">you</span>.</h1>
-    <p class="lede">Eight tools, all free, and the list keeps growing. None of them need an account. You do not have to read the whole site. Find the sentence below that matches why you came, and start there.</p>
+    <p class="lede">Seven tools, all free, and the list keeps growing. None of them need an account. You do not have to read the whole site. Find the sentence below that matches why you came, and start there.</p>
 
     <div class="noacct">
       <b>Before you go further</b>
@@ -282,7 +291,7 @@ pre,code{overflow-wrap:anywhere}
 <section>
   <div class="wrap">
     <h2>Everything, in one list</h2>
-    <p class="body">All free, permanently. Seven of the eight need no account at all, and every one of them works with your connection switched off.</p>
+    <p class="body">All free, permanently. Six of the seven need no account at all, and every one of them works with your connection switched off.</p>
     <div class="paths" style="grid-template-columns:1fr">
       <div class="path" style="padding:0;background:none;border:0">
         <ol style="gap:12px">
@@ -308,7 +317,6 @@ pre,code{overflow-wrap:anywhere}
     <nav class="fnav">
       <div><span>Use now</span>
         <a href="/start">Start here</a>
-        <a href="/breach">The Breach Check</a>
         <a href="/photo">The Photo Check</a><a href="/audit">The Audit</a><a href="/map">The Map</a>
         <a href="/guide">The Guide</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
       </div>
@@ -324,5 +332,16 @@ pre,code{overflow-wrap:anywhere}
     <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--> &middot; No cookies. No trackers. No analytics.</p>
   </div>
 </footer>
+<script>
+(function(){
+  try{
+    var a=document.getElementById('acctlink');
+    if(a && localStorage.getItem('sv-signed-in')==='1'){
+      a.classList.add('in'); a.href='/panel';
+      var l=document.getElementById('acctlabel'); if(l) l.textContent='Your panel';
+    }
+  }catch(e){}
+})();
+</script>
 </body>
 </html>

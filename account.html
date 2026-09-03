@@ -228,6 +228,31 @@ pre,code{overflow-wrap:anywhere}
   .btn{width:100%;justify-content:center}
   .dl .btn,.dacts .btn,.form .btn{width:auto}
 }
+
+/* ── Idle screen lock ──
+   A privacy screen, not a security boundary. It hides what is on screen from
+   someone who walks past. It does not protect against someone with the device
+   and the skill to open developer tools — and the page says so, because a lock
+   that overstates itself is worse than none. */
+#lockveil{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;
+  background:rgba(4,6,15,.97);backdrop-filter:blur(18px);padding:24px}
+#lockveil.on{display:flex}
+.lockbox{max-width:400px;width:100%;text-align:center}
+.lockbox h2{font-size:clamp(1.4rem,5vw,1.9rem);margin-bottom:10px;background:none;-webkit-text-fill-color:var(--bone);color:var(--bone)}
+.lockbox p{color:var(--ash);font-size:.92rem;line-height:1.6;margin-bottom:20px}
+.pinrow{display:flex;gap:9px;justify-content:center;margin-bottom:16px}
+.pinrow input{width:46px;height:56px;text-align:center;font-family:'IBM Plex Mono',monospace;
+  font-size:1.4rem;background:var(--surface);color:var(--bone);border:1px solid var(--line-2);
+  border-radius:12px;-moz-appearance:textfield}
+.pinrow input::-webkit-outer-spin-button,.pinrow input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.pinrow input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,203,107,.18)}
+.lockmsg{font-size:.86rem;color:#FF9E5E;min-height:1.3em;margin-bottom:14px}
+.locknote{font-size:.8rem;color:var(--ash-dim);line-height:1.55;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.pinsetup{background:var(--surface);border:1px solid rgba(255,203,107,.3);border-radius:var(--r-md);
+  padding:18px 20px;margin-top:18px}
+.pinsetup h4{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.pinsetup p{font-size:.87rem;color:var(--ash);line-height:1.55;margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -266,7 +291,7 @@ pre,code{overflow-wrap:anywhere}
 
     <div class="whybox">
       <h2 style="font-size:1.15rem;margin-bottom:14px">Do you even need one?</h2>
-      <p style="color:var(--ash);font-size:.94rem;line-height:1.6;margin-bottom:18px"><strong>Probably not yet, and we would rather say so.</strong> Seven of our eight tools work with no account at all &mdash; no email, no signup, nothing. An account does exactly one thing today.</p>
+      <p style="color:var(--ash);font-size:.94rem;line-height:1.6;margin-bottom:18px"><strong>Probably not yet, and we would rather say so.</strong> Six of our seven tools work with no account at all &mdash; no email, no signup, nothing. An account does exactly one thing today.</p>
       <div class="yn">
         <div class="y">
           <span class="h">Worth it if</span>
@@ -365,7 +390,6 @@ pre,code{overflow-wrap:anywhere}
     <nav class="fnav">
       <div><span>Use now</span>
         <a href="/start">Start here</a>
-        <a href="/breach">The Breach Check</a>
         <a href="/photo">The Photo Check</a><a href="/audit">The Audit</a><a href="/map">The Map</a>
         <a href="/guide">The Guide</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
       </div>
@@ -474,6 +498,169 @@ $('del').addEventListener('click',function(){
     document.body.innerHTML='<div style="max-width:520px;margin:22vh auto;padding:0 24px;font-family:IBM Plex Sans,sans-serif;color:#EDE7DA"><h1 style="font-family:Archivo,sans-serif;text-transform:uppercase;font-size:2rem;margin-bottom:18px">You\u2019re gone.</h1><p style="color:#A8B0C8;line-height:1.6">Your account, your vault, and every session are deleted. Nothing of yours remains on our side.</p><p style="margin-top:24px"><a href="/" style="color:#E5BC6E">Back to SOVRAN</a></p></div>';
   });
 });
+})();
+</script>
+<script>
+(function(){
+  // A local marker so other pages can show "Your panel" instead of "Account".
+  // It is not a credential and it is not checked by anything.
+  function mark(v){ try{ v?localStorage.setItem('sv-signed-in','1'):localStorage.removeItem('sv-signed-in'); }catch(e){} }
+  var obs=new MutationObserver(function(){
+    var panel=document.getElementById('panel');
+    mark(panel && panel.classList.contains('show'));
+  });
+  var t=document.getElementById('panel');
+  if(t) obs.observe(t,{attributes:true,attributeFilter:['class']});
+})();
+</script>
+<div class="wrap" id="pinwrap" style="display:none;max-width:640px;margin:0 auto 40px">
+  <div class="pinsetup">
+    <h4>Screen lock &middot; optional</h4>
+    <p>Set a six-digit PIN and this page covers itself after five minutes of no activity, or the moment you switch tabs. Useful on a shared or work machine.</p>
+    <p style="color:var(--ash-dim);font-size:.83rem"><b style="color:var(--bone)">Be clear about what it is.</b> A curtain over the screen, not encryption. It stops someone reading over your shoulder. It does not stop someone who has your unlocked device and knows what they are doing &mdash; only your passphrase does that. The PIN is held in memory for this tab only and is never stored or sent anywhere.</p>
+    <div class="pinrow" style="justify-content:flex-start;margin:16px 0 12px">
+      <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 1">
+      <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 2">
+      <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 3">
+      <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 4">
+      <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 5">
+      <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 6">
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" id="setpin" style="font-size:.84rem;padding:12px 20px">Turn the lock on</button>
+      <button class="btn ghost" id="clearpin" style="font-size:.84rem;padding:12px 20px;display:none">Turn it off</button>
+    </div>
+    <p id="pinstate" style="font-size:.85rem;color:#3DE8A5;margin-top:12px;min-height:1.2em"></p>
+  </div>
+</div>
+
+<div id="lockveil"><div class="lockbox">
+  <h2>Screen locked</h2>
+  <p>You stepped away, so we covered what was on screen. Enter your PIN to carry on.</p>
+  <div class="pinrow">
+    <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 1">
+    <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 2">
+    <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 3">
+    <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 4">
+    <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 5">
+    <input type="number" inputmode="numeric" maxlength="1" aria-label="digit 6">
+  </div>
+  <div class="lockmsg" id="lockmsg"></div>
+  <button class="btn ghost" id="lockout" style="font-size:.82rem">Forget the PIN and sign out</button>
+  <p class="locknote"><b style="color:var(--bone)">What this is.</b> A curtain over the screen, so someone walking past cannot read it. <b style="color:var(--bone)">What it is not.</b> Protection against someone holding your unlocked device who knows what they are doing. Only your passphrase does that, and we never receive it either.</p>
+</div></div>
+<script>
+(function(){
+'use strict';
+var IDLE_MS = 5*60*1000;      // five minutes
+var MAX_TRIES = 3;
+var veil=document.getElementById('lockveil'); if(!veil) return;
+var boxes=veil.querySelectorAll('.pinrow input');
+var msg=document.getElementById('lockmsg');
+var pin=null, tries=0, timer=null, locked=false;
+
+// The PIN lives in memory only. Closing the tab forgets it, and it is never
+// written to storage, sent anywhere, or used to derive any key.
+window.SV_setPin=function(p){ pin=p; arm(); };
+window.SV_hasPin=function(){ return !!pin; };
+window.SV_clearPin=function(){ pin=null; disarm(); };
+
+function arm(){ disarm(); if(pin) timer=setTimeout(lock, IDLE_MS); }
+function disarm(){ if(timer) clearTimeout(timer); timer=null; }
+function bump(){ if(!locked && pin) arm(); }
+
+['pointerdown','keydown','wheel','touchstart','focus'].forEach(function(ev){
+  window.addEventListener(ev, bump, {passive:true});
+});
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden && pin && !locked) lock();
+});
+
+function lock(){
+  if(!pin) return;
+  locked=true; tries=0;
+  boxes.forEach(function(b){ b.value=''; });
+  msg.textContent='';
+  veil.classList.add('on');
+  setTimeout(function(){ boxes[0].focus(); }, 60);
+}
+
+function unlock(){
+  locked=false; veil.classList.remove('on'); arm();
+}
+
+boxes.forEach(function(b,i){
+  b.addEventListener('input', function(){
+    b.value=b.value.replace(/\D/g,'').slice(0,1);
+    if(b.value && i<boxes.length-1) boxes[i+1].focus();
+    var entered=Array.prototype.map.call(boxes,function(x){return x.value;}).join('');
+    if(entered.length===6) check(entered);
+  });
+  b.addEventListener('keydown', function(e){
+    if(e.key==='Backspace' && !b.value && i>0) boxes[i-1].focus();
+  });
+});
+
+function check(entered){
+  if(entered===pin){ unlock(); return; }
+  tries++;
+  boxes.forEach(function(x){ x.value=''; });
+  boxes[0].focus();
+  if(tries>=MAX_TRIES){
+    msg.innerHTML='Too many attempts. Signing out \u2014 your passphrase is the only way back in.';
+    setTimeout(function(){ try{ localStorage.removeItem('sv-signed-in'); }catch(e){} location.href='/account'; }, 1600);
+    return;
+  }
+  msg.textContent='Not that one. '+(MAX_TRIES-tries)+' attempt'+(MAX_TRIES-tries===1?'':'s')+' left before you are signed out.';
+}
+
+document.getElementById('lockout').addEventListener('click', function(){
+  pin=null;
+  try{ localStorage.removeItem('sv-signed-in'); }catch(e){}
+  location.href='/account';
+});
+})();
+</script>
+<script>
+(function(){
+  var wrap=document.getElementById('pinwrap'); if(!wrap) return;
+  var boxes=wrap.querySelectorAll('.pinrow input');
+  var state=document.getElementById('pinstate');
+
+  // only offer the lock once there is something behind it
+  var panel=document.getElementById('panel');
+  function sync(){ wrap.style.display=(panel&&panel.classList.contains('show'))?'block':'none'; }
+  if(panel){ new MutationObserver(sync).observe(panel,{attributes:true,attributeFilter:['class']}); }
+  sync();
+
+  boxes.forEach(function(b,i){
+    b.addEventListener('input',function(){
+      b.value=b.value.replace(/\D/g,'').slice(0,1);
+      if(b.value && i<boxes.length-1) boxes[i+1].focus();
+    });
+    b.addEventListener('keydown',function(e){
+      if(e.key==='Backspace' && !b.value && i>0) boxes[i-1].focus();
+    });
+  });
+
+  document.getElementById('setpin').addEventListener('click',function(){
+    var p=Array.prototype.map.call(boxes,function(x){return x.value;}).join('');
+    if(p.length!==6){ state.style.color='#FF9E5E'; state.textContent='Six digits, please.'; return; }
+    if(/^(\d)\1{5}$/.test(p) || p==='123456' || p==='000000'){
+      state.style.color='#FF9E5E'; state.textContent='Pick something less guessable than that.'; return;
+    }
+    if(window.SV_setPin) window.SV_setPin(p);
+    boxes.forEach(function(x){ x.value=''; });
+    state.style.color='#3DE8A5';
+    state.textContent='Lock is on. This page covers itself after five minutes idle, or when you switch tabs.';
+    document.getElementById('clearpin').style.display='';
+  });
+
+  document.getElementById('clearpin').addEventListener('click',function(){
+    if(window.SV_clearPin) window.SV_clearPin();
+    state.style.color='var(--ash-dim)'; state.textContent='Lock is off.';
+    this.style.display='none';
+  });
 })();
 </script>
 </body>

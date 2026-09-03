@@ -246,6 +246,14 @@ pre,code{overflow-wrap:anywhere}
   .btn{width:100%;justify-content:center}
   .dl .btn,.dacts .btn,.form .btn{width:auto}
 }
+
+.acct{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;
+  font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);
+  text-decoration:none;border:1px solid var(--line-2);border-radius:99px;padding:8px 14px;
+  transition:all .18s;white-space:nowrap;margin-left:auto}
+.acct:hover{border-color:var(--gold);color:var(--gold)}
+.acct.in{border-color:rgba(61,232,165,.42);color:#3DE8A5}
+@media(max-width:560px){.acct span{display:none}.acct{padding:9px 11px}}
 </style>
 </head>
 <body>
@@ -256,6 +264,7 @@ pre,code{overflow-wrap:anywhere}
       SOVRAN
     </a>
     <a href="/" class="back">&larr; Back</a>
+      <a href="/account" class="acct" id="acctlink"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="8" cy="5.2" r="2.8" stroke="currentColor" stroke-width="1.5"/><path d="M2.6 14c0-3 2.4-4.6 5.4-4.6S13.4 11 13.4 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span id="acctlabel">Account</span></a>
   </div>
 </header>
 <main>
@@ -271,7 +280,7 @@ pre,code{overflow-wrap:anywhere}
         <div class="tprice"><b>$0</b></div>
         <p class="tsub">No account. No card. No trial that ends.</p>
         <ul>
-          <li>All eight tools: the Breach Check, the Photo Check, the Audit, the Map, the Guide, the Passphrase, your Panel, and your Account</li>
+          <li>All seven tools: the Photo Check, the Audit, the Map, the Guide, the Passphrase, your Panel, and your Account</li>
           <li>Every tool we add from here &mdash; if it costs nothing to run, it costs nothing to use</li>
           <li>Knowing what is exposed about you</li>
           <li>Knowing every right you hold and how to use it yourself</li>
@@ -289,7 +298,6 @@ pre,code{overflow-wrap:anywhere}
           <li>Refiled automatically when they quietly repopulate</li>
           <li>Takedowns for photos you own and images posted without consent</li>
           <li>Alerts when something new appears about you</li>
-          <li>Continuous breach monitoring &mdash; told within a day when your address surfaces in something new</li>
           <li>The successor switch, and your panel synced across devices</li>
         </ul>
         <p class="tnote"><b>For a life that keeps generating records.</b> You move, you vote, you register a car. Every one of those repopulates the brokers within months. Removal is not a task you finish &mdash; it is one you maintain.</p>
@@ -418,7 +426,7 @@ pre,code{overflow-wrap:anywhere}
 <section>
   <div class="wrap">
     <h2>And most of it is free anyway</h2>
-    <p class="body">Before any of the above matters: <strong>everything that costs us nothing to run is free for everyone, permanently.</strong> That is eight tools today and it will be more, because the rule is about what a thing costs to operate, not about how much we can fence off. Knowing what is exposed about you, and knowing what you can do about it, is never behind a payment.</p>
+    <p class="body">Before any of the above matters: <strong>everything that costs us nothing to run is free for everyone, permanently.</strong> That is seven tools today and it will be more, because the rule is about what a thing costs to operate, not about how much we can fence off. Knowing what is exposed about you, and knowing what you can do about it, is never behind a payment.</p>
     <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px">
       <a href="/photo" class="btn ghost">The Photo Check</a>
       <a href="/audit" class="btn ghost">The Audit</a>
@@ -438,7 +446,6 @@ pre,code{overflow-wrap:anywhere}
     <nav class="fnav">
       <div><span>Use now</span>
         <a href="/start">Start here</a>
-        <a href="/breach">The Breach Check</a>
         <a href="/photo">The Photo Check</a><a href="/audit">The Audit</a><a href="/map">The Map</a>
         <a href="/guide">The Guide</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
       </div>
@@ -455,5 +462,16 @@ pre,code{overflow-wrap:anywhere}
     <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--> &middot; No cookies. No trackers. No analytics.</p>
   </div>
 </footer>
+<script>
+(function(){
+  try{
+    var a=document.getElementById('acctlink');
+    if(a && localStorage.getItem('sv-signed-in')==='1'){
+      a.classList.add('in'); a.href='/panel';
+      var l=document.getElementById('acctlabel'); if(l) l.textContent='Your panel';
+    }
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
