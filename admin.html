@@ -1,3 +1,20 @@
+    /* Streets near devices, batched by device id rather than by area.
+
+       Asking for "every street within 250m of every camera in this rectangle"
+       is unbounded — a rectangle over Denver contains thousands of cameras and
+       Overpass refuses. Splitting the rectangle does not help, because the
+       problem is density, not size.
+
+       Batching by id makes every request the same weight wherever the devices
+       happen to be. 200 downtown costs what 200 across a county costs.        */
+    var LOCAL_BATCH = 200;
+    function localQueryIds(ids){
+      return '[out:json][timeout:20];'+
+        'node(id:'+ids.join(',')+')->.cams;'+
+        'way(around.cams:250)["highway"~"^(residential|unclassified|tertiary|living_street)$"];'+
+        'out geom;';
+    }
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -756,7 +773,10 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
     // The browser route has no server cost, so the only limit that matters is
     // Overpass's fair use. 70 requests at a 2.5s pace is about three minutes of
     // polite traffic, and enough for three passes over a dense state.
-    var MAXDEPTH=2, PAUSE=2500, requests=0, MAXREQ=70, stopped=false;
+    // Arterials still tile by area because roads are area-shaped. Depth 3 lets a
+    // dense metro subdivide properly; the streets pass no longer competes for
+    // the budget because it batches by device count instead.
+    var MAXDEPTH=3, PAUSE=2500, requests=0, MAXREQ=90, stopped=false;
 
     function fetchTile(t, depth){
       if(stopped) return Promise.resolve();   // cap already reached; skip quietly
@@ -770,7 +790,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
         // rejecting here threw away a complete device pass and 51,767 roads.
         return Promise.resolve();
       }
-      q = mode==='cams' ? camQuery(t) : mode==='local' ? localQuery(t) : tileQuery(t);
+      q = mode==='cams' ? camQuery(t) : tileQuery(t);
       return go().then(function(r){
         (r.elements||[]).forEach(function(el){ if(!seen[el.id]){ seen[el.id]=1; acc.push(el); } });
         okTiles++;
@@ -821,15 +841,46 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51.2,-179
         if(!acc.length) line('   \u26A0 no arterials returned','#FFCB6B');
         else line('   \u2713 arterials: '+acc.length.toLocaleString()+' ways from '+okTiles+' tiles','#3DE8A5');
 
-        // pass 3 — streets around the devices themselves
-        line('   now fetching streets near each device\u2026','var(--ash-dim)');
-        mode='local'; okTiles=0; failTiles=0;
-        var before=acc.length;
-        return runTiles(split(bb),0).then(function(){
+        // pass 3 — streets around the devices themselves, batched by id
+        var ids=(camData.elements||[]).filter(function(e){return e.type==='node';})
+                                      .map(function(e){return e.id;});
+        if(!ids.length){
+          line('   no device ids to work from \u2014 skipping streets','#FFCB6B');
+          return {elements:(camData.elements||[]).concat(acc)};
+        }
+        var batches=[];
+        for(var bi=0; bi<ids.length; bi+=LOCAL_BATCH) batches.push(ids.slice(bi,bi+LOCAL_BATCH));
+        line('   now fetching streets near each device \u2014 '+batches.length+
+             ' batches of up to '+LOCAL_BATCH+'\u2026','var(--ash-dim)');
+
+        var before=acc.length, bIdx=0, bOk=0, bFail=0;
+        function nextBatch(){
+          if(bIdx>=batches.length || stopped) return Promise.resolve();
+          var b=batches[bIdx++];
+          if(++requests > MAXREQ){
+            if(!stopped){ stopped=true;
+              line('   \u26A0 request cap reached. Saving what has been fetched.','#FFCB6B'); }
+            return Promise.resolve();
+          }
+          line('   streets: batch '+bIdx+' of '+batches.length+'\u2026','var(--ash-dim)');
+          q=localQueryIds(b);
+          return go().then(function(r){
+            (r.elements||[]).forEach(function(el){ if(!seen[el.id]){ seen[el.id]=1; acc.push(el); } });
+            bOk++;
+            return new Promise(function(res){ setTimeout(res,PAUSE); }).then(nextBatch);
+          }).catch(function(e){
+            if(e && e.rateLimited){ stopped=true; throw e; }
+            bFail++;
+            line('   \u26A0 batch '+bIdx+' failed \u2014 continuing','#FFCB6B');
+            return new Promise(function(res){ setTimeout(res,PAUSE); }).then(nextBatch);
+          });
+        }
+
+        return nextBatch().then(function(){
           var got=acc.length-before;
           if(!got) line('   \u26A0 no local streets returned','#FFCB6B');
-          else line('   \u2713 local streets: '+got.toLocaleString()+' ways near devices'+
-                    (stopped?' (pass cut short at the request cap)':''),'#3DE8A5');
+          else line('   \u2713 local streets: '+got.toLocaleString()+' ways from '+
+                    bOk+'/'+batches.length+' batches'+(bFail?' ('+bFail+' failed)':''),'#3DE8A5');
           return {elements:(camData.elements||[]).concat(acc)};
         });
       });

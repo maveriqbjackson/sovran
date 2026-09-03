@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-02 23:58 UTC",
+ "generated": "2026-09-03 00:06 UTC",
  "note": "SHA-256 of every deployed file.",
  "files": {
   "/404.html": {
@@ -15,8 +15,8 @@
    "bytes": 42983
   },
   "/admin.html": {
-   "sha256": "58041a9f275997c93adb01837340dba284566e063ba43a6c66c235d6a4addcfb",
-   "bytes": 60136
+   "sha256": "6cb230bd2fc610e8f2d7855458864237bd532bf1a5d3a8ce66c57254801afd82",
+   "bytes": 62668
   },
   "/audit.html": {
    "sha256": "75f0bc5b49b05c255c8753ad0fc5214f97660198c9e8aeab7a56c36eff254fca",
