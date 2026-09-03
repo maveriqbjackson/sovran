@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-03 00:06 UTC",
+ "generated": "2026-09-03 13:09 UTC",
  "note": "SHA-256 of every deployed file.",
  "files": {
   "/404.html": {
@@ -15,12 +15,12 @@
    "bytes": 42983
   },
   "/admin.html": {
-   "sha256": "6cb230bd2fc610e8f2d7855458864237bd532bf1a5d3a8ce66c57254801afd82",
-   "bytes": 62668
+   "sha256": "67b835d89eb94d5034ab44171b8e77ae90a9d4ae96c44e5ad73297bfb567bed3",
+   "bytes": 62660
   },
   "/audit.html": {
-   "sha256": "75f0bc5b49b05c255c8753ad0fc5214f97660198c9e8aeab7a56c36eff254fca",
-   "bytes": 47064
+   "sha256": "ba6f18728e2f6dc863e0a2c8c907159eeb00975d8887e8041158766467b4c83b",
+   "bytes": 55167
   },
   "/canary.html": {
    "sha256": "a355db32c1b9403bd67f3737f0f027e697e6b9c27171614087ca082281dbce85",
@@ -51,12 +51,12 @@
    "bytes": 97630
   },
   "/map.html": {
-   "sha256": "4d1c8b59a3332001e010ad4360e77cbf80a4c9bd55ffa32b110a4545314a44b0",
-   "bytes": 81794
+   "sha256": "1b6a854648aa96be5a3f0d4d99524e11e88e13d30e5702c328b2b4273e60798a",
+   "bytes": 81786
   },
   "/panel.html": {
-   "sha256": "d7ff7f13731f4c428fa97e5e6b93a4758be0e867ec785c23d8a67da0ee426a83",
-   "bytes": 36005
+   "sha256": "16de5e93cd19bc3df4db6de5e87acc94064ed4a0929d85b67eb80f718b7fddf5",
+   "bytes": 36537
   },
   "/passphrase.html": {
    "sha256": "d5082f8556f112d9d2e510354010afd4e5e52f251cc4c9bd13a6e6570fb07a9a",

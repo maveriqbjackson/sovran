@@ -314,6 +314,7 @@ pre,code{overflow-wrap:anywhere}
 <script src="/sv-crypto.js"></script>
 <script>
 (function(){
+function esc(x){return String(x==null?'':x).replace(/[<>&"]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c];});}
 'use strict';
 var KEY='sv-panel';
 var GROUPS=[
@@ -433,7 +434,12 @@ paint();
     var pass=null;
     try{ pass=sessionStorage.getItem('sv-pp'); }catch(e){}
     if(!pass){
-      bar.innerHTML='Signed in as '+r.d.email+'. <a href="/account" style="color:var(--gold)">Sign in again</a> to unlock syncing \u2014 your key is only held while the tab is open.';
+      // This is not an error state. The key is derived from the passphrase and
+      // held in memory only, so any reload legitimately needs it again. Say that,
+      // rather than making it look like something went wrong.
+      bar.innerHTML='<b style="color:var(--bone)">'+esc(r.d.email)+'</b> \u00b7 this list is saved on this device. '+
+        '<a href="/account" style="color:var(--gold)">Unlock syncing</a> to carry it to your other devices \u2014 '+
+        '<span style="color:var(--ash-dim)">your key is never stored, so a reload always asks for it again.</span>';
       return;
     }
     bar.innerHTML='<span id="syncS">Signed in as '+r.d.email+' \u00b7 syncing encrypted</span> <button id="pull" style="background:none;border:1px solid var(--line-2);color:var(--ash);border-radius:8px;font-family:IBM Plex Mono,monospace;font-size:.72rem;padding:7px 11px;cursor:pointer;margin-left:8px">Pull from other device</button>';
