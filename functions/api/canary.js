@@ -31,7 +31,7 @@ export async function onRequestGet({ env }) {
 
     // history of signing dates only — proves the cadence without extra detail
     const { results } = await env.DB.prepare(
-      "SELECT signed_by, signed_at, freshness FROM canary ORDER BY id DESC LIMIT 12"
+      "SELECT signed_by, signed_at, freshness, anchor FROM canary ORDER BY id DESC LIMIT 12"
     ).all();
 
     return json({
