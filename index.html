@@ -164,6 +164,39 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .gilt{filter:none;background:linear-gradient(160deg,#FFE7B4 10%,#FFCB6B 45%,#D08A2A 95%);
   -webkit-background-clip:text;background-clip:text;color:transparent}
 @media(prefers-reduced-motion:reduce){html::before{animation:none}}
+
+/* canary strip — was lost when the aurora block was stripped */
+.cbanner{display:flex;align-items:center;gap:13px;max-width:var(--maxw);margin:20px auto 0;
+  padding:14px 20px;background:#080B14;border:1px solid rgba(232,224,206,.12);
+  text-decoration:none;transition:border-color .2s;width:calc(100% - var(--pad)*2);
+  position:relative;z-index:3}
+.cbanner:hover{border-color:rgba(61,232,165,.5)}
+.cbanner .cdot{width:9px;height:9px;border-radius:50%;background:var(--ash-dim);flex:none}
+.cbanner.ok .cdot{background:#3DE8A5;box-shadow:0 0 0 3px rgba(61,232,165,.16)}
+.cbanner.due .cdot{background:#FFCB6B} .cbanner.bad .cdot{background:#FF9E5E}
+.cbanner .ctext{flex:1;font-size:.86rem;color:var(--ash);line-height:1.45}
+.cbanner .ctext b{color:var(--bone);font-family:'Archivo',sans-serif;font-weight:700}
+.cbanner .cgo{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--gold);flex:none}
+@media(max-width:620px){.cbanner .cgo{display:none}}
+
+/* footer navigation — lost when the aurora block was stripped */
+.fnav{display:grid;gap:22px;margin-bottom:26px;padding-bottom:24px;
+  border-bottom:1px solid rgba(232,224,206,.1)}
+@media(min-width:700px){.fnav{grid-template-columns:repeat(3,1fr)}}
+.fnav>div{display:flex;flex-direction:column;gap:7px}
+.fnav span{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content;
+  transition:color .18s}
+.fnav a:hover{color:var(--gold)}
+.acct{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;
+  font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ash);
+  text-decoration:none;border:1px solid rgba(232,224,206,.2);padding:9px 15px;
+  transition:all .18s;white-space:nowrap;margin-left:auto}
+.acct:hover{border-color:var(--gold);color:var(--gold)}
+.acct.in{border-color:rgba(61,232,165,.45);color:#3DE8A5}
+@media(max-width:560px){.acct span{display:none}.acct{padding:10px 12px}}
 </style>
 <style>
 :root{--void:#04060F; --void-2:#070B18; --surface:#0C1424; --surface-2:#131E38;

@@ -1,20 +1,3 @@
-    /* Streets near devices, batched by device id rather than by area.
-
-       Asking for "every street within 250m of every camera in this rectangle"
-       is unbounded — a rectangle over Denver contains thousands of cameras and
-       Overpass refuses. Splitting the rectangle does not help, because the
-       problem is density, not size.
-
-       Batching by id makes every request the same weight wherever the devices
-       happen to be. 200 downtown costs what 200 across a county costs.        */
-    var LOCAL_BATCH = 120;
-    function localQueryIds(ids){
-      return '[out:json][timeout:20];'+
-        'node(id:'+ids.join(',')+')->.cams;'+
-        'way(around.cams:250)["highway"~"^(residential|unclassified|tertiary|living_street)$"];'+
-        'out geom;';
-    }
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -731,9 +714,16 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
     // Every street within 400m of a surveillance device. Not every street in the
     // state — that is hundreds of megabytes of empty countryside. This returns
     // detail exactly where there is something to look at, and nothing elsewhere.
-    function localQuery(t){
-      return '[out:json][timeout:22];'+
-        'node["man_made"="surveillance"]('+t.join(',')+')->.cams;'+
+    /* Streets near devices, batched by device id rather than by area.
+       "Every street within 250m of every camera in this rectangle" is unbounded
+       — a rectangle over Denver holds thousands of cameras and Overpass refuses.
+       Splitting the rectangle does not help, because the problem is density, not
+       size. Batching by id makes every request the same weight wherever the
+       devices happen to be. */
+    var LOCAL_BATCH = 120;
+    function localQueryIds(ids){
+      return '[out:json][timeout:20];'+
+        'node(id:'+ids.join(',')+')->.cams;'+
         'way(around.cams:250)["highway"~"^(residential|unclassified|tertiary|living_street)$"];'+
         'out geom;';
     }

@@ -1,30 +1,30 @@
 {
- "generated": "2026-09-05 02:08 UTC",
- "note": "SHA-256 of every deployed file.",
+ "generated": "2026-09-05 22:40 UTC",
+ "note": "SHA-256 of every deployed file. robots.txt is excluded because Cloudflare rewrites it. Font files are excluded from this build and verified by the browser loading them.",
  "files": {
   "/404.html": {
    "sha256": "3fd271e2f27c6962308b907925e3ec959795b90f28283ae6356cf5e108c54934",
    "bytes": 14492
   },
   "/access.html": {
-   "sha256": "5cf5ef03483598db6141327525a142613c1130a07a6336322320e94b56d0b0a4",
-   "bytes": 37141
+   "sha256": "7dcfcdf917346caabe6a2e1ba19e3c4284b6c78466551ee1e01dc95e0b300e6b",
+   "bytes": 38249
   },
   "/account.html": {
-   "sha256": "61491f7238cfbff7560ec2cd97a5c70790715ff3baa232aa1b737ccf6d6b088b",
-   "bytes": 43746
+   "sha256": "d92841409f6e0e38abd457478a5fe1f3b6be271a90e7dacb1d84bacf2377fa14",
+   "bytes": 44854
   },
   "/admin.html": {
-   "sha256": "b76ca29c972b8ed0d86e3bc857cb2a860ae878b239f05efa1e5b0d6e4be11b79",
-   "bytes": 67088
+   "sha256": "e59da1d1fce2af5443b1bbff1e4befa6a16dc2342be4c9f6c2c3d87b4228183b",
+   "bytes": 66745
   },
   "/audit.html": {
-   "sha256": "72f1b8e7b7c5b49151f46cbe10525c6daf1a0453edd7000c7f77527cd07e9744",
-   "bytes": 55930
+   "sha256": "eac84dae5920932a458a1ee5ec6bd6166be170a6d4d6875786f043c6c2080062",
+   "bytes": 57038
   },
   "/canary.html": {
-   "sha256": "a9106067f7839a23ddbc3f35bc2d24b132a20c1ff61682da5d3917bcd5ca9e77",
-   "bytes": 31451
+   "sha256": "491d707cccc115e29ae7362904eaf8b01a69014c3b367db11118491cf4ca87ec",
+   "bytes": 33370
   },
   "/charter.html": {
    "sha256": "4c91dba4c74ec946c067ec35bb23ff1733bc2e7564c0dbe8edaa4d59c2a0f2a8",
@@ -39,32 +39,32 @@
    "bytes": 27886
   },
   "/guide.html": {
-   "sha256": "1eb697ddc2866d8884c2ec685a2ae67f380b6400e488c6ddc5d1b2d35e703306",
-   "bytes": 56033
+   "sha256": "0f5f13d7dd8ad6e21ca1a63f5cccd1c9a1e03de35475ceeff7a22d5bb376fc2f",
+   "bytes": 57141
   },
   "/index.html": {
-   "sha256": "285b318f84be38086f62e34b3047b9a44354da989233b1bda51a4037ba8446bf",
-   "bytes": 61318
+   "sha256": "f69f53b1548de3456aab9eabe9c68147ff9b934afa8489202c055f52ab27b2ce",
+   "bytes": 63439
   },
   "/jszip.min.js": {
    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",
    "bytes": 97630
   },
   "/map.html": {
-   "sha256": "b28d78026320a1c39fc62aec5291a1e253992cd7f9c798abefba9ebba7deff9a",
-   "bytes": 82787
+   "sha256": "965da083feae809c92ca07ace4197627931d3f9f735c1870760d28964b91a9f5",
+   "bytes": 83895
   },
   "/panel.html": {
-   "sha256": "634ebfd8dbf2d7bed6a40e19f5b3c9c598c86368cae9c2ffa62a1d4899ff7bc5",
-   "bytes": 37300
+   "sha256": "901d8463d5eb8d4878292f462e1c7d3b12255c8980907e43c202c717e2829294",
+   "bytes": 38408
   },
   "/passphrase.html": {
-   "sha256": "84c62fd67ebb0432bdc13b5e6e10e4369185e6cdc8f9d3ae786593cbc8dff710",
-   "bytes": 30135
+   "sha256": "7a97579d20f61065c9b2d24bdc34b35444b8d9093d602e375876c3c6384a467a",
+   "bytes": 31679
   },
   "/photo.html": {
-   "sha256": "27e3b47fa72b9d14c477938f4818d963b2104871140a2c6a230eebcc3d5593b1",
-   "bytes": 47708
+   "sha256": "1f693aad045b17d50ca51b8a41d736c0fcd910d972c31c043e533c5e7e8e00b6",
+   "bytes": 48816
   },
   "/sign.html": {
    "sha256": "e364735f9d3083a07f0a88de951ae1556366dc82428db0f8da73c6af0db2caff",
@@ -85,26 +85,6 @@
   "/wordlist.txt": {
    "sha256": "abae49761b88f3f1ba31ef944bea1f61b795a3cd7e1cfb7d276ed45bf77967ba",
    "bytes": 62143
-  },
-  "/fonts/archivo-var.woff2": {
-   "sha256": "e3a28eade21a900c7155a247757f4b2834c07bb7ef07ad7efa55cebaac1e8f5e",
-   "bytes": 90104
-  },
-  "/fonts/plex-mono-400.woff2": {
-   "sha256": "08949f728dc52d528e69b1667d15c89a5686a4ee9a296ff90983985f99c380f7",
-   "bytes": 14708
-  },
-  "/fonts/plex-mono-500.woff2": {
-   "sha256": "01d285447409c8a588692162439a038b8cbd7871309ee20267b0d2d91c6e8e22",
-   "bytes": 14888
-  },
-  "/fonts/plex-mono-600.woff2": {
-   "sha256": "0d1f0b8d0722224e32e9f28261bdc86c79115be73444ae5eceb73976a1bcdf83",
-   "bytes": 15620
-  },
-  "/fonts/plex-sans-var.woff2": {
-   "sha256": "1e875856600a34cb44a406a7deef0e3f9ae70e6f636e0f37fbca2248dec2dca4",
-   "bytes": 65488
   },
   "/outlines/AK.json": {
    "sha256": "3d2c86473bcd58a499b15a41deb013480ebb5a1e73db6224c45600e26f077922",

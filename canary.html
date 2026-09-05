@@ -116,6 +116,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .steps b{display:block;color:var(--bone);font-family:'Archivo',sans-serif;font-weight:700;font-size:.97rem;margin-bottom:5px}
 .steps a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.35)}
 .hist{margin-top:14px;display:grid;gap:5px}
+.hev{font-size:.78rem;color:var(--ash-dim);line-height:1.5;padding:0 0 9px 2px;
+  border-bottom:1px solid rgba(232,224,206,.06);margin-bottom:6px;word-break:break-word}
+.hev a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.35)}
+.hev.mono{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--ice)}
 .hrow{display:flex;justify-content:space-between;gap:12px;font-family:'IBM Plex Mono',monospace;font-size:.7rem;
   color:var(--ash-dim);padding:7px 0;border-bottom:1px solid var(--line)}
 .hrow:last-child{border-bottom:0}
@@ -243,6 +247,24 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .gilt{filter:none;background:linear-gradient(160deg,#FFE7B4 10%,#FFCB6B 45%,#D08A2A 95%);
   -webkit-background-clip:text;background-clip:text;color:transparent}
 @media(prefers-reduced-motion:reduce){html::before{animation:none}}
+
+/* footer navigation — lost when the aurora block was stripped */
+.fnav{display:grid;gap:22px;margin-bottom:26px;padding-bottom:24px;
+  border-bottom:1px solid rgba(232,224,206,.1)}
+@media(min-width:700px){.fnav{grid-template-columns:repeat(3,1fr)}}
+.fnav>div{display:flex;flex-direction:column;gap:7px}
+.fnav span{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content;
+  transition:color .18s}
+.fnav a:hover{color:var(--gold)}
+.acct{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;
+  font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ash);
+  text-decoration:none;border:1px solid rgba(232,224,206,.2);padding:9px 15px;
+  transition:all .18s;white-space:nowrap;margin-left:auto}
+.acct:hover{border-color:var(--gold);color:var(--gold)}
+.acct.in{border-color:rgba(61,232,165,.45);color:#3DE8A5}
+@media(max-width:560px){.acct span{display:none}.acct{padding:10px 12px}}
 </style>
 </head>
 <body>
@@ -402,7 +424,15 @@ fetch('/api/canary',{cache:'no-store'}).then(function(r){ return r.json(); }).th
     var h='<div class="hist">';
     d.history.forEach(function(x){
       var dt=new Date(x.signed_at.replace(' ','T')+'Z');
-      h+='<div class="hrow"><b>signed</b><span>'+fmt(dt)+'</span></div>';
+      var link=''; 
+      if(x.freshness){
+        var t=String(x.freshness), k=t.indexOf('http');
+        link = k<0 ? '<div class="hev">'+esc(t)+'</div>'
+             : '<div class="hev">'+esc(t.slice(0,k).replace(/[\u2014\-\s]+$/,''))+
+               ' <a href="'+esc(t.slice(k).trim())+'" target="_blank" rel="noopener nofollow">check the story &rarr;</a></div>';
+      }
+      var anc = x.anchor ? '<div class="hev mono">'+esc(x.anchor)+'</div>' : '';
+      h+='<div class="hrow"><b>signed</b><span>'+fmt(dt)+'</span></div>'+link+anc;
     });
     META.insertAdjacentHTML('beforeend','<div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)"><span style="font-family:\'IBM Plex Mono\',monospace;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ash-dim)">Signing history</span>'+h+'</div></div>');
   }
