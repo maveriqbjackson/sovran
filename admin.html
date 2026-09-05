@@ -7,7 +7,7 @@
 
        Batching by id makes every request the same weight wherever the devices
        happen to be. 200 downtown costs what 200 across a county costs.        */
-    var LOCAL_BATCH = 200;
+    var LOCAL_BATCH = 120;
     function localQueryIds(ids){
       return '[out:json][timeout:20];'+
         'node(id:'+ids.join(',')+')->.cams;'+
@@ -22,7 +22,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Admin — SOVRAN</title>
 <meta name="description" content="Private.">
-<meta name="theme-color" content="#04060F">
+<meta name="theme-color" content="#04060C">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/plex-sans-var.woff2" as="font" type="font/woff2" crossorigin>
@@ -136,56 +136,7 @@ h2{background:linear-gradient(96deg,var(--bone) 62%,rgba(169,140,255,.92));
   -webkit-background-clip:text;background-clip:text;color:transparent}
 .mark{text-shadow:0 0 22px rgba(169,140,255,.28)}
 
-/* ══════════════════════════════════════════════════════════════════
-   ASGARD · three stacked layers of sky, none of which cost a request
-     html::before  the Bifröst itself — curtains of light, drifting
-     body::before  starfield
-     body::after   vignette and the gold horizon beneath it
-   ══════════════════════════════════════════════════════════════════ */
-html{background:var(--void)}
-html::before{
-  content:'';position:fixed;inset:-30% -20%;z-index:0;pointer-events:none;
-  background:
-    linear-gradient(106deg, transparent 10%, rgba(168,120,255,.50) 23%, transparent 37%),
-    linear-gradient(97deg,  transparent 26%, rgba(90,240,255,.40)  40%, transparent 54%),
-    linear-gradient(116deg, transparent 42%, rgba(255,203,107,.36) 57%, transparent 71%),
-    linear-gradient(90deg,  transparent 60%, rgba(255,122,190,.22) 71%, transparent 84%);
-  filter:blur(64px);
-  opacity:.85;
-  animation:bifrost 46s ease-in-out infinite alternate;
-}
-@keyframes bifrost{
-  0%  {transform:translate3d(0,0,0) scale(1)}
-  50% {transform:translate3d(-3%,2%,0) scale(1.06)}
-  100%{transform:translate3d(2%,-2%,0) scale(1.02)}
-}
-body::before{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.75;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='760'%3E%3Cg fill='%23F4F0E8'%3E%3Ccircle cx='53' cy='88' r='.9' opacity='.62'/%3E%3Ccircle cx='188' cy='31' r='.7' opacity='.44'/%3E%3Ccircle cx='302' cy='142' r='1.1' opacity='.56'/%3E%3Ccircle cx='431' cy='67' r='.7' opacity='.38'/%3E%3Ccircle cx='588' cy='121' r='1' opacity='.5'/%3E%3Ccircle cx='97' cy='233' r='.8' opacity='.47'/%3E%3Ccircle cx='249' cy='298' r='.6' opacity='.35'/%3E%3Ccircle cx='389' cy='241' r='1' opacity='.53'/%3E%3Ccircle cx='522' cy='329' r='.7' opacity='.4'/%3E%3Ccircle cx='657' cy='266' r='.9' opacity='.45'/%3E%3Ccircle cx='31' cy='401' r='1' opacity='.5'/%3E%3Ccircle cx='166' cy='466' r='.65' opacity='.37'/%3E%3Ccircle cx='291' cy='412' r='.85' opacity='.45'/%3E%3Ccircle cx='447' cy='488' r='1.1' opacity='.55'/%3E%3Ccircle cx='611' cy='434' r='.7' opacity='.38'/%3E%3Ccircle cx='122' cy='597' r='.9' opacity='.47'/%3E%3Ccircle cx='268' cy='643' r='.7' opacity='.37'/%3E%3Ccircle cx='412' cy='581' r='.95' opacity='.5'/%3E%3Ccircle cx='559' cy='657' r='.65' opacity='.35'/%3E%3Ccircle cx='678' cy='533' r='1' opacity='.5'/%3E%3Ccircle cx='722' cy='711' r='.8' opacity='.42'/%3E%3Ccircle cx='84' cy='702' r='.7' opacity='.38'/%3E%3Ccircle cx='355' cy='23' r='.85' opacity='.44'/%3E%3Ccircle cx='497' cy='196' r='.7' opacity='.36'/%3E%3C/g%3E%3C/svg%3E");
-}
-body::after{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    linear-gradient(180deg, transparent 58%, rgba(255,203,107,.13) 88%, rgba(255,203,107,.20) 100%),
-    radial-gradient(150ch 110ch at 50% 42%, transparent 42%, rgba(0,0,0,.60) 100%) !important;
-}
 
-/* structure lit by the bridge */
-.rule{height:2px !important;opacity:.9 !important;
-  background:linear-gradient(90deg,transparent,var(--bif-1) 18%,var(--bif-2) 44%,var(--bif-3) 72%,var(--bif-4) 88%,transparent) !important}
-.cap::after,.blk::after,.pillar::after{height:2px;opacity:.5;
-  background:linear-gradient(90deg,var(--bif-1),var(--bif-2) 46%,var(--bif-3))}
-.cap:hover::after,.blk:hover::after,.pillar:hover::after{opacity:1}
-.cap:hover,.blk:hover{border-color:rgba(168,120,255,.4);box-shadow:0 14px 44px rgba(0,0,0,.5),0 0 0 1px rgba(90,240,255,.08)}
-.eyebrow::before{width:9px;height:9px;box-shadow:0 0 12px rgba(168,120,255,.7);
-  background:linear-gradient(135deg,var(--bif-1),var(--bif-2),var(--bif-3))}
-.mark{text-shadow:0 0 26px rgba(168,120,255,.35)}
-.gilt{background:linear-gradient(150deg,var(--gold-hi) 4%,var(--gold) 40%,#E0A63C 74%,var(--gold-deep) 100%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 0 22px rgba(255,203,107,.28))}
-.btn{box-shadow:0 0 0 1px rgba(255,237,192,.22) inset}
-.btn:hover{box-shadow:0 0 30px rgba(255,203,107,.34),0 0 0 1px rgba(255,237,192,.35) inset}
-@media(prefers-reduced-motion:reduce){html::before{animation:none}}
 
 /* Nothing may force the page sideways on a phone. Wide content scrolls inside
    its own container instead of dragging the whole layout with it. */
@@ -198,6 +149,118 @@ pre,code{overflow-wrap:anywhere}
   .btn{width:100%;justify-content:center}
   .dl .btn,.dacts .btn,.form .btn{width:auto}
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STRIKING, NOT DECORATED
+   Contrast does the work: near-black, one real spectral band, type pushed
+   to the narrow end of Archivo's width axis, hard edges everywhere. No
+   glows standing in for hierarchy.
+   ═══════════════════════════════════════════════════════════════════════ */
+html{background:#04060C}
+body{background:transparent}
+html::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.75;
+  background-image:
+    linear-gradient(rgba(232,224,206,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,224,206,.035) 1px, transparent 1px);
+  background-size:48px 48px;animation:none;
+  mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.5) 42%,transparent 72%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.5) 42%,transparent 72%)}
+body::before{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(120ch 60ch at 50% -8%, rgba(169,120,255,.16), transparent 62%) !important}
+
+/* THE BRIDGE — a real band, not a suggestion */
+header{position:relative;z-index:5;border-bottom:1px solid rgba(232,224,206,.1)}
+header::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:3px;
+  background:linear-gradient(90deg,#A878FF 0%,#6FE8FF 34%,#3DE8A5 52%,#FFCB6B 74%,#FF7ABE 100%)}
+main,footer,section{position:relative;z-index:2}
+
+.rule{height:1px !important;opacity:1 !important;overflow:visible;position:relative;
+  background:rgba(232,224,206,.1) !important;margin:clamp(56px,9vw,96px) 0 !important}
+.rule::after{content:'';position:absolute;left:0;top:-1px;width:140px;height:3px;
+  background:linear-gradient(90deg,#A878FF,#6FE8FF 50%,#FFCB6B)}
+
+/* type at its extremes */
+h1{font-size:clamp(2.6rem,9.5vw,6.2rem) !important;line-height:.92 !important;
+  letter-spacing:-.05em !important;font-variation-settings:'wdth' 82 !important}
+h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;color:var(--bone) !important;
+  font-size:clamp(1.9rem,5.4vw,3.2rem) !important;line-height:1.04 !important;
+  letter-spacing:-.045em !important;font-variation-settings:'wdth' 84 !important}
+.lede{font-size:clamp(1rem,2.2vw,1.28rem) !important;max-width:56ch;color:var(--bone);opacity:.86}
+.eyebrow{padding-left:0;font-size:.62rem;letter-spacing:.28em}
+.eyebrow::before{position:static;display:inline-block;transform:none;margin-right:12px;
+  width:34px;height:2px;border-radius:0;vertical-align:middle;box-shadow:none}
+
+/* statistics, loud */
+.facts{gap:0 !important;border-top:1px solid rgba(232,224,206,.1)}
+.fact{border-radius:0 !important;border:0 !important;
+  border-bottom:1px solid rgba(232,224,206,.1) !important;
+  border-right:1px solid rgba(232,224,206,.1) !important;
+  padding:clamp(26px,4vw,38px) clamp(20px,3vw,30px) !important;
+  background:transparent !important;position:relative;overflow:hidden}
+.fact::before{content:'';position:absolute;left:0;top:0;width:3px;height:0;
+  background:linear-gradient(180deg,#A878FF,#6FE8FF);transition:height .3s}
+.fact:hover::before{height:100%}
+.fact:hover{background:rgba(169,120,255,.045) !important}
+.fact .n{font-size:clamp(3.2rem,8vw,5rem) !important;line-height:.84 !important;
+  letter-spacing:-.06em !important;font-variation-settings:'wdth' 78 !important;
+  background:linear-gradient(170deg,var(--bone) 30%,rgba(169,120,255,.75));
+  -webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:14px}
+
+/* cards as one built object */
+.caps{gap:1px !important;background:rgba(232,224,206,.1);border:1px solid rgba(232,224,206,.1)}
+.cap{border-radius:0 !important;border:0 !important;background:#080B14 !important;
+  padding:clamp(24px,3.4vw,34px) !important;position:relative;transition:background .2s}
+.cap::after{display:none}
+.cap:hover{background:#0C1120 !important}
+.cap::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;transition:background .25s}
+.cap:hover::before{background:linear-gradient(180deg,#A878FF,#6FE8FF 50%,#FFCB6B)}
+.cap h3{font-size:clamp(1.15rem,2.4vw,1.5rem) !important;letter-spacing:-.025em;line-height:1.12}
+@media(min-width:960px){
+  .caps{grid-template-columns:repeat(6,1fr) !important;align-items:stretch}
+  .caps > .cap{grid-column:span 2}
+  .caps > .cap.wide{grid-column:span 4}
+  .caps > .cap:nth-child(1){grid-column:span 4}
+  .caps > .cap:nth-child(2){grid-column:span 2}
+  .caps > .cap:nth-child(6){grid-column:span 3}
+  .caps > .cap:nth-child(7){grid-column:span 3}
+  .caps > .cap:last-child{grid-column:span 6}}
+
+/* charter as a ledger */
+.arts{border-radius:0 !important;border:1px solid rgba(232,224,206,.1) !important}
+.arts::before{width:2px !important;background:linear-gradient(180deg,#A878FF,#6FE8FF 45%,#FFCB6B) !important}
+.art{border-radius:0;border-bottom:1px solid rgba(232,224,206,.08);
+  padding:clamp(22px,3vw,30px) clamp(20px,3vw,30px) !important;transition:background .2s}
+.art:hover{background:rgba(169,120,255,.04)}
+.art .num{font-size:1.5rem !important;font-variation-settings:'wdth' 76 !important;opacity:.5;min-width:52px !important}
+.art h3{font-size:1.1rem !important;letter-spacing:-.02em}
+
+/* buttons: square, and they move */
+.btn{border-radius:0 !important;letter-spacing:.1em;font-size:.8rem;padding:16px 30px;
+  transition:transform .15s, box-shadow .15s}
+.btn:not(.ghost){background:linear-gradient(100deg,#FFE7B4,#FFCB6B 45%,#E0A63C) !important;
+  color:#0A0806 !important;box-shadow:none !important}
+.btn:not(.ghost):hover{box-shadow:0 0 0 1px #FFCB6B, 6px 6px 0 0 rgba(169,120,255,.5) !important;
+  transform:translate(-2px,-2px)}
+.btn.ghost:hover{box-shadow:4px 4px 0 0 rgba(111,232,255,.4) !important;transform:translate(-2px,-2px)}
+
+/* everything square */
+.livebar,.cbanner,.acct,.blk,.tier,.path,.cbox,.plain,.never,.consent-form,.pinsetup,
+.status,.box,.arts,.srcbar .mini,.st,.br,.verdict,.next,.detail,.plotwrap,.canvaswrap,
+.key,.guard,.disc,.freebar,.warn,.adds,.watch,.honest,.shapes>div,.pay>div,.explain>div,
+.steps>div,.chk>div,.bgrid>div,.tags>div,.who div,.hrow,.msg,.field input,.box input,
+.form input,.pick select,.pinrow input,.srcs a{border-radius:0 !important}
+.pinrow input{border-radius:2px !important}
+.tags span,.flag,.mins,.notyet,.tlab,.srcs a{border-radius:0 !important}
+
+.mark{text-shadow:none}
+.gilt{filter:none;background:linear-gradient(160deg,#FFE7B4 10%,#FFCB6B 45%,#D08A2A 95%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+@media(prefers-reduced-motion:reduce){html::before{animation:none}}
 </style>
 </head>
 <body>
@@ -280,13 +343,18 @@ pre,code{overflow-wrap:anywhere}
       <div class="blk">
         <h3>Build map snapshots</h3>
         <p class="body" style="font-size:.88rem;margin-bottom:16px">The Map loads from files on our own domain so visitors never make an outside request. This builds those files. Your browser queries OpenStreetMap, compacts the result, and hands you a file to drop into <code style="font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--gold-hi)">mapdata/</code> in the repo.</p>
-        <p class="body" style="font-size:.85rem;color:var(--ash-dim);margin-bottom:16px">Overpass is a free service on donated hardware. Build a few states at a time, not fifty at once, and leave gaps between runs. Rebuilding every few months is plenty &mdash; the data changes slowly.</p>
+        <p class="body" style="font-size:.85rem;color:var(--ash-dim);margin-bottom:14px">Overpass is a free service on donated hardware. Build a few states at a time and leave gaps between runs. Rebuilding every few months is plenty &mdash; the data changes slowly.</p>
+        <div class="key" style="margin-bottom:16px"><b>How roads are fetched</b>
+          Streets are requested in groups of devices rather than by map area. A group of 120 cameras costs the same whether they sit on one block downtown or across an entire county &mdash; and if a group is still too heavy, it halves itself until it is not.
+          <br><br>
+          That is what makes dense states work. Arterials are still fetched by area and can be patchy in a big metro; the streets around each camera are the part that matters and they are now reliable.
+        </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
           <select id="mstate" style="background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:13px 15px;font-family:inherit;font-size:.9rem;min-width:190px"></select>
           <button class="btn" id="mbuild" style="font-size:.84rem;padding:13px 22px">Build this state</button>
           <label style="display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--ash);cursor:pointer">
             <input type="checkbox" id="mroads" checked style="width:16px;height:16px;accent-color:var(--gold)">
-            include roads
+            include roads <span style="color:var(--ash-dim);font-size:.8em">&mdash; adds a few minutes</span>
           </label>
           <button class="btn ghost" id="mstop" style="font-size:.84rem;padding:13px 22px;display:none">Stop</button>
         </div>
@@ -776,7 +844,9 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
     // Arterials still tile by area because roads are area-shaped. Depth 3 lets a
     // dense metro subdivide properly; the streets pass no longer competes for
     // the budget because it batches by device count instead.
-    var MAXDEPTH=3, PAUSE=2500, requests=0, MAXREQ=90, stopped=false;
+    // Streets are the point of the exercise, so they get the budget. Batches are
+    // cheap and predictable; arterials are the expensive, unpredictable part.
+    var MAXDEPTH=2, PAUSE=2200, requests=0, MAXREQ=160, stopped=false;
 
     function fetchTile(t, depth){
       if(stopped) return Promise.resolve();   // cap already reached; skip quietly
@@ -853,16 +923,23 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
         line('   now fetching streets near each device \u2014 '+batches.length+
              ' batches of up to '+LOCAL_BATCH+'\u2026','var(--ash-dim)');
 
-        var before=acc.length, bIdx=0, bOk=0, bFail=0;
+        var before=acc.length, bOk=0, bFail=0, queue=batches.slice();
+
+        /* If a batch fails we halve it and put both halves back, down to a
+           floor of 12 ids. Density is now handled by count, so a batch that is
+           too heavy anywhere gets smaller until it is not. This is what makes
+           California work: it has roughly twice Colorado's devices, and every
+           batch still costs the same as every other batch. */
+        var MIN_BATCH = 12;
         function nextBatch(){
-          if(bIdx>=batches.length || stopped) return Promise.resolve();
-          var b=batches[bIdx++];
+          if(!queue.length || stopped) return Promise.resolve();
+          var b=queue.shift();
           if(++requests > MAXREQ){
             if(!stopped){ stopped=true;
-              line('   \u26A0 request cap reached. Saving what has been fetched.','#FFCB6B'); }
+              line('   \u26A0 request cap reached with '+queue.length+' batches left. Saving what we have.','#FFCB6B'); }
             return Promise.resolve();
           }
-          line('   streets: batch '+bIdx+' of '+batches.length+'\u2026','var(--ash-dim)');
+          line('   streets: '+b.length+' devices \u00b7 '+queue.length+' batches left\u2026','var(--ash-dim)');
           q=localQueryIds(b);
           return go().then(function(r){
             (r.elements||[]).forEach(function(el){ if(!seen[el.id]){ seen[el.id]=1; acc.push(el); } });
@@ -870,8 +947,14 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
             return new Promise(function(res){ setTimeout(res,PAUSE); }).then(nextBatch);
           }).catch(function(e){
             if(e && e.rateLimited){ stopped=true; throw e; }
-            bFail++;
-            line('   \u26A0 batch '+bIdx+' failed \u2014 continuing','#FFCB6B');
+            if(b.length > MIN_BATCH){
+              var h=Math.ceil(b.length/2);
+              queue.unshift(b.slice(h)); queue.unshift(b.slice(0,h));
+              line('   too heavy \u2014 halving to '+h+' devices per request','var(--ash-dim)');
+            } else {
+              bFail++;
+              line('   \u26A0 '+b.length+' devices could not be fetched even at minimum size','#FFCB6B');
+            }
             return new Promise(function(res){ setTimeout(res,PAUSE); }).then(nextBatch);
           });
         }
@@ -880,7 +963,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
           var got=acc.length-before;
           if(!got) line('   \u26A0 no local streets returned','#FFCB6B');
           else line('   \u2713 local streets: '+got.toLocaleString()+' ways from '+
-                    bOk+'/'+batches.length+' batches'+(bFail?' ('+bFail+' failed)':''),'#3DE8A5');
+                    bOk+' requests'+(bFail?' \u00b7 '+bFail+' groups skipped':' \u00b7 all devices covered'),'#3DE8A5');
           return {elements:(camData.elements||[]).concat(acc)};
         });
       });

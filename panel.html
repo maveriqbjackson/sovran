@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Your Panel — SOVRAN</title>
 <meta name="description" content="A personal checklist for protecting yourself, saved only in your own browser. No account, no login, no sync, nothing sent anywhere.">
-<meta name="theme-color" content="#04060F">
+<meta name="theme-color" content="#04060C">
 <meta name="robots" content="noindex">
 <meta property="og:title" content="Your Panel — SOVRAN">
 <meta property="og:description" content="A personal checklist for protecting yourself, saved only in your own browser.">
@@ -121,94 +121,6 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .said.show{display:block}
 
 
-/* ── Bifröst accents ── */
-.cap,.blk,.pillar,.fact,.kid,.tool,.st{position:relative;overflow:hidden}
-.cap::after,.blk::after,.pillar::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,var(--bif-1),var(--bif-2) 48%,var(--bif-3));opacity:.28;transition:opacity .3s}
-.cap:hover::after,.blk:hover::after,.pillar:hover::after{opacity:.85}
-.eyebrow{position:relative;padding-left:16px}
-.eyebrow::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);
-  width:8px;height:8px;border-radius:2px;
-  background:linear-gradient(135deg,var(--bif-1),var(--bif-2),var(--bif-3))}
-
-.rule{opacity:.72 !important;height:2px !important}
-.cap::after,.blk::after,.pillar::after{opacity:.55}
-.cap:hover,.blk:hover{border-color:rgba(169,140,255,.34)}
-.eyebrow::before{width:9px;height:9px;box-shadow:0 0 10px rgba(169,140,255,.6)}
-h2{background:linear-gradient(96deg,var(--bone) 62%,rgba(169,140,255,.92));
-  -webkit-background-clip:text;background-clip:text;color:transparent}
-.mark{text-shadow:0 0 22px rgba(169,140,255,.28)}
-
-/* ══════════════════════════════════════════════════════════════════
-   ASGARD · three stacked layers of sky, none of which cost a request
-     html::before  the Bifröst itself — curtains of light, drifting
-     body::before  starfield
-     body::after   vignette and the gold horizon beneath it
-   ══════════════════════════════════════════════════════════════════ */
-html{background:var(--void)}
-html::before{
-  content:'';position:fixed;inset:-30% -20%;z-index:0;pointer-events:none;
-  background:
-    linear-gradient(106deg, transparent 10%, rgba(168,120,255,.50) 23%, transparent 37%),
-    linear-gradient(97deg,  transparent 26%, rgba(90,240,255,.40)  40%, transparent 54%),
-    linear-gradient(116deg, transparent 42%, rgba(255,203,107,.36) 57%, transparent 71%),
-    linear-gradient(90deg,  transparent 60%, rgba(255,122,190,.22) 71%, transparent 84%);
-  filter:blur(64px);
-  opacity:.85;
-  animation:bifrost 46s ease-in-out infinite alternate;
-}
-@keyframes bifrost{
-  0%  {transform:translate3d(0,0,0) scale(1)}
-  50% {transform:translate3d(-3%,2%,0) scale(1.06)}
-  100%{transform:translate3d(2%,-2%,0) scale(1.02)}
-}
-body::before{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.75;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='760'%3E%3Cg fill='%23F4F0E8'%3E%3Ccircle cx='53' cy='88' r='.9' opacity='.62'/%3E%3Ccircle cx='188' cy='31' r='.7' opacity='.44'/%3E%3Ccircle cx='302' cy='142' r='1.1' opacity='.56'/%3E%3Ccircle cx='431' cy='67' r='.7' opacity='.38'/%3E%3Ccircle cx='588' cy='121' r='1' opacity='.5'/%3E%3Ccircle cx='97' cy='233' r='.8' opacity='.47'/%3E%3Ccircle cx='249' cy='298' r='.6' opacity='.35'/%3E%3Ccircle cx='389' cy='241' r='1' opacity='.53'/%3E%3Ccircle cx='522' cy='329' r='.7' opacity='.4'/%3E%3Ccircle cx='657' cy='266' r='.9' opacity='.45'/%3E%3Ccircle cx='31' cy='401' r='1' opacity='.5'/%3E%3Ccircle cx='166' cy='466' r='.65' opacity='.37'/%3E%3Ccircle cx='291' cy='412' r='.85' opacity='.45'/%3E%3Ccircle cx='447' cy='488' r='1.1' opacity='.55'/%3E%3Ccircle cx='611' cy='434' r='.7' opacity='.38'/%3E%3Ccircle cx='122' cy='597' r='.9' opacity='.47'/%3E%3Ccircle cx='268' cy='643' r='.7' opacity='.37'/%3E%3Ccircle cx='412' cy='581' r='.95' opacity='.5'/%3E%3Ccircle cx='559' cy='657' r='.65' opacity='.35'/%3E%3Ccircle cx='678' cy='533' r='1' opacity='.5'/%3E%3Ccircle cx='722' cy='711' r='.8' opacity='.42'/%3E%3Ccircle cx='84' cy='702' r='.7' opacity='.38'/%3E%3Ccircle cx='355' cy='23' r='.85' opacity='.44'/%3E%3Ccircle cx='497' cy='196' r='.7' opacity='.36'/%3E%3C/g%3E%3C/svg%3E");
-}
-body::after{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    linear-gradient(180deg, transparent 58%, rgba(255,203,107,.13) 88%, rgba(255,203,107,.20) 100%),
-    radial-gradient(150ch 110ch at 50% 42%, transparent 42%, rgba(0,0,0,.60) 100%) !important;
-}
-
-/* structure lit by the bridge */
-.rule{height:2px !important;opacity:.9 !important;
-  background:linear-gradient(90deg,transparent,var(--bif-1) 18%,var(--bif-2) 44%,var(--bif-3) 72%,var(--bif-4) 88%,transparent) !important}
-.cap::after,.blk::after,.pillar::after{height:2px;opacity:.5;
-  background:linear-gradient(90deg,var(--bif-1),var(--bif-2) 46%,var(--bif-3))}
-.cap:hover::after,.blk:hover::after,.pillar:hover::after{opacity:1}
-.cap:hover,.blk:hover{border-color:rgba(168,120,255,.4);box-shadow:0 14px 44px rgba(0,0,0,.5),0 0 0 1px rgba(90,240,255,.08)}
-.eyebrow::before{width:9px;height:9px;box-shadow:0 0 12px rgba(168,120,255,.7);
-  background:linear-gradient(135deg,var(--bif-1),var(--bif-2),var(--bif-3))}
-.mark{text-shadow:0 0 26px rgba(168,120,255,.35)}
-.gilt{background:linear-gradient(150deg,var(--gold-hi) 4%,var(--gold) 40%,#E0A63C 74%,var(--gold-deep) 100%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 0 22px rgba(255,203,107,.28))}
-.btn{box-shadow:0 0 0 1px rgba(255,237,192,.22) inset}
-.btn:hover{box-shadow:0 0 30px rgba(255,203,107,.34),0 0 0 1px rgba(255,237,192,.35) inset}
-@media(prefers-reduced-motion:reduce){html::before{animation:none}}
-
-.fnav{display:grid;gap:22px;margin-bottom:26px;padding-bottom:24px;border-bottom:1px solid var(--line)}
-@media(min-width:700px){.fnav{grid-template-columns:repeat(3,1fr)}}
-.fnav>div{display:flex;flex-direction:column;gap:7px}
-.fnav span{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--gold);margin-bottom:4px}
-.fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content}
-.fnav a:hover{color:var(--gold)}
-
-/* Nothing may force the page sideways on a phone. Wide content scrolls inside
-   its own container instead of dragging the whole layout with it. */
-html,body{max-width:100%;overflow-x:hidden}
-img,svg,canvas,video{max-width:100%;height:auto}
-pre,code{overflow-wrap:anywhere}
-@media(max-width:420px){
-  .wrap{padding-left:16px;padding-right:16px}
-  h1{font-size:clamp(1.9rem,10vw,3rem)}
-  .btn{width:100%;justify-content:center}
-  .dl .btn,.dacts .btn,.form .btn{width:auto}
-}
 
 .acct{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;
   font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ash);
@@ -242,6 +154,118 @@ pre,code{overflow-wrap:anywhere}
 .pinsetup h4{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.15em;
   text-transform:uppercase;color:var(--gold);margin-bottom:10px}
 .pinsetup p{font-size:.87rem;color:var(--ash);line-height:1.55;margin-bottom:12px}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STRIKING, NOT DECORATED
+   Contrast does the work: near-black, one real spectral band, type pushed
+   to the narrow end of Archivo's width axis, hard edges everywhere. No
+   glows standing in for hierarchy.
+   ═══════════════════════════════════════════════════════════════════════ */
+html{background:#04060C}
+body{background:transparent}
+html::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.75;
+  background-image:
+    linear-gradient(rgba(232,224,206,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,224,206,.035) 1px, transparent 1px);
+  background-size:48px 48px;animation:none;
+  mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.5) 42%,transparent 72%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.5) 42%,transparent 72%)}
+body::before{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(120ch 60ch at 50% -8%, rgba(169,120,255,.16), transparent 62%) !important}
+
+/* THE BRIDGE — a real band, not a suggestion */
+header{position:relative;z-index:5;border-bottom:1px solid rgba(232,224,206,.1)}
+header::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:3px;
+  background:linear-gradient(90deg,#A878FF 0%,#6FE8FF 34%,#3DE8A5 52%,#FFCB6B 74%,#FF7ABE 100%)}
+main,footer,section{position:relative;z-index:2}
+
+.rule{height:1px !important;opacity:1 !important;overflow:visible;position:relative;
+  background:rgba(232,224,206,.1) !important;margin:clamp(56px,9vw,96px) 0 !important}
+.rule::after{content:'';position:absolute;left:0;top:-1px;width:140px;height:3px;
+  background:linear-gradient(90deg,#A878FF,#6FE8FF 50%,#FFCB6B)}
+
+/* type at its extremes */
+h1{font-size:clamp(2.6rem,9.5vw,6.2rem) !important;line-height:.92 !important;
+  letter-spacing:-.05em !important;font-variation-settings:'wdth' 82 !important}
+h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;color:var(--bone) !important;
+  font-size:clamp(1.9rem,5.4vw,3.2rem) !important;line-height:1.04 !important;
+  letter-spacing:-.045em !important;font-variation-settings:'wdth' 84 !important}
+.lede{font-size:clamp(1rem,2.2vw,1.28rem) !important;max-width:56ch;color:var(--bone);opacity:.86}
+.eyebrow{padding-left:0;font-size:.62rem;letter-spacing:.28em}
+.eyebrow::before{position:static;display:inline-block;transform:none;margin-right:12px;
+  width:34px;height:2px;border-radius:0;vertical-align:middle;box-shadow:none}
+
+/* statistics, loud */
+.facts{gap:0 !important;border-top:1px solid rgba(232,224,206,.1)}
+.fact{border-radius:0 !important;border:0 !important;
+  border-bottom:1px solid rgba(232,224,206,.1) !important;
+  border-right:1px solid rgba(232,224,206,.1) !important;
+  padding:clamp(26px,4vw,38px) clamp(20px,3vw,30px) !important;
+  background:transparent !important;position:relative;overflow:hidden}
+.fact::before{content:'';position:absolute;left:0;top:0;width:3px;height:0;
+  background:linear-gradient(180deg,#A878FF,#6FE8FF);transition:height .3s}
+.fact:hover::before{height:100%}
+.fact:hover{background:rgba(169,120,255,.045) !important}
+.fact .n{font-size:clamp(3.2rem,8vw,5rem) !important;line-height:.84 !important;
+  letter-spacing:-.06em !important;font-variation-settings:'wdth' 78 !important;
+  background:linear-gradient(170deg,var(--bone) 30%,rgba(169,120,255,.75));
+  -webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:14px}
+
+/* cards as one built object */
+.caps{gap:1px !important;background:rgba(232,224,206,.1);border:1px solid rgba(232,224,206,.1)}
+.cap{border-radius:0 !important;border:0 !important;background:#080B14 !important;
+  padding:clamp(24px,3.4vw,34px) !important;position:relative;transition:background .2s}
+.cap::after{display:none}
+.cap:hover{background:#0C1120 !important}
+.cap::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;transition:background .25s}
+.cap:hover::before{background:linear-gradient(180deg,#A878FF,#6FE8FF 50%,#FFCB6B)}
+.cap h3{font-size:clamp(1.15rem,2.4vw,1.5rem) !important;letter-spacing:-.025em;line-height:1.12}
+@media(min-width:960px){
+  .caps{grid-template-columns:repeat(6,1fr) !important;align-items:stretch}
+  .caps > .cap{grid-column:span 2}
+  .caps > .cap.wide{grid-column:span 4}
+  .caps > .cap:nth-child(1){grid-column:span 4}
+  .caps > .cap:nth-child(2){grid-column:span 2}
+  .caps > .cap:nth-child(6){grid-column:span 3}
+  .caps > .cap:nth-child(7){grid-column:span 3}
+  .caps > .cap:last-child{grid-column:span 6}}
+
+/* charter as a ledger */
+.arts{border-radius:0 !important;border:1px solid rgba(232,224,206,.1) !important}
+.arts::before{width:2px !important;background:linear-gradient(180deg,#A878FF,#6FE8FF 45%,#FFCB6B) !important}
+.art{border-radius:0;border-bottom:1px solid rgba(232,224,206,.08);
+  padding:clamp(22px,3vw,30px) clamp(20px,3vw,30px) !important;transition:background .2s}
+.art:hover{background:rgba(169,120,255,.04)}
+.art .num{font-size:1.5rem !important;font-variation-settings:'wdth' 76 !important;opacity:.5;min-width:52px !important}
+.art h3{font-size:1.1rem !important;letter-spacing:-.02em}
+
+/* buttons: square, and they move */
+.btn{border-radius:0 !important;letter-spacing:.1em;font-size:.8rem;padding:16px 30px;
+  transition:transform .15s, box-shadow .15s}
+.btn:not(.ghost){background:linear-gradient(100deg,#FFE7B4,#FFCB6B 45%,#E0A63C) !important;
+  color:#0A0806 !important;box-shadow:none !important}
+.btn:not(.ghost):hover{box-shadow:0 0 0 1px #FFCB6B, 6px 6px 0 0 rgba(169,120,255,.5) !important;
+  transform:translate(-2px,-2px)}
+.btn.ghost:hover{box-shadow:4px 4px 0 0 rgba(111,232,255,.4) !important;transform:translate(-2px,-2px)}
+
+/* everything square */
+.livebar,.cbanner,.acct,.blk,.tier,.path,.cbox,.plain,.never,.consent-form,.pinsetup,
+.status,.box,.arts,.srcbar .mini,.st,.br,.verdict,.next,.detail,.plotwrap,.canvaswrap,
+.key,.guard,.disc,.freebar,.warn,.adds,.watch,.honest,.shapes>div,.pay>div,.explain>div,
+.steps>div,.chk>div,.bgrid>div,.tags>div,.who div,.hrow,.msg,.field input,.box input,
+.form input,.pick select,.pinrow input,.srcs a{border-radius:0 !important}
+.pinrow input{border-radius:2px !important}
+.tags span,.flag,.mins,.notyet,.tlab,.srcs a{border-radius:0 !important}
+
+.mark{text-shadow:none}
+.gilt{filter:none;background:linear-gradient(160deg,#FFE7B4 10%,#FFCB6B 45%,#D08A2A 95%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+@media(prefers-reduced-motion:reduce){html::before{animation:none}}
 </style>
 </head>
 <body>
