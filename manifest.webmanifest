@@ -1,0 +1,22 @@
+{
+  "name": "SOVRAN — take your data back",
+  "short_name": "SOVRAN",
+  "description": "Privacy tools that never learn who you are. Everything runs on your device.",
+  "start_url": "/?src=app",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#04060C",
+  "theme_color": "#04060C",
+  "categories": ["utilities", "security", "productivity"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Check a photo", "short_name": "Photo", "url": "/photo" },
+    { "name": "The Map", "short_name": "Map", "url": "/map" },
+    { "name": "Your Panel", "short_name": "Panel", "url": "/panel" }
+  ]
+}

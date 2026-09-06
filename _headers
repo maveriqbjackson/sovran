@@ -1,3 +1,10 @@
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+  Cache-Control: public, max-age=3600
+
+/icon-*.png
+  Cache-Control: public, max-age=604800
+
 # ── Long-lived caching for immutable assets ──
 /fonts/*
   Cache-Control: public, max-age=31536000, immutable
