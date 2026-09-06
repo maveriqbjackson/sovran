@@ -313,13 +313,17 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content;
   transition:color .18s}
 .fnav a:hover{color:var(--gold)}
-.acct{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;
-  font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ash);
-  text-decoration:none;border:1px solid rgba(232,224,206,.2);padding:9px 15px;
-  transition:all .18s;white-space:nowrap;margin-left:auto}
-.acct:hover{border-color:var(--gold);color:var(--gold)}
-.acct.in{border-color:rgba(61,232,165,.45);color:#3DE8A5}
-@media(max-width:560px){.acct span{display:none}.acct{padding:10px 12px}}
+.acct{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;
+  font-size:.7rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:#0A0806;text-decoration:none;border:0;padding:11px 20px;
+  background:linear-gradient(100deg,#FFE7B4,#FFCB6B 45%,#E0A63C);
+  transition:transform .15s, box-shadow .15s;white-space:nowrap;margin-left:auto}
+.acct:hover{box-shadow:0 0 0 1px #FFCB6B, 5px 5px 0 0 rgba(169,120,255,.55);
+  transform:translate(-2px,-2px)}
+.acct svg{stroke:#0A0806}
+.acct.in{background:linear-gradient(100deg,#8CFFD0,#3DE8A5 50%,#1FBF80);color:#04120C}
+.acct.in svg{stroke:#04120C}
+@media(max-width:560px){.acct span{display:none}.acct{padding:11px 13px}}
 </style>
 </head>
 <body>

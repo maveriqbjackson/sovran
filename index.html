@@ -189,13 +189,47 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content;
   transition:color .18s}
 .fnav a:hover{color:var(--gold)}
-.acct{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;
-  font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ash);
-  text-decoration:none;border:1px solid rgba(232,224,206,.2);padding:9px 15px;
-  transition:all .18s;white-space:nowrap;margin-left:auto}
-.acct:hover{border-color:var(--gold);color:var(--gold)}
-.acct.in{border-color:rgba(61,232,165,.45);color:#3DE8A5}
-@media(max-width:560px){.acct span{display:none}.acct{padding:10px 12px}}
+.acct{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;
+  font-size:.7rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:#0A0806;text-decoration:none;border:0;padding:11px 20px;
+  background:linear-gradient(100deg,#FFE7B4,#FFCB6B 45%,#E0A63C);
+  transition:transform .15s, box-shadow .15s;white-space:nowrap;margin-left:auto}
+.acct:hover{box-shadow:0 0 0 1px #FFCB6B, 5px 5px 0 0 rgba(169,120,255,.55);
+  transform:translate(-2px,-2px)}
+.acct svg{stroke:#0A0806}
+.acct.in{background:linear-gradient(100deg,#8CFFD0,#3DE8A5 50%,#1FBF80);color:#04120C}
+.acct.in svg{stroke:#04120C}
+@media(max-width:560px){.acct span{display:none}.acct{padding:11px 13px}}
+
+/* the "use these now" strip — the seven live tools, above everything else */
+.usenow{position:relative;z-index:3;border-bottom:1px solid rgba(232,224,206,.1);
+  padding:clamp(30px,5vw,48px) 0 clamp(26px,4vw,38px);background:rgba(8,11,20,.5)}
+.un-head{margin-bottom:22px}
+.un-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;
+  font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#3DE8A5;
+  border:1px solid rgba(61,232,165,.35);padding:6px 12px;margin-bottom:14px}
+.un-h{font-family:'Archivo',sans-serif;font-weight:900;font-variation-settings:'wdth' 84;
+  font-size:clamp(1.5rem,4vw,2.4rem) !important;line-height:1.05;letter-spacing:-.04em;
+  color:var(--bone) !important;margin-bottom:10px;background:none !important;
+  -webkit-text-fill-color:var(--bone) !important}
+.un-p{font-size:.95rem;color:var(--ash);line-height:1.6;max-width:58ch}
+.un-grid{display:grid;gap:1px;background:rgba(232,224,206,.1);
+  border:1px solid rgba(232,224,206,.1);grid-template-columns:1fr}
+@media(min-width:600px){.un-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.un-grid{grid-template-columns:repeat(4,1fr)}}
+.un-grid a{background:#080B14;padding:18px 20px;text-decoration:none;display:block;
+  border:0;transition:background .18s;position:relative}
+.un-grid a:hover{background:#0E1424}
+.un-grid a::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:transparent;transition:background .2s}
+.un-grid a:hover::before{background:linear-gradient(180deg,#A878FF,#6FE8FF)}
+.un-grid b{display:block;font-family:'Archivo',sans-serif;font-weight:700;font-size:1rem;
+  color:var(--bone);margin-bottom:4px;letter-spacing:-.015em}
+.un-grid span{font-size:.83rem;color:var(--ash-dim);line-height:1.4}
+.un-start{display:inline-block;margin-top:20px;font-family:'IBM Plex Mono',monospace;
+  font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);
+  text-decoration:none;border-bottom:1px solid rgba(255,203,107,.4);padding-bottom:3px}
+.un-start:hover{color:var(--gold-hi)}
 </style>
 <style>
 :root{--void:#04060F; --void-2:#070B18; --surface:#0C1424; --surface-2:#131E38;
@@ -423,6 +457,26 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
   <span class="ctext"><b>The Canary</b> <span id="cbtext">checking&hellip;</span></span>
   <span class="cgo">Read it &rarr;</span>
 </a>
+
+<div class="usenow">
+  <div class="wrap">
+    <div class="un-head">
+      <span class="un-tag">Free &middot; No account &middot; Works offline</span>
+      <h2 class="un-h">Seven tools you can use right now.</h2>
+      <p class="un-p">Nothing to sign up for. Nothing to pay. Every one of these runs inside your browser &mdash; turn off your wifi and they still work.</p>
+    </div>
+    <div class="un-grid">
+      <a href="/photo"><b>The Photo Check</b><span>What your photo reveals</span></a>
+      <a href="/audit"><b>The Audit</b><span>Read your own social export</span></a>
+      <a href="/map"><b>The Map</b><span>Cameras on your street</span></a>
+      <a href="/guide"><b>The Guide</b><span>What to actually do</span></a>
+      <a href="/passphrase"><b>The Passphrase</b><span>A key worth having</span></a>
+      <a href="/panel"><b>Your Panel</b><span>Track your progress</span></a>
+      <a href="/account"><b>Your Account</b><span>Optional, encrypted, free</span></a>
+    </div>
+    <a href="/start" class="un-start">New here? Start with one question &rarr;</a>
+  </div>
+</div>
 
 <section class="hero">
   <div class="wrap">

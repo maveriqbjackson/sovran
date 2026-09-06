@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-05 22:48 UTC",
+ "generated": "2026-09-06 13:40 UTC",
  "note": "SHA-256 of every deployed file. robots.txt excluded because Cloudflare rewrites it. Fonts excluded from this build.",
  "files": {
   "/404.html": {
@@ -7,24 +7,24 @@
    "bytes": 14492
   },
   "/access.html": {
-   "sha256": "576735f27f57b8efc037cbcd8098e2d7d0c13291e2370e3ca303c85e7a09f93d",
-   "bytes": 38134
+   "sha256": "de658a964016ffd1ed2883bb7a0906f42e12d4b5065eb69a3d40ce20c0005aa9",
+   "bytes": 38346
   },
   "/account.html": {
-   "sha256": "981c070e8860e5127e6f3173fa0380290760a8282592a413205cf148b358d997",
-   "bytes": 44739
+   "sha256": "275fd6ed1340f5495e2cdf143b9d66ed6c0e14ccc4725a3d9914a4f8cdaa92ce",
+   "bytes": 44951
   },
   "/admin.html": {
    "sha256": "e59da1d1fce2af5443b1bbff1e4befa6a16dc2342be4c9f6c2c3d87b4228183b",
    "bytes": 66745
   },
   "/audit.html": {
-   "sha256": "0a15d587e6afcf8245015e2d7792cb14861a8eda9b3b1fff18f7c4266c118a39",
-   "bytes": 56923
+   "sha256": "93ef5d737962d47857887074fff2638125d892081a6bae20e9025e20779c6040",
+   "bytes": 57135
   },
   "/canary.html": {
-   "sha256": "9d24e820bd2b7f6cf6e44026d4c320f4f02223d8035312142fcb2f96bbb4766f",
-   "bytes": 33255
+   "sha256": "ad63218a892cd225080946cc65084eb858e35eb24ad6f054746144275c02da40",
+   "bytes": 33467
   },
   "/charter.html": {
    "sha256": "4735c66c8a28a82675dba1861de6b8ae011d7df2d856030f5fbf4e3419653d73",
@@ -39,32 +39,32 @@
    "bytes": 27783
   },
   "/guide.html": {
-   "sha256": "bb6d728bb29b0049dc6cc4b5eef4e60927c24cde19be0e70300fce9d528e7483",
-   "bytes": 57026
+   "sha256": "83ebe0eacdc11685891db45fd1694e09ac4adc0cdd248323b72d5ab064e9ede7",
+   "bytes": 57238
   },
   "/index.html": {
-   "sha256": "d7bae5bb745c5cbd4ab7300020197320e287bc6000bca02e614f990423d3f224",
-   "bytes": 63324
+   "sha256": "24426b97aca8177db27690de8223234f6c071c8c962aa72052474c82c81b3e8b",
+   "bytes": 66696
   },
   "/jszip.min.js": {
    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",
    "bytes": 97630
   },
   "/map.html": {
-   "sha256": "a55f70106e6ad43b197c544b4d1089e7c0f2e5dc79ab9721432ff0d202cfc761",
-   "bytes": 83780
+   "sha256": "83aeb915ac12795b31af43d727bfccc5dd3db671be7839ee07cfb9ce1a451558",
+   "bytes": 85823
   },
   "/panel.html": {
-   "sha256": "d429e1243178d345fa728e13d4c471e7f37cfb8efc3dcd01124e778e5cc46cf4",
-   "bytes": 38293
+   "sha256": "c03e73d0ac595a9023bfbdc3957cbeeafaf4972d99838c1d1039f559ed36e324",
+   "bytes": 38505
   },
   "/passphrase.html": {
-   "sha256": "547a0bc87ccf8f583ec5d3b84599a52b80baa27a4ba34f5b3964fa0f113758d1",
-   "bytes": 31564
+   "sha256": "05ee1f547428601c30fb48e886f25a11e12c034f6295a86c669c9c3c41cab338",
+   "bytes": 31776
   },
   "/photo.html": {
-   "sha256": "2413388335d47b1dc57b9696f2d1c58ecad84884ead7b1d8f2fd16ef2a1225e7",
-   "bytes": 48701
+   "sha256": "b874de2e1a2536859111bd4a838d415ba194402332eaa382123ca224bf9031a6",
+   "bytes": 48913
   },
   "/sign.html": {
    "sha256": "e364735f9d3083a07f0a88de951ae1556366dc82428db0f8da73c6af0db2caff",

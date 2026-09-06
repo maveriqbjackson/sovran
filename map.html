@@ -336,13 +336,17 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content;
   transition:color .18s}
 .fnav a:hover{color:var(--gold)}
-.acct{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;
-  font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ash);
-  text-decoration:none;border:1px solid rgba(232,224,206,.2);padding:9px 15px;
-  transition:all .18s;white-space:nowrap;margin-left:auto}
-.acct:hover{border-color:var(--gold);color:var(--gold)}
-.acct.in{border-color:rgba(61,232,165,.45);color:#3DE8A5}
-@media(max-width:560px){.acct span{display:none}.acct{padding:10px 12px}}
+.acct{display:inline-flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;
+  font-size:.7rem;font-weight:600;letter-spacing:.13em;text-transform:uppercase;
+  color:#0A0806;text-decoration:none;border:0;padding:11px 20px;
+  background:linear-gradient(100deg,#FFE7B4,#FFCB6B 45%,#E0A63C);
+  transition:transform .15s, box-shadow .15s;white-space:nowrap;margin-left:auto}
+.acct:hover{box-shadow:0 0 0 1px #FFCB6B, 5px 5px 0 0 rgba(169,120,255,.55);
+  transform:translate(-2px,-2px)}
+.acct svg{stroke:#0A0806}
+.acct.in{background:linear-gradient(100deg,#8CFFD0,#3DE8A5 50%,#1FBF80);color:#04120C}
+.acct.in svg{stroke:#04120C}
+@media(max-width:560px){.acct span{display:none}.acct{padding:11px 13px}}
 </style>
 </head>
 <body>
@@ -534,7 +538,7 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 'use strict';
 var $=function(i){return document.getElementById(i);};
 var SEL=$('region'), PROG=$('prog'), ERR=$('err'), OUT=$('out');
-var rows=[], regionName='', blocked=false, diag=[], dataAge=null, ROADS=[], ROADNAMES=[];
+var rows=[], regionName='', blocked=false, diag=[], dataAge=null, ROADS=[], ROADNAMES=[], CITIES_DRAWN=0;
 
 // A blocked request throws a generic TypeError, which is indistinguishable from
 // a network failure. This event tells us which one actually happened.
@@ -689,6 +693,7 @@ function showLayers(notes){
   var ok=[];
   if(view.outline) ok.push('state outline');
   if(view.cities.length) ok.push(view.cities.length+' towns');
+  else notes.push(['towns','none in range \u2014 check that /cities.json is deployed']);
   if(ROADS.length) ok.push(ROADS.length.toLocaleString()+' road segments');
   ok.push(rows.length.toLocaleString()+' devices');
 
@@ -721,10 +726,18 @@ function tally(field,label){
     CS.onchange=function(){
       var list=(view.cities||[]).slice().sort(function(a,b){return a[0]<b[0]?-1:1;});
       var c=list[+CS.value]; if(!c) return;
-      T.k=14;
-      var q=px(c[3],c[2]);
-      T.x+=cv.cssW/2-q[0]; T.y+=cv.cssH/2-q[1];
-      drawMap();
+      var startK=T.k, startX=T.x, startY=T.y;
+      var q0=px(c[3],c[2]);
+      T.k=14; var q1=px(c[3],c[2]);
+      var endX=T.x+cv.cssW/2-q1[0], endY=T.y+cv.cssH/2-q1[1], endK=14;
+      T.k=startK; T.x=startX; T.y=startY;
+      var t0=performance.now();
+      (function fly(now){
+        var k=Math.min(1,(now-t0)/420), e=1-Math.pow(1-k,3);
+        T.k=startK+(endK-startK)*e; T.x=startX+(endX-startX)*e; T.y=startY+(endY-startY)*e;
+        drawMap();
+        if(k<1) requestAnimationFrame(fly);
+      })(t0);
     };
   }
   var src=document.getElementById('src');
@@ -1069,24 +1082,33 @@ function drawMap(){
     ctx.fill(); ctx.globalAlpha=1;
   });
 
-  // cities on top, so they stay readable
-  ctx.font='500 11px "IBM Plex Mono", monospace';
-  ctx.textBaseline='middle';
-  var shown=0;
+  // Towns last and unmissable — they are the only thing telling someone where
+  // they are looking. Drawn after roads and devices so nothing covers them.
+  ctx.textBaseline='middle'; ctx.textAlign='left';
+  var shown=0, cap = T.k>6 ? 60 : T.k>2 ? 30 : 16;
   view.cities.forEach(function(c){
-    if(shown>(T.k>2?40:14)) return;
+    if(shown>=cap) return;
     var q=px(c[3],c[2]);
-    if(q[0]<0||q[0]>W||q[1]<0||q[1]>H) return;
+    if(q[0]<-30||q[0]>W+30||q[1]<-20||q[1]>H+20) return;
     shown++;
-    ctx.beginPath(); ctx.arc(q[0],q[1],3.2,0,6.2832);
-    ctx.fillStyle='#EDE7DA'; ctx.globalAlpha=.85; ctx.fill();
-    ctx.globalAlpha=1;
-    ctx.fillStyle='rgba(2,4,11,.85)';
+    // marker: a filled ring so it reads against both roads and dots
+    ctx.beginPath(); ctx.arc(q[0],q[1],4.4,0,6.2832);
+    ctx.fillStyle='rgba(4,6,12,.9)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(q[0],q[1],4.4,0,6.2832);
+    ctx.strokeStyle='#F4F0E8'; ctx.lineWidth=1.6; ctx.stroke();
+    ctx.beginPath(); ctx.arc(q[0],q[1],1.5,0,6.2832);
+    ctx.fillStyle='#F4F0E8'; ctx.fill();
+
+    ctx.font='600 12px "IBM Plex Mono", monospace';
     var tw=ctx.measureText(c[0]).width;
-    ctx.fillRect(q[0]+7,q[1]-7,tw+6,14);
-    ctx.fillStyle='#EDE7DA';
-    ctx.fillText(c[0],q[0]+10,q[1]);
+    ctx.fillStyle='rgba(4,6,12,.92)';
+    ctx.fillRect(q[0]+9, q[1]-9, tw+10, 18);
+    ctx.strokeStyle='rgba(244,240,232,.28)'; ctx.lineWidth=1;
+    ctx.strokeRect(q[0]+9, q[1]-9, tw+10, 18);
+    ctx.fillStyle='#F4F0E8';
+    ctx.fillText(c[0], q[0]+14, q[1]);
   });
+  CITIES_DRAWN=shown;
 
   drawScale();
 }
@@ -1127,10 +1149,19 @@ function bindMap(){
     return [e.clientX-b.left, e.clientY-b.top];
   }
 
+  // Trackpads fire many small deltas and mice fire few large ones. Scaling by
+  // the delta rather than a fixed step is what makes both feel the same.
+  var wheelRaf=0, pendingZoom=null;
   cv.addEventListener('wheel',function(e){
     e.preventDefault();
     var p=rel(e);
-    zoomAt(p[0],p[1], e.deltaY<0?1.18:1/1.18);
+    var d=e.deltaMode===1 ? e.deltaY*16 : e.deltaY;
+    var f=Math.exp(-Math.max(-90,Math.min(90,d))*0.0035);
+    pendingZoom=[p[0],p[1],f];
+    if(!wheelRaf) wheelRaf=requestAnimationFrame(function(){
+      wheelRaf=0;
+      if(pendingZoom){ zoomAt(pendingZoom[0],pendingZoom[1],pendingZoom[2]); pendingZoom=null; }
+    });
   },{passive:false});
 
   cv.addEventListener('pointerdown',function(e){
@@ -1182,8 +1213,17 @@ function bindMap(){
     cv.addEventListener(ev,function(e){ delete pts[e.pointerId]; startD=0; });
   });
 
-  document.getElementById('zin').addEventListener('click',function(){ zoomAt(cv.cssW/2,cv.cssH/2,1.5); });
-  document.getElementById('zout').addEventListener('click',function(){ zoomAt(cv.cssW/2,cv.cssH/2,1/1.5); });
+  function glide(target){
+    var start=T.k, t0=performance.now(), dur=260;
+    (function step(now){
+      var k=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-k,3);
+      var want=start+(target-start)*e;
+      zoomAt(cv.cssW/2, cv.cssH/2, want/T.k);
+      if(k<1) requestAnimationFrame(step);
+    })(t0);
+  }
+  document.getElementById('zin').addEventListener('click',function(){ glide(Math.min(60,T.k*1.8)); });
+  document.getElementById('zout').addEventListener('click',function(){ glide(Math.max(1,T.k/1.8)); });
   document.getElementById('zreset').addEventListener('click',function(){ fit(); drawMap(); });
 }
 
