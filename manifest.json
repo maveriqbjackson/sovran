@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-06 13:40 UTC",
+ "generated": "2026-09-06 14:04 UTC",
  "note": "SHA-256 of every deployed file. robots.txt excluded because Cloudflare rewrites it. Fonts excluded from this build.",
  "files": {
   "/404.html": {
@@ -23,12 +23,12 @@
    "bytes": 57135
   },
   "/canary.html": {
-   "sha256": "ad63218a892cd225080946cc65084eb858e35eb24ad6f054746144275c02da40",
-   "bytes": 33467
+   "sha256": "161127a6955aba194886b984698cbf6b0ac50a97f79a7732858e59da65524d1a",
+   "bytes": 37389
   },
   "/charter.html": {
-   "sha256": "4735c66c8a28a82675dba1861de6b8ae011d7df2d856030f5fbf4e3419653d73",
-   "bytes": 27767
+   "sha256": "17c287049f8162ba6bf12c9fd712da1e84929857acc87648252735c91c62cfb5",
+   "bytes": 27882
   },
   "/cities.json": {
    "sha256": "3de19588ded4e7ad5bfbd97895dc4d943cb5bbe9883b3cd310cff0ee6989eab7",
@@ -43,8 +43,8 @@
    "bytes": 57238
   },
   "/index.html": {
-   "sha256": "24426b97aca8177db27690de8223234f6c071c8c962aa72052474c82c81b3e8b",
-   "bytes": 66696
+   "sha256": "65b08e0761cf6b43aa48366567cd31bb0639b6fa4d76ae0dc02f0a9780477083",
+   "bytes": 66701
   },
   "/jszip.min.js": {
    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",

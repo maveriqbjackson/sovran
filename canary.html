@@ -110,6 +110,19 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .meta div{display:flex;justify-content:space-between;gap:14px;font-family:'IBM Plex Mono',monospace;font-size:.76rem;flex-wrap:wrap}
 .meta span:first-child{color:var(--ash-dim);letter-spacing:.1em;text-transform:uppercase;font-size:.64rem}
 .meta span:last-child{color:var(--bone);text-align:right}
+.routes{display:grid;gap:1px;margin-top:24px;background:rgba(232,224,206,.1);
+  border:1px solid rgba(232,224,206,.1)}
+@media(min-width:840px){.routes{grid-template-columns:repeat(3,1fr)}}
+.routes>div{background:#080B14;padding:24px 22px}
+.routes>div.hot{background:#0F0B16;box-shadow:inset 2px 0 0 0 #A878FF}
+.routes .rn{font-family:'Archivo',sans-serif;font-weight:900;font-variation-settings:'wdth' 78;
+  font-size:2.2rem;line-height:1;letter-spacing:-.05em;color:rgba(232,224,206,.16);display:block;margin-bottom:10px}
+.routes>div.hot .rn{color:rgba(168,120,255,.55)}
+.routes h3{font-size:1.08rem;margin-bottom:9px;letter-spacing:-.02em}
+.routes p{font-size:.89rem;color:var(--ash);line-height:1.58;margin-bottom:10px}
+.routes .rnote{font-family:'IBM Plex Mono',monospace;font-size:.74rem;color:var(--ash-dim);
+  line-height:1.5;padding-top:10px;border-top:1px solid rgba(232,224,206,.08);margin-bottom:0}
+.routes>div.hot .rnote{color:rgba(168,120,255,.8)}
 .steps{display:grid;gap:11px;margin-top:20px}
 .steps>div{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--gold-deep);
   border-radius:var(--r-md);padding:16px 18px;font-size:.9rem;color:var(--ash);line-height:1.58}
@@ -293,6 +306,48 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
       <p class="stmt" id="stmt"><span class="loading">Loading the current statement&hellip;</span></p>
       <div class="meta" id="meta"></div>
     </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <div class="wrap">
+    <h2>Three ways your data leaves a company. Most people only think about one.</h2>
+    <p class="body">When someone says &ldquo;my data got out&rdquo;, they usually picture a hacker. That is one route of three, and it is not the one that gets the least attention by accident.</p>
+
+    <div class="routes">
+      <div>
+        <span class="rn">01</span>
+        <h3>A breach</h3>
+        <p>Criminals get in and take what is there. This is the one everyone imagines, the one that makes the news, and the one every company promises they are protecting you from.</p>
+        <p class="rnote">You usually find out. Eventually. Often years later.</p>
+      </div>
+      <div>
+        <span class="rn">02</span>
+        <h3>A sale</h3>
+        <p>The company simply sells it, or is bought by somebody who will. Entirely legal, disclosed in a privacy policy nobody reads, and the actual business model of most free services.</p>
+        <p class="rnote">You are told, in a sense. In paragraph forty-one.</p>
+      </div>
+      <div class="hot">
+        <span class="rn">03</span>
+        <h3>A demand you are never told about</h3>
+        <p>A subpoena, a warrant, a court order, or a National Security Letter. The company hands over what it holds because it is legally required to &mdash; <strong>and is often legally forbidden from telling you it happened.</strong></p>
+        <p class="rnote">You are not told. That is the design, not a failure.</p>
+      </div>
+    </div>
+
+    <div class="key" style="margin-top:22px"><b>Why the third one matters most here</b>
+      A breach is a security failure, so a company can promise to try harder. A sale is a choice, so a company can promise not to. <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">Legal compulsion is neither.</b> No amount of care prevents it, no promise survives it, and a gag order means the company cannot even warn you.
+      <br><br>
+      Encryption does not help if the company holds the key. Good intentions do not help. A privacy policy definitely does not help &mdash; a court order overrides it entirely.
+      <br><br>
+      <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">There are only two real defences.</b> Do not hold the data, so there is nothing to compel. And publish a statement you would have to stop making if it ever happened.
+      <br><br>
+      That is what this page is. The first defence is the Charter. This is the second.
+    </div>
+
+    <p class="body" style="margin-top:20px">It is worth being precise about what a canary can and cannot cover. It says nothing has been demanded of <em>us</em>. It cannot speak for your phone, your email provider, your bank, or anyone else holding something about you &mdash; all of whom face the same three routes and most of whom publish nothing at all.</p>
   </div>
 </section>
 
