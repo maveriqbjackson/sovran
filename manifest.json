@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-07 13:54 UTC",
+ "generated": "2026-09-07 14:00 UTC",
  "note": "SHA-256 of every deployed file. robots.txt excluded because Cloudflare rewrites it. Fonts excluded from this build.",
  "files": {
   "/404.html": {
@@ -55,8 +55,8 @@
    "bytes": 33614
   },
   "/index.html": {
-   "sha256": "a2548ddd89a45a525db8263c554381174615bdc03d47b17f2a930f4335f612c2",
-   "bytes": 90310
+   "sha256": "34fbbfbbdc0c4f3269738b0e4760085935467cb03809cf79fbaa9dc586115070",
+   "bytes": 93280
   },
   "/jszip.min.js": {
    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",

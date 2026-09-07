@@ -418,6 +418,55 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   border-bottom-color:rgba(61,232,165,.4) !important}
 .ksmini:hover{color:#8CFFD0 !important}
 .un-start+.un-start{margin-top:10px}
+
+/* ── canary banner: status by colour, word and meaning together ── */
+.cbanner{display:flex;align-items:center;gap:14px;max-width:var(--maxw);
+  margin:0 auto;width:calc(100% - var(--pad)*2);padding:13px 18px;
+  text-decoration:none;position:relative;z-index:3;
+  background:#080B14;border:1px solid rgba(232,224,206,.14);
+  transition:border-color .25s, box-shadow .25s, background .25s}
+
+.cchip{display:inline-flex;align-items:center;gap:8px;flex:none;
+  padding:7px 12px;border:1px solid currentColor;font-family:'IBM Plex Mono',monospace;
+  font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ash-dim)}
+.cchip b{font-weight:700;letter-spacing:.14em}
+.cchip i{font-style:normal;font-weight:400;opacity:.8;letter-spacing:.06em;
+  text-transform:none;margin-left:5px}
+.cdot{width:9px;height:9px;flex:none;border-radius:50%;background:currentColor}
+
+.cbanner.ok{border-color:rgba(61,232,165,.55);
+  box-shadow:0 0 0 1px rgba(61,232,165,.22), 0 0 26px rgba(61,232,165,.13);
+  background:linear-gradient(90deg,rgba(61,232,165,.07),#080B14 60%)}
+.cbanner.ok .cchip{color:#3DE8A5}
+.cbanner.ok .cdot{box-shadow:0 0 0 3px rgba(61,232,165,.2)}
+
+.cbanner.due{border-color:rgba(255,203,107,.6);
+  box-shadow:0 0 0 1px rgba(255,203,107,.25), 0 0 26px rgba(255,203,107,.15);
+  background:linear-gradient(90deg,rgba(255,203,107,.08),#080B14 60%)}
+.cbanner.due .cchip{color:#FFCB6B}
+.cbanner.due .cdot{box-shadow:0 0 0 3px rgba(255,203,107,.22)}
+
+.cbanner.bad{border-color:rgba(255,110,110,.7);
+  box-shadow:0 0 0 1px rgba(255,110,110,.3), 0 0 30px rgba(255,110,110,.18);
+  background:linear-gradient(90deg,rgba(255,110,110,.1),#080B14 60%)}
+.cbanner.bad .cchip{color:#FF6E6E}
+.cbanner.bad .cdot{box-shadow:0 0 0 3px rgba(255,110,110,.26)}
+
+.cbanner .ctext{flex:1;font-size:.85rem;color:var(--ash);line-height:1.45}
+.cbanner .ctext b{color:var(--bone);font-weight:600}
+.cbanner .cgo{flex:none;font-family:'IBM Plex Mono',monospace;font-size:.63rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.cbanner:hover{background:#0C1120}
+@media(max-width:760px){
+  .cbanner{flex-wrap:wrap;gap:10px;padding:13px 16px}
+  .cbanner .cgo{display:none}
+  .cchip i{display:none}
+  .cbanner .ctext{flex:1 1 100%;font-size:.82rem}
+}
+@media(prefers-contrast:more){
+  .cbanner{border-width:2px}
+  .cchip{border-width:2px}
+}
 </style>
 <style>
 :root{--void:#04060F; --void-2:#070B18; --surface:#0C1424; --surface-2:#131E38;
@@ -656,8 +705,8 @@ window.SV_KS = {
 
 <main id="top">
 <a class="cbanner" href="/canary" id="cbanner">
-  <span class="cdot" id="cbdot"></span>
-  <span class="ctext"><b>The Canary</b> <span id="cbtext">checking&hellip;</span></span>
+  <span class="cchip" id="cbchip"><span class="cdot" id="cbdot"></span><b id="cbword">CHECKING</b></span>
+  <span class="ctext" id="cbtext">Checking the canary&hellip;</span>
   <span class="cgo">What this is &rarr;</span>
 </a>
 
@@ -1167,12 +1216,23 @@ window.SV_KS = {
     var signed=new Date(String(d.signed_at).replace(' ','T')+'Z');
     var days=Math.floor((Date.now()-signed.getTime())/86400000);
     var iv=d.interval_days||14, gr=d.grace_days||7;
-    b.classList.add(days<=iv?'ok':days<=iv+gr?'due':'bad');
-    document.getElementById('cbtext').innerHTML = days<=iv
-      ? '\u2713 We have received no secret order, no gag order, and no demand for your data. Signed '+(days===0?'today':days+(days===1?' day':' days')+' ago')+'.'
-      : days<=iv+gr
-      ? '\u26A0 Overdue by '+(days-iv)+' day'+(days-iv===1?'':'s')+'. Probably nothing \u2014 but check back.'
-      : '\u2717 Lapsed '+(days-iv)+' days ago. Treat assurances here as unverified.';
+    /* Colour is never the only signal. Every state names its colour AND says
+       what that colour means, so it reads identically to somebody who cannot
+       tell green from amber. */
+    var state = days<=iv ? 'ok' : days<=iv+gr ? 'due' : 'bad';
+    var WORD = { ok:'GREEN', due:'AMBER', bad:'RED' };
+    var MEAN = { ok:'all good', due:'signature due', bad:'overdue \u2014 read this' };
+    b.classList.add(state);
+    var chip = document.getElementById('cbword');
+    if(chip) chip.innerHTML = WORD[state] + ' <i>' + MEAN[state] + '</i>';
+    b.setAttribute('aria-label', 'Canary status: ' + WORD[state] + ', ' + MEAN[state]);
+
+    var ago = days===0 ? 'today' : days + (days===1?' day':' days') + ' ago';
+    document.getElementById('cbtext').innerHTML = state==='ok'
+      ? 'No secret order, no gag order, and no demand for your data. Signed <b>'+ago+'</b>.'
+      : state==='due'
+      ? 'Last signed <b>'+ago+'</b>. A renewal is due but not yet overdue.'
+      : 'Last signed <b>'+ago+'</b>. This is past the deadline. Read the page before trusting the service.';
   }).catch(function(){
     document.getElementById('cbtext').textContent='A public statement that we have not been secretly ordered to hand over your data.';
   });
