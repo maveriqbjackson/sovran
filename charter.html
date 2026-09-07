@@ -102,7 +102,6 @@ ul.open a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(25
 
 
 
-@media(min-width:700px){.fnav{grid-template-columns:repeat(3,1fr)}}
 .fnav>div{display:flex;flex-direction:column;gap:7px}
 .fnav span{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.16em;
   text-transform:uppercase;color:var(--gold);margin-bottom:4px}
@@ -352,6 +351,18 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .tabbar{display:none}
 @media (max-width:820px) and (pointer:coarse){ .tabbar{display:grid} }
 @media (max-width:820px){ .tabbar{display:grid} }
+
+/* four balanced columns rather than 8/5/2 across three */
+.fnav{display:grid;gap:26px 22px;margin-bottom:26px;padding-bottom:24px;
+  border-bottom:1px solid rgba(232,224,206,.1);grid-template-columns:1fr}
+@media(min-width:560px){.fnav{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){.fnav{grid-template-columns:repeat(4,1fr)}}
+.fnav>div{display:flex;flex-direction:column;gap:8px}
+.fnav span{font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.fnav a{color:var(--ash);text-decoration:none;font-size:.87rem;border:0;width:fit-content;
+  transition:color .18s;line-height:1.35}
+.fnav a:hover{color:var(--gold)}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -472,19 +483,33 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 <footer>
   <div class="wrap">
     <nav class="fnav">
-      <div><span>Use now</span>
+      <div>
+        <span>Check yourself</span>
+        <a href="/photo">The Photo Check</a>
+        <a href="/audit">The Audit</a>
+        <a href="/map">The Map</a>
+        <a href="/passphrase">The Passphrase</a>
+      </div>
+      <div>
+        <span>Learn and act</span>
         <a href="/start">Start here</a>
-        <a href="/photo">The Photo Check</a><a href="/audit">The Audit</a><a href="/map">The Map</a>
         <a href="/guide">The Guide</a>
-        <a href="/rights">Your rights</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
+        <a href="/rights">Your rights by country</a>
+        <a href="/panel">Your Panel</a>
       </div>
-      <div><span>Understand</span>
-        <a href="/consent">Face consent</a>
+      <div>
+        <span>How we work</span>
         <a href="/charter">The Charter</a>
-        <a href="/charter#social">Why no social media</a><a href="/access">Access &amp; cost</a><a href="/canary">The Canary</a>
+        <a href="/canary">The Canary</a>
+        <a href="/access">Access &amp; cost</a>
+        <a href="/consent">Face consent</a>
       </div>
-      <div><span>Account</span>
-        <a href="/account">Sign in or create</a><a href="/#waitlist">Join the waitlist</a>
+      <div>
+        <span>Who we are</span>
+        <a href="/charter#social">Why no social media</a>
+        <a href="https://www.linkedin.com/in/maveriqbjackson/" target="_blank" rel="noopener me">The founder</a>
+        <a href="/account">Sign in or create</a>
+        <a href="/#waitlist">Join the waitlist</a>
       </div>
     </nav>
     <p style="margin-bottom:12px;max-width:62ch;line-height:1.55">The Charter of <a href="/">SOVRAN</a>, a concept by <a href="https://aetherandash.digital" target="_blank" rel="noopener">Aether &amp; Ash</a>. If an article ever changes, the change will be announced.</p>
