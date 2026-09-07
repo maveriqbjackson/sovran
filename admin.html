@@ -368,7 +368,7 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 'use strict';
 var KEYIN=document.getElementById('key'), MSG=document.getElementById('msg'),
     GATE=document.getElementById('gate'), PANEL=document.getElementById('panel');
-var key='', code='', session='';
+var key='', code='', session='', BUILDING=false;
 // Bumped in lockstep with BUILD_ID in functions/api/admin.js. If these disagree,
 // one of the two files did not deploy — which has cost us several rounds of
 // guessing, so the panel now says which one.
@@ -779,10 +779,17 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
         signal:c.signal
       }).then(function(r){
         clearTimeout(t);
-        if(r.status===429) { var e=new Error('rate-limited'); e.rateLimited=true; throw e; }
+        // 429 = rate limited. 504/502/503 = their server is overloaded. All three
+        // mean STOP, not split. Only a 400 (bad query) or a genuinely huge 200
+        // response should ever be read as density.
+        if(r.status===429 || r.status===504 || r.status===503 || r.status===502){
+          var e=new Error('overloaded'); e.overloaded=true; e.code=r.status; throw e;
+        }
         if(!r.ok) return r.text().catch(function(){return '';}).then(function(txt){
-          if(/rate.?limit|too many|slot|blocked/i.test(txt)){ var e=new Error('rate-limited'); e.rateLimited=true; throw e; }
-          throw new Error('http-'+r.status);
+          if(/rate.?limit|too many|slot|blocked|load|timeout/i.test(txt)){
+            var e=new Error('overloaded'); e.overloaded=true; throw e;
+          }
+          var e2=new Error('http-'+r.status); e2.code=r.status; throw e2;
         });
         return r.json();
       }).then(function(d){
@@ -864,16 +871,18 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
         okTiles++;
         return new Promise(function(res){ setTimeout(res,PAUSE); });
       }).catch(function(err){
-        // A rate limit means stop, not try harder. Splitting here is what turns
-        // a short throttle into an hour-long block.
-        if(err && err.rateLimited){ stopped=true; throw err; }
+        // Overload or rate limit: the server is saying stop. Splitting would send
+        // four MORE requests to a server already refusing us — which is exactly
+        // how a short throttle became a total failure. So we stop the whole build.
+        if(err && (err.rateLimited || err.overloaded)){ stopped=true; throw err; }
         if(stopped) return Promise.resolve();
+        // A real 400 or an oversized 200 is genuine density — that we split.
         if(depth>=MAXDEPTH){
           failTiles++;
-          line('   \u26A0 a dense area could not be fetched even split small \u2014 skipping it','#FFCB6B');
+          line('   \u26A0 a genuinely dense area could not be fetched \u2014 skipping it','#FFCB6B');
           return new Promise(function(res){ setTimeout(res,PAUSE);});
         }
-        line('   too dense \u2014 splitting into 4 smaller tiles','var(--ash-dim)');
+        line('   dense area \u2014 splitting into 4 smaller tiles','var(--ash-dim)');
         return new Promise(function(res){ setTimeout(res,PAUSE);}).then(function(){
           return runTiles(split(t), depth+1);
         });
@@ -1055,8 +1064,16 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
         acc = deviceData; roads = []; rnames = [];
         // fall through to the normal assembly below by re-raising into the saver
       }
-      if(err && err.rateLimited){
-        line('\u2717 '+name+': Overpass has rate limited us and the build stopped.','#FF9E5E');
+      if(err && (err.rateLimited || err.overloaded)){
+        line('\u2717 '+name+': Overpass is overloaded or has rate-limited this network.','#FF9E5E');
+        line('   This is not your fault and not a bug. Overpass is a free service on','var(--ash-dim)');
+        line('   donated hardware, and it throttles hard after repeated use.','var(--ash-dim)');
+        line('   \u2192 Wait a few HOURS (not minutes), then try ONE state with roads OFF.','#FFCB6B');
+        line('   \u2192 Or try a different network \u2014 phone hotspot, different wifi.','var(--ash-dim)');
+        if(deviceData && deviceData.length){
+          line('   You did capture '+deviceData.length.toLocaleString()+' devices. Saving those.','#3DE8A5');
+        }
+        return false;
         if(err.detail) line('   they said: '+err.detail,'var(--ash-dim)');
         line('   This is a shared free service on donated hardware. A block usually','var(--ash-dim)');
         line('   lasts up to an hour. Wait it out \u2014 retrying now makes it longer.','var(--ash-dim)');
@@ -1080,12 +1097,32 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
     });
   }
 
+  // A single tiny request tells us if Overpass will talk to us at all, before
+  // we commit to a five-minute build that might produce nothing.
+  function overpassHealthy(){
+    var probe='[out:json][timeout:8];node["man_made"="surveillance"](39.7,-105.0,39.72,-104.98);out count;';
+    return fetch(HOSTS[0],{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:'data='+encodeURIComponent(probe)})
+      .then(function(r){ return r.ok; }).catch(function(){ return false; });
+  }
+
   document.getElementById('mbuild').addEventListener('click',function(){
     var k=SEL.value; if(!k) return;
-    // Confirm the Worker is alive and current before blaming a query for a 502.
-    call('ping').then(function(p){
-      if(p.ok && p.d && p.d.build) line('   worker '+p.d.build+' responding','var(--ash-dim)');
-    }).catch(function(){});
+    line('   checking Overpass is reachable\u2026','var(--ash-dim)');
+    overpassHealthy().then(function(ok){
+      if(!ok){
+        line('\u2717 Overpass is not responding to even a tiny request right now.','#FF9E5E');
+        line('   It is overloaded or throttling this network. Do not build yet.','#FFCB6B');
+        line('   Wait a few hours, or switch networks, then try again.','var(--ash-dim)');
+        BUILDING=false; document.getElementById('mbuild').disabled=false;
+        return;
+      }
+      line('   \u2713 Overpass responded \u2014 starting build','#3DE8A5');
+      startBuild(k);
+    });
+  });
+
+  function startBuild(k){
     document.getElementById('mlog').innerHTML='';
     stop=false;
     m('Building '+REGIONS[k][0]+'\u2026 this can take up to a minute.','busy');
@@ -1095,7 +1132,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
       m(ok ? 'Done. Upload the downloaded file to mapdata/ in your repo, then redeploy. Wait a couple of minutes before building the next state \u2014 Overpass rate-limits by IP and will refuse back-to-back requests.'
            : 'That one failed \u2014 the log above says why. Overpass is often genuinely overloaded; waiting ten minutes usually fixes it.', ok?'ok':'err');
     });
-  });
+  }
 })();
 })();
 </script>
