@@ -421,6 +421,16 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .ksplan h3{font-size:1.06rem;margin-bottom:10px;letter-spacing:-.02em;color:var(--bone)}
 .ksplan p{font-size:.91rem;color:var(--ash);line-height:1.62;margin-bottom:10px}
 .ksplan p:last-child{margin-bottom:0}
+
+.ksflag{display:flex;align-items:center;gap:9px;margin:-4px 0 14px;padding:10px 13px;
+  background:rgba(255,203,107,.07);border:1px solid rgba(255,203,107,.3);
+  text-decoration:none;border-radius:0;font-size:.78rem;color:var(--ash);
+  line-height:1.4;transition:border-color .18s;flex-wrap:wrap}
+.ksflag:hover{border-color:var(--gold)}
+.ksflag b{color:var(--gold);font-family:'IBM Plex Mono',monospace;font-size:.66rem;
+  letter-spacing:.09em;text-transform:uppercase;font-weight:600}
+.ksdot2{width:7px;height:7px;flex:none;background:#FFCB6B;border-radius:50%;
+  box-shadow:0 0 0 3px rgba(255,203,107,.16)}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -462,9 +472,10 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
       </div>
 
       <div class="tier hero">
+        <a class="ksflag" href="#kickstarter"><span class="ksdot2"></span>Not open yet &mdash; funded by our Kickstarter <b>Read what it pays for &rarr;</b></a>
         <span class="tlab gold">SOVRAN+ &middot; ongoing</span>
         <div class="tprice"><b>$12</b><i>/ month</i></div>
-        <p class="tsub">One price. No annual discount &mdash; we are not going to reward you for committing to us.</p>
+        <p class="tsub">Or <b style="color:var(--bone)">$110 a year</b>, which saves you $34. Regional pricing in the UK, EU, Canada and Australia.</p>
         <ul>
           <li>Every broker deletion filed for you, and chased to a real answer</li>
           <li>Refiled automatically when they quietly repopulate</li>
@@ -476,6 +487,7 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
       </div>
 
       <div class="tier alt">
+        <a class="ksflag" href="#kickstarter"><span class="ksdot2"></span>Not open yet &mdash; funded by our Kickstarter <b>Read what it pays for &rarr;</b></a>
         <span class="tlab green">The Clean Break &middot; once</span>
         <div class="tprice"><b>$129</b><i>one payment</i></div>
         <p class="tsub">Paid once. No subscription, no renewal, no relationship afterwards.</p>
