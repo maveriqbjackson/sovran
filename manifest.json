@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-07 19:39 UTC",
- "note": "SHA-256 of every deployed file.",
+ "generated": "2026-09-07 20:11 UTC",
+ "note": "SHA-256 of every deployed file. robots.txt excluded because Cloudflare rewrites it. Fonts excluded from this build.",
  "files": {
   "/404.html": {
    "sha256": "ea4845df096f261bc6b019e3443ea96cae0e5f455b35eb99835e760a2959b9bc",
