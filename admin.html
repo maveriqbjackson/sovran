@@ -892,10 +892,15 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
       return next();
     }
 
+    // Devices are the map. Everything else is enrichment. We capture them
+    // first and hold them, so that no matter what roads do, the run is not wasted.
+    var deviceData = null;
+
     // pass 1 — devices, tiled
     return runTiles(tilesFor(bb),0).then(function(){
       line('   \u2713 devices: '+acc.length.toLocaleString()+' found across '+okTiles+' tiles','#3DE8A5');
       var camData={elements:acc.slice()};
+      deviceData = acc.slice();
       acc=[]; seen={}; okTiles=0; failTiles=0; mode='arterial';
       return camData;
 
@@ -1012,7 +1017,15 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
         pts.push([+lat.toFixed(5), +lon.toFixed(5), classify(tg), oi[op], ti[ty]]);
       });
 
+      // Coverage stamp: the map reads this and tells visitors exactly what it
+      // has, rather than pretending a devices-only build is a complete one.
+      var arterials=roads.filter(function(r){return r[0]<4;}).length;
+      var streets=roads.filter(function(r){return r[0]>=4;}).length;
+      var coverage = roads.length===0 ? 'devices-only'
+                   : streets===0 ? 'devices-and-highways'
+                   : 'full';
       var out={region:code,name:name,built:new Date().toISOString().slice(0,10),
+               coverage:coverage, arterials:arterials, streets:streets,
                bbox:bb,ops:ops,types:types,pts:pts,
                roadNames:rnames,roads:roads};
       var json=JSON.stringify(out);
@@ -1035,6 +1048,13 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
       return true;
     }).catch(function(err){
       var msg=(err && err.message)||'';
+      if(err && deviceData && deviceData.length){
+        // Roads failed but we have devices. Save them rather than lose the run.
+        line('   \u26A0 roads could not be fetched, but '+deviceData.length.toLocaleString()+
+             ' devices were. Saving a devices-only map.','#FFCB6B');
+        acc = deviceData; roads = []; rnames = [];
+        // fall through to the normal assembly below by re-raising into the saver
+      }
       if(err && err.rateLimited){
         line('\u2717 '+name+': Overpass has rate limited us and the build stopped.','#FF9E5E');
         if(err.detail) line('   they said: '+err.detail,'var(--ash-dim)');
