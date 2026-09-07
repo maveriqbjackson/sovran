@@ -315,6 +315,8 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   padding:14px 16px;display:none;align-items:center;gap:13px;
   box-shadow:0 10px 40px rgba(0,0,0,.6)}
 .installbar.show{display:flex}
+/* installbar-desktop-guard — never on a wide screen or a mouse-driven one */
+@media (min-width:821px), (pointer:fine){ .installbar,.installbar.show{display:none !important} }
 .installbar p{flex:1;font-size:.84rem;color:var(--bone);line-height:1.4;margin:0}
 .installbar p span{display:block;font-size:.76rem;color:var(--ash-dim);margin-top:2px}
 .installbar button{background:linear-gradient(100deg,#FFE7B4,#FFCB6B 45%,#E0A63C);
@@ -528,9 +530,16 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   // Install prompt, offered once and never nagged.
   var deferred=null, bar=document.getElementById('installbar');
   function dismissed(){ try{ return localStorage.getItem('sv-install-no')==='1'; }catch(e){ return true; } }
+  // Chrome fires this on desktop too. The bar is styled and positioned for a
+  // phone, so it should only ever appear on one.
+  function phone(){
+    return window.matchMedia('(max-width:820px)').matches &&
+           window.matchMedia('(pointer:coarse)').matches;
+  }
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault(); deferred=e;
-    if(!dismissed() && bar) setTimeout(function(){ bar.classList.add('show'); }, 9000);
+    if(!phone() || dismissed() || !bar) return;
+    setTimeout(function(){ if(phone()) bar.classList.add('show'); }, 9000);
   });
   var go=document.getElementById('installgo'), no=document.getElementById('installno');
   if(go) go.addEventListener('click', function(){

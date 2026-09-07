@@ -727,6 +727,14 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
         'way(around.cams:250)["highway"~"^(residential|unclassified|tertiary|living_street)$"];'+
         'out geom;';
     }
+    /* A state smaller than about a degree is one request, not four. Splitting
+       Rhode Island or DC into quarters makes four tiny requests where one would
+       do, and every extra request is another chance to be throttled. */
+    function tilesFor(b){
+      var w=b[3]-b[1], h=b[2]-b[0];
+      if(w<1.2 && h<1.2) return [b];
+      return split(b);
+    }
     function split(t){
       var mLat=(t[0]+t[2])/2, mLon=(t[1]+t[3])/2;
       return [[t[0],t[1],mLat,mLon],[t[0],mLon,mLat,t[3]],
@@ -885,7 +893,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
     }
 
     // pass 1 — devices, tiled
-    return runTiles(split(bb),0).then(function(){
+    return runTiles(tilesFor(bb),0).then(function(){
       line('   \u2713 devices: '+acc.length.toLocaleString()+' found across '+okTiles+' tiles','#3DE8A5');
       var camData={elements:acc.slice()};
       acc=[]; seen={}; okTiles=0; failTiles=0; mode='arterial';
@@ -897,7 +905,7 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
         line('   roads skipped by choice','var(--ash-dim)');
         return camData;
       }
-      return runTiles(split(bb),0).then(function(){
+      return runTiles(tilesFor(bb),0).then(function(){
         if(!acc.length) line('   \u26A0 no arterials returned','#FFCB6B');
         else line('   \u2713 arterials: '+acc.length.toLocaleString()+' ways from '+okTiles+' tiles','#3DE8A5');
 
