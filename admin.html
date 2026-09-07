@@ -1100,21 +1100,37 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
   // A single tiny request tells us if Overpass will talk to us at all, before
   // we commit to a five-minute build that might produce nothing.
   function overpassHealthy(){
-    var probe='[out:json][timeout:8];node["man_made"="surveillance"](39.7,-105.0,39.72,-104.98);out count;';
-    return fetch(HOSTS[0],{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},
-      body:'data='+encodeURIComponent(probe)})
-      .then(function(r){ return r.ok; }).catch(function(){ return false; });
+    // Probe every mirror with a hard 6-second cap each. Without the AbortController
+    // a stalled mirror makes fetch hang forever, which is exactly what "checking
+    // Overpass is reachable..." sitting there forever was.
+    var probe='[out:json][timeout:6];node["man_made"="surveillance"](39.7,-105.0,39.72,-104.98);out count;';
+    function tryHost(i){
+      if(i>=HOSTS.length) return Promise.resolve(false);
+      var c=new AbortController(), t=setTimeout(function(){ c.abort(); }, 6000);
+      return fetch(HOSTS[i],{method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:'data='+encodeURIComponent(probe), signal:c.signal})
+        .then(function(r){ clearTimeout(t); return r.ok ? true : tryHost(i+1); })
+        .catch(function(){ clearTimeout(t); return tryHost(i+1); });
+    }
+    // Whole probe cannot take longer than ~19s even if all three stall.
+    return Promise.race([
+      tryHost(0),
+      new Promise(function(res){ setTimeout(function(){ res(false); }, 20000); })
+    ]);
   }
 
   document.getElementById('mbuild').addEventListener('click',function(){
     var k=SEL.value; if(!k) return;
-    line('   checking Overpass is reachable\u2026','var(--ash-dim)');
+    line('   checking Overpass is reachable (max 6s)\u2026','var(--ash-dim)');
     overpassHealthy().then(function(ok){
       if(!ok){
-        line('\u2717 Overpass is not responding to even a tiny request right now.','#FF9E5E');
-        line('   It is overloaded or throttling this network. Do not build yet.','#FFCB6B');
-        line('   Wait a few hours, or switch networks, then try again.','var(--ash-dim)');
-        BUILDING=false; document.getElementById('mbuild').disabled=false;
+        line('\u2717 Overpass did not answer a tiny test request within 6 seconds.','#FF9E5E');
+        line('   Every mirror is overloaded or throttling this network right now.','#FFCB6B');
+        line('   \u2192 Fastest fix: switch to a phone hotspot or different wifi (new IP).','#FFCB6B');
+        line('   \u2192 Or wait a few hours \u2014 a heavy throttle clears on its own.','var(--ash-dim)');
+        BUILDING=false;
+        var b=document.getElementById('mbuild'); if(b) b.disabled=false;
         return;
       }
       line('   \u2713 Overpass responded \u2014 starting build','#3DE8A5');
