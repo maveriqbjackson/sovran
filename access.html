@@ -431,6 +431,22 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   letter-spacing:.09em;text-transform:uppercase;font-weight:600}
 .ksdot2{width:7px;height:7px;flex:none;background:#FFCB6B;border-radius:50%;
   box-shadow:0 0 0 3px rgba(255,203,107,.16)}
+
+.regional{margin:26px 0}
+.reglabel{display:block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;
+  letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.pricetbl{width:100%;border-collapse:collapse;font-size:.88rem;
+  border:1px solid rgba(232,224,206,.1)}
+.pricetbl th,.pricetbl td{padding:11px 14px;text-align:left;
+  border-bottom:1px solid rgba(232,224,206,.08)}
+.pricetbl th{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gold);font-weight:600;background:#080B14}
+.pricetbl td{color:var(--ash)}
+.pricetbl td:first-child{color:var(--bone)}
+.pricetbl tr:last-child td{border-bottom:0}
+.regnote{margin-top:12px;font-size:.84rem;color:var(--ash-dim);line-height:1.55;max-width:62ch}
+.regnote a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.35)}
+@media(max-width:600px){.pricetbl{font-size:.8rem}.pricetbl th,.pricetbl td{padding:9px 10px}}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -611,6 +627,21 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
     </div>
   </div>
 </section>
+
+<div class="wrap"><div class="regional">
+      <span class="reglabel">What it costs where you live</span>
+      <table class="pricetbl">
+        <tr><th>Region</th><th>Monthly</th><th>Yearly</th><th>Works out at</th></tr>
+        <tr><td>United States</td><td>$12</td><td>$110</td><td>$9.17 / month</td></tr>
+        <tr><td>United Kingdom</td><td>&pound;10</td><td>&pound;92</td><td>&pound;7.67 / month</td></tr>
+        <tr><td>European Union</td><td>&euro;11</td><td>&euro;99</td><td>&euro;8.25 / month</td></tr>
+        <tr><td>Canada</td><td>C$16</td><td>C$148</td><td>C$12.33 / month</td></tr>
+        <tr><td>Australia</td><td>A$18</td><td>A$165</td><td>A$13.75 / month</td></tr>
+      </table>
+      <p class="regnote">Priced to the local market rather than converted from dollars, because a straight conversion makes it expensive in some countries and cheap in others for no good reason. <a href="/rights">Your rights differ by country too</a>.</p>
+    </div>
+
+    </div>
 
 <hr class="rule">
 
