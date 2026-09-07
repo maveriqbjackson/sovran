@@ -335,6 +335,17 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   cursor:pointer;min-height:44px;white-space:nowrap}
 .installbar .x{background:none;color:var(--ash-dim);padding:12px 6px;font-size:1.1rem;
   border:0;cursor:pointer;min-height:44px}
+
+.whygrid{display:grid;gap:1px;background:rgba(232,224,206,.1);
+  border:1px solid rgba(232,224,206,.1);margin-top:22px}
+@media(min-width:880px){.whygrid{grid-template-columns:repeat(3,1fr)}}
+.whygrid>div{background:#080B14;padding:24px 22px}
+.whygrid h3{font-size:1.06rem;margin-bottom:10px;letter-spacing:-.02em;color:var(--bone)}
+.whygrid p{font-size:.9rem;color:var(--ash);line-height:1.62;margin-bottom:10px}
+.whygrid p:last-child{margin-bottom:0}
+.founderlink{display:inline-flex;align-items:center;gap:10px;margin-top:20px}
+.founderlink svg{flex:none}
+.foundernote{margin-top:12px;font-size:.84rem;color:var(--ash-dim);line-height:1.55;max-width:60ch}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -395,6 +406,50 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 
 <hr class="rule">
 
+<section id="social">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Why you cannot follow us</span>
+      <h2>SOVRAN has no social media. That is deliberate.</h2>
+      <p class="lede">Every other privacy company has a Twitter account, an Instagram, a TikTok. We have none, and we are not planning to.</p>
+    </div>
+
+    <div class="whygrid">
+      <div>
+        <h3>What a follow actually costs you</h3>
+        <p>Following an account tells that platform something about you: what you are worried about, what you are trying to hide from, and who else in your network shares that concern.</p>
+        <p>For most brands that is a harmless signal. For this one it is a list of people who are trying to disappear &mdash; assembled and held by a company whose business is selling exactly that kind of inference.</p>
+      </div>
+      <div>
+        <h3>The contradiction we will not make</h3>
+        <p>A privacy service asking you to be tracked in order to hear from it is asking you to pay a price it claims to be saving you from.</p>
+        <p>We would rather be harder to find than ask you for that. If our reach is smaller because of it, that is the cost of meaning what we say.</p>
+      </div>
+      <div>
+        <h3>What we do instead</h3>
+        <p>An email list you can leave in one click, with no tracking pixels and no open receipts. This site, which sets no cookies and runs no analytics. And a canary that tells you something is wrong without you having to follow anything.</p>
+        <p>If you want to hear from us, that is the whole of it.</p>
+      </div>
+    </div>
+
+    <div class="key" style="margin-top:22px"><b>But a person should still be accountable</b>
+      There is a difference between a company harvesting followers and a founder being findable.
+      <br><br>
+      Somebody asking you to trust a privacy product should be a real, named person with a checkable history &mdash; not an anonymous brand. If this project ever behaves badly, you should know exactly who to hold responsible, and be able to reach them.
+      <br><br>
+      So there is one account, and it is mine rather than SOVRAN&rsquo;s. LinkedIn, because a professional record is the one place where being findable is the entire point rather than a side effect.
+    </div>
+
+    <a class="btn ghost founderlink" href="https://www.linkedin.com/in/maveriqbjackson/" target="_blank" rel="noopener me">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05a3.74 3.74 0 0 1 3.37-1.85c3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13ZM7.12 20.45H3.55V9h3.57v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z"/></svg>
+      maveriQ B Jackson &middot; the founder
+    </a>
+    <p class="foundernote">One account. No SOVRAN page, no company feed, nothing to follow. Following it tells LinkedIn something about you &mdash; so read it if it is useful and do not follow it if it is not.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
 <section>
   <div class="wrap">
     <h2>What we have not decided yet</h2>
@@ -419,7 +474,8 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
       </div>
       <div><span>Understand</span>
         <a href="/consent">Face consent</a>
-        <a href="/charter">The Charter</a><a href="/access">Access &amp; cost</a><a href="/canary">The Canary</a>
+        <a href="/charter">The Charter</a>
+        <a href="/charter#social">Why no social media</a><a href="/access">Access &amp; cost</a><a href="/canary">The Canary</a>
       </div>
       <div><span>Account</span>
         <a href="/account">Sign in or create</a><a href="/#waitlist">Join the waitlist</a>
