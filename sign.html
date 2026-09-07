@@ -340,6 +340,13 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   cursor:pointer;min-height:44px;white-space:nowrap}
 .installbar .x{background:none;color:var(--ash-dim);padding:12px 6px;font-size:1.1rem;
   border:0;cursor:pointer;min-height:44px}
+.fnav{grid-template-columns:repeat(3,1fr)}}
+.fnav>div{display:flex;flex-direction:column;gap:7px}
+.fnav span{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.fnav a{color:var(--ash);text-decoration:none;font-size:.88rem;border:0;width:fit-content;
+  transition:color .18s}
+.fnav a:hover{color:var(--gold)}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -428,6 +435,22 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 </main>
 <footer>
   <div class="wrap">
+    <nav class="fnav">
+      <div><span>Use now</span>
+        <a href="/start">Start here</a>
+        <a href="/photo">The Photo Check</a><a href="/audit">The Audit</a><a href="/map">The Map</a>
+        <a href="/guide">The Guide</a>
+        <a href="/rights">Your rights</a><a href="/passphrase">The Passphrase</a><a href="/panel">Your Panel</a>
+      </div>
+      <div><span>Understand</span>
+        <a href="/consent">Face consent</a>
+        <a href="/charter">The Charter</a><a href="/access">Access &amp; cost</a><a href="/canary">The Canary</a>
+      </div>
+      <div><span>Account</span>
+        <a href="/account">Sign in or create</a><a href="/#waitlist">Join the waitlist</a>
+      </div>
+    </nav>
+
     <p style="margin-bottom:12px;max-width:62ch;line-height:1.55">Canary signing for <a href="/">SOVRAN</a>. This page can do nothing except renew the statement &mdash; it cannot read user data, and it is not the admin panel.</p>
     <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--> &middot; No cookies. No trackers. No analytics.</p>
   </div>

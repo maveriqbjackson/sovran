@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-07 01:36 UTC",
+ "generated": "2026-09-07 01:44 UTC",
  "note": "SHA-256 of every deployed file. robots.txt excluded because Cloudflare rewrites it. Fonts excluded from this build.",
  "files": {
   "/404.html": {
@@ -7,11 +7,11 @@
    "bytes": 14471
   },
   "/access.html": {
-   "sha256": "8c567d322639285f4de17f7ef6c3ace62fc39a3f4e96829831dc69b1aa0f0b40",
-   "bytes": 46395
+   "sha256": "fcfe126893121586fe06a34bf9fabcc1fc9fc7fdfc7fe8abbb15eabfc1ec9bd9",
+   "bytes": 47355
   },
   "/account.html": {
-   "sha256": "9136304ef4fd5008856fc7c5dad63b2e09575635cd797625830771b60345df24",
+   "sha256": "7240da779030bc9011534739b60a35cbf5ef1337b919ef257f0d183b0769bd79",
    "bytes": 53000
   },
   "/admin.html": {
@@ -55,8 +55,8 @@
    "bytes": 33614
   },
   "/index.html": {
-   "sha256": "fda9aba453e941acc1544cfe9e5837b565ba9fda3610f1a357341517b7b466fe",
-   "bytes": 81075
+   "sha256": "5a83df01434c9954b6161c8331815643252152e9cd8e9fe30e02a23c6ea8c01c",
+   "bytes": 82532
   },
   "/jszip.min.js": {
    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",
@@ -79,24 +79,24 @@
    "bytes": 39825
   },
   "/photo.html": {
-   "sha256": "99ff069ef9f95cf246ca17f486e12beebeb0ffeef6a854b3495d2713be3a12ee",
-   "bytes": 56962
+   "sha256": "2e51c7e254d9c33a36de9943942678e3938cc80180c1eb82fb8c9a78e5aaa127",
+   "bytes": 57494
   },
   "/rights.html": {
-   "sha256": "9c27aa0e760745c3f1fecf424f41dd0835a1d5760c382b73464b4b0a0c4ff3f9",
-   "bytes": 38970
+   "sha256": "7044461f9c39851d0c6b003f7f41d4b8b3b7307ae76396df794af7f6740785d9",
+   "bytes": 43996
   },
   "/sign.html": {
-   "sha256": "3990b296c725ee78ecdf48434676c51092c43841a2791d3bf084ea5d1a9bf41d",
-   "bytes": 36517
+   "sha256": "b64ecf51702e3bb1826fb09cb5714fe0638f4e47a1aa74e5ec3ddaa6971ce668",
+   "bytes": 37630
   },
   "/sitemap.xml": {
    "sha256": "c0a4ddde7171d4e2ae2a045cc4470d3bea431d89b7c0047a15da819d47c5cdeb",
    "bytes": 1052
   },
   "/start.html": {
-   "sha256": "d70250a46fa72fee0907d4f8e50086a606800c52ca9e6fc0e5ad7bfe56f3a39e",
-   "bytes": 35771
+   "sha256": "511a9b5695d9e32c7cfe22858601d784cea1f157cd34ad06ad8379068d1c9f6c",
+   "bytes": 35773
   },
   "/sv-crypto.js": {
    "sha256": "cd32d57c89f86c8ef5f87154c7903e2f1e6f7490faf3a62f6e4160c2b02a4a79",

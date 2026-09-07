@@ -939,5 +939,16 @@ document.getElementById('again').addEventListener('click',function(){
   });
 })();
 </script>
+<script>
+/* REVEAL FAILSAFE — an element that never gets .in stays at opacity 0 while
+   still occupying its full height, which reads as an unexplained gap. Nothing
+   may stay invisible, whatever the observer did. */
+(function(){
+  function show(){ document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
+  setTimeout(show, 1800);
+  window.addEventListener('load', function(){ setTimeout(show, 300); });
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) show();
+})();
+</script>
 </body>
 </html>

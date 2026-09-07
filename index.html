@@ -614,7 +614,7 @@ window.SV_KS = {
   <div class="wrap">
     <div class="un-head">
       <span class="un-tag">Free &middot; No account &middot; Works offline</span>
-      <h2 class="un-h">Seven tools you can use right now.</h2>
+      <h2 class="un-h">Eight tools you can use right now.</h2>
       <p class="un-p">Nothing to sign up for. Nothing to pay. Every one of these runs inside your browser &mdash; turn off your wifi and they still work.</p>
     </div>
     <div class="un-grid">
@@ -643,7 +643,7 @@ window.SV_KS = {
     <p class="lede">Your face, your address, your habits, your children — collected by people you never met and sold to people you'll never see. SOVRAN finds it, takes it down, and shows you the surveillance you move through every day.</p>
 
     <div class="livebar">
-      <span class="livebar-h"><i></i>Seven tools, built and free to use right now &mdash; and growing</span>
+      <span class="livebar-h"><i></i>Eight tools, built and free to use right now &mdash; and growing</span>
       <p style="font-size:.88rem;color:var(--ash);margin-bottom:14px">New here? <a href="/start" style="color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.4)">Start here instead</a> &mdash; it asks why you came and points you at one thing.</p>
       <div class="livegrid">
         <a href="/photo"><b>The Photo Check</b><span>Find the GPS coordinates and camera serial hidden in any photo, then download a clean copy. <em>Use it before you send a picture to anyone you don&rsquo;t know.</em></span></a>
@@ -722,7 +722,7 @@ window.SV_KS = {
     <div class="sec-head reveal">
       <span class="eyebrow">What it does</span>
       <h2>Ten ways to take yourself back.</h2>
-      <p class="body">Rights you already hold are scattered across a dozen agencies and hundreds of forms. SOVRAN turns them into one place you actually check. <strong>Seven are live and free today.</strong> The rest are honestly labelled as launching soon — we would rather tell you that than imply otherwise.</p>
+      <p class="body">Rights you already hold are scattered across a dozen agencies and hundreds of forms. SOVRAN turns them into one place you actually check. <strong>Eight are live and free today.</strong> The rest are honestly labelled as launching soon — we would rather tell you that than imply otherwise.</p>
     </div>
     <div class="caps">
 
@@ -889,7 +889,7 @@ window.SV_KS = {
   <div class="wrap">
     <div class="sec-head">
       <span class="eyebrow">Where this goes next</span>
-      <h2>Seven tools are free. The eighth costs money to run.</h2>
+      <h2>Eight tools are free. The ninth costs money to run.</h2>
       <p class="lede">Everything on this site works today and always will, free. What does not exist yet is the part that does the work for you.</p>
     </div>
 
@@ -980,13 +980,33 @@ window.SV_KS = {
     setTimeout(function(){ box2.classList.add('on'); }, 2200);
   }
 
-  var io = new IntersectionObserver(function(es){
-    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { threshold: 0.14, rootMargin: '0px 0px -40px 0px' });
-  document.querySelectorAll('.reveal').forEach(function(el, i){
-    el.style.transitionDelay = (Math.min(i,3) * 70) + 'ms';
-    io.observe(el);
-  });
+  /* Reveal-on-scroll, with a hard failsafe.
+
+     An element that never receives .in stays at opacity 0 while still taking up
+     its full height — which reads as a large unexplained gap rather than as
+     missing content. A threshold of 0.14 plus a negative bottom margin meant
+     elements near the end of the page could sit invisible indefinitely.
+
+     So: trigger on the first pixel, and reveal everything unconditionally after
+     two seconds whatever the observer did. Content being visible always beats
+     content animating nicely. */
+  var reveals = document.querySelectorAll('.reveal');
+  function showAll(){ reveals.forEach(function(el){ el.classList.add('in'); }); }
+
+  if(!('IntersectionObserver' in window) ||
+     window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    showAll();
+  } else {
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.01, rootMargin: '0px 0px 120px 0px' });
+    reveals.forEach(function(el, i){
+      el.style.transitionDelay = (Math.min(i,3) * 70) + 'ms';
+      io.observe(el);
+    });
+    setTimeout(showAll, 2000);
+    window.addEventListener('load', function(){ setTimeout(showAll, 400); });
+  }
 
   var btn = document.getElementById('submit'),
       status = document.getElementById('status'),
@@ -1141,10 +1161,10 @@ window.SV_KS = {
     var h=document.getElementById('kshead'), sub=document.getElementById('kssub'),
         note=document.getElementById('ksnote'), go=document.getElementById('ksgo');
     if(h) h.textContent = 'The campaign is live.';
-    if(sub) sub.textContent = 'Seven tools stay free either way. This funds the removal engine and the proof that comes with it.';
+    if(sub) sub.textContent = 'Eight tools stay free either way. This funds the removal engine and the proof that comes with it.';
     if(go) go.innerHTML = 'Back it &rarr;';
     if(btn) btn.textContent = 'Back it on Kickstarter';
-    if(note) note.textContent = 'Seven tools on this site are free and will stay free whether this funds or not.';
+    if(note) note.textContent = 'Eight tools on this site are free and will stay free whether this funds or not.';
   }
 
   // The strip is dismissible and remembers. It is an announcement, not a wall.
@@ -1161,6 +1181,17 @@ window.SV_KS = {
       try{ localStorage.setItem(key,'1'); }catch(e){}
     });
   }
+})();
+</script>
+<script>
+/* REVEAL FAILSAFE — an element that never gets .in stays at opacity 0 while
+   still occupying its full height, which reads as an unexplained gap. Nothing
+   may stay invisible, whatever the observer did. */
+(function(){
+  function show(){ document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
+  setTimeout(show, 1800);
+  window.addEventListener('load', function(){ setTimeout(show, 300); });
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) show();
 })();
 </script>
 </body>
