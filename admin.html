@@ -339,6 +339,9 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
             <input type="checkbox" id="mroads" checked style="width:16px;height:16px;accent-color:var(--gold)">
             include roads <span style="color:var(--ash-dim);font-size:.8em">&mdash; adds a few minutes</span>
           </label>
+      <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;margin-left:14px">
+        <input type="checkbox" id="mskip"> skip the reachability check <span style="color:var(--ash-dim);font-size:.8em">&mdash; build straight away</span>
+      </label>
           <button class="btn ghost" id="mstop" style="font-size:.84rem;padding:13px 22px;display:none">Stop</button>
         </div>
         <div class="msg" id="mmsg"></div>
@@ -1122,6 +1125,12 @@ var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,7
 
   document.getElementById('mbuild').addEventListener('click',function(){
     var k=SEL.value; if(!k) return;
+    var skipCheck = document.getElementById('mskip') && document.getElementById('mskip').checked;
+    if(skipCheck){
+      line('   skipping the reachability check \u2014 building straight away','var(--ash-dim)');
+      startBuild(k);
+      return;
+    }
     line('   checking Overpass is reachable (max 6s)\u2026','var(--ash-dim)');
     overpassHealthy().then(function(ok){
       if(!ok){

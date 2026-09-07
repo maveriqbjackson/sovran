@@ -1,6 +1,6 @@
 {
- "generated": "2026-09-07 20:11 UTC",
- "note": "SHA-256 of every deployed file. robots.txt excluded because Cloudflare rewrites it. Fonts excluded from this build.",
+ "generated": "2026-09-07 21:19 UTC",
+ "note": "SHA-256 of every deployed file.",
  "files": {
   "/404.html": {
    "sha256": "ea4845df096f261bc6b019e3443ea96cae0e5f455b35eb99835e760a2959b9bc",
@@ -15,8 +15,8 @@
    "bytes": 54282
   },
   "/admin.html": {
-   "sha256": "bb97845eaae7d04ee5c08cb9129896fc75bfffacced70efe532205e2fcb2563a",
-   "bytes": 71241
+   "sha256": "0b317978be311a123ec3e6f03658836a33576336be4998c8ad1c9edd6a53505e",
+   "bytes": 71768
   },
   "/audit.html": {
    "sha256": "1687ed65b819709388922e71280c06de204a57b562af813284e4e25c506d339f",
@@ -67,8 +67,8 @@
    "bytes": 924
   },
   "/map.html": {
-   "sha256": "f9f77683fbee83163e2b26efb5dad3083bbb018312374aee5f0a47ba1c6ef4f1",
-   "bytes": 99297
+   "sha256": "e3f3ae38151017b5033f7e27f2c995fdfa213b99d6801f28cd1bc80a505da6a2",
+   "bytes": 99299
   },
   "/panel.html": {
    "sha256": "b1c1e087d6d8a1496e98c898464d57f18cd84a09ce8efe76ebc6ba21949fa62c",
@@ -79,8 +79,8 @@
    "bytes": 41112
   },
   "/photo.html": {
-   "sha256": "1546d619b0df190daadd75b474571c937da6ec07c565fb5364980be17e109546",
-   "bytes": 62919
+   "sha256": "69f440ac8824d7561a5db37797574bd3a9a2146d8ceb2d1deb631e2a848dc1c9",
+   "bytes": 62921
   },
   "/rights.html": {
    "sha256": "9ed7e8840ff4df00e8e4b56e8b251be93bc6907cfd1330a91cd3c839bb19a267",
