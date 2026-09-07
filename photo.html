@@ -449,6 +449,10 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .sharebtn:hover{border-color:var(--gold);color:var(--gold)}
 .sharebtn svg{flex:none;width:15px;height:15px;fill:currentColor}
 .sharebtn.done{border-color:#3DE8A5;color:#3DE8A5}
+
+.osmnote{margin-top:11px;font-size:.8rem;color:var(--ash-dim);line-height:1.5;
+  padding-top:10px;border-top:1px solid rgba(232,224,206,.08)}
+.osmoff{margin-top:10px;font-size:.82rem;color:#FFCB6B;line-height:1.5;font-weight:600}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -790,7 +794,8 @@ function magnitude(lat,lon){
     'But it is your location, and whether to look is your call, not ours. The link below opens OpenStreetMap in a new tab and '+
     '<b>will send these coordinates to openstreetmap.org</b>. Nothing else on this page does anything like that.</p>'+
     '<a href="https://www.openstreetmap.org/?mlat='+lat.toFixed(6)+'&mlon='+lon.toFixed(6)+'#map=18/'+lat.toFixed(6)+'/'+lon.toFixed(6)+
-    '" target="_blank" rel="noopener noreferrer">Open in OpenStreetMap \u2192</a></div>';
+    '" target="_blank" rel="noopener noreferrer">Open in OpenStreetMap \u2192</a>'+(navigator.onLine?'':'<p class="osmoff">\u26A0 You appear to be offline right now. Turn your connection on before tapping the link above.</p>')+''+
+    '<p class="osmnote">This is the one thing here that needs a connection. Everything else on this page works with your data off \u2014 but opening the map requires internet, so turn it back on first.</p></div>';
 
   return ladder+svg+map;
 }

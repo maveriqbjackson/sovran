@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-07 21:19 UTC",
+ "generated": "2026-09-07 21:29 UTC",
  "note": "SHA-256 of every deployed file.",
  "files": {
   "/404.html": {
@@ -79,8 +79,8 @@
    "bytes": 41112
   },
   "/photo.html": {
-   "sha256": "69f440ac8824d7561a5db37797574bd3a9a2146d8ceb2d1deb631e2a848dc1c9",
-   "bytes": 62921
+   "sha256": "aba29692bdec98c53f12017f1fc18bdbfda3b7cc7933aa771c9ca0bedc9437e1",
+   "bytes": 63507
   },
   "/rights.html": {
    "sha256": "9ed7e8840ff4df00e8e4b56e8b251be93bc6907cfd1330a91cd3c839bb19a267",
