@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin — SOVRAN</title>
+<meta name="description" content="Private.">
+<meta name="theme-color" content="#04060C">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/plex-sans-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%2304060F'/%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' x2='1'%3E%3Cstop offset='0' stop-color='%237B5CD6'/%3E%3Cstop offset='.5' stop-color='%234FC3D9'/%3E%3Cstop offset='1' stop-color='%23D9AE5F'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M10 76 Q50 26 90 76' stroke='url(%23b)' stroke-width='8' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+@font-face{font-family:'Archivo';font-style:normal;font-weight:100 900;font-stretch:62% 125%;font-display:swap;
+  src:url(/fonts/archivo-var.woff2) format('woff2-variations'),url(/fonts/archivo-var.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:100 700;font-display:swap;
+  src:url(/fonts/plex-sans-var.woff2) format('woff2-variations'),url(/fonts/plex-sans-var.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url(/fonts/plex-mono-400.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url(/fonts/plex-mono-500.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:600;font-display:swap;src:url(/fonts/plex-mono-600.woff2) format('woff2')}
+:root{--void:#04060F; --void-2:#070B18; --surface:#0C1424; --surface-2:#131E38;
+  --line:rgba(236,230,220,.13); --line-2:rgba(236,230,220,.24);
+  --bone:#F4F0E8; --ash:#A2AEC6; --ash-dim:#74809B;
+  --gold:#FFCB6B; --gold-hi:#FFEDC0; --gold-deep:#A87A22;
+  --bif-1:#A878FF; --bif-2:#5AF0FF; --bif-3:#FFCB6B; --bif-4:#FF7ABE;
+  --ice:#5AF0FF; --alarm:#FF9E5E; --clear:#3DE8A5;
+  --r-lg:26px;--r-md:18px;--r-sm:11px;--pad:clamp(20px,5vw,32px);--maxw:860px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{background:var(--void);color:var(--bone);font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(60ch 44ch at 82% 2%,rgba(123,92,214,.10),transparent 66%),
+             radial-gradient(150ch 110ch at 50% 40%,transparent 44%,rgba(0,0,0,.5) 100%)}
+.wrap{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 var(--pad)}
+h1,h2,.mark{font-family:'Archivo',system-ui,sans-serif;text-transform:uppercase}
+h1{font-weight:900;font-variation-settings:'wdth' 118;font-size:clamp(1.85rem,7vw,3.2rem);letter-spacing:-.012em;line-height:1.07}
+h2{font-weight:900;font-variation-settings:'wdth' 114;font-size:clamp(1.25rem,4vw,1.75rem);line-height:1.16;margin-bottom:16px}
+h3{font-family:'Archivo',sans-serif;font-weight:700;font-variation-settings:'wdth' 106;font-size:1.06rem;letter-spacing:-.015em;line-height:1.26}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:.67rem;font-weight:500;letter-spacing:.26em;text-transform:uppercase;color:var(--gold)}
+.lede{font-size:clamp(1.02rem,3.2vw,1.2rem);color:var(--ash);line-height:1.58;max-width:58ch}
+p.body{color:var(--ash);max-width:64ch;margin-bottom:16px}
+strong{color:var(--bone);font-weight:600}
+.gilt{background:linear-gradient(160deg,var(--gold-hi) 8%,var(--gold) 46%,var(--gold-deep) 96%);-webkit-background-clip:text;background-clip:text;color:transparent}
+header{position:relative;z-index:3;padding:22px 0 0}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.mark{font-weight:900;font-size:1.18rem;letter-spacing:.16em;font-variation-settings:'wdth' 122;color:var(--bone);text-decoration:none;display:inline-flex;align-items:center;gap:10px}
+.bridge{width:21px;height:14px;flex:none;overflow:visible}
+.back{font-family:'IBM Plex Mono',monospace;font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ash);text-decoration:none;border-bottom:1px solid var(--line-2)}
+.back:hover{color:var(--gold);border-color:var(--gold)}
+.intro{padding:clamp(38px,8vw,64px) 0 clamp(20px,4vw,30px)}
+.intro .eyebrow{display:block;margin-bottom:20px}
+.intro .lede{margin-top:22px}
+section{padding:0 0 clamp(38px,8vw,60px)}
+.rule{height:1px;border:0;background:linear-gradient(90deg,transparent,var(--bif-1) 22%,var(--bif-2) 50%,var(--bif-3) 78%,transparent);opacity:.42;margin:clamp(34px,7vw,54px) 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(20px,4vw,28px);margin-bottom:14px}
+.card p{color:var(--ash);font-size:.95rem;line-height:1.6}
+.key{background:linear-gradient(140deg,rgba(217,174,95,.09),transparent 70%);border:1px solid rgba(217,174,95,.22);
+  border-left:3px solid var(--gold);border-radius:var(--r-sm);padding:16px 18px;margin-bottom:18px;font-size:.92rem;color:var(--ash);line-height:1.58}
+.key b{display:block;color:var(--gold);font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px}
+.btn{border:0;border-radius:var(--r-sm);cursor:pointer;background:linear-gradient(165deg,var(--gold-hi),var(--gold) 58%,var(--gold-deep));
+  color:#1E1403;font-family:'Archivo',sans-serif;font-weight:800;font-size:.88rem;text-transform:uppercase;letter-spacing:.09em;
+  padding:15px 28px;transition:transform .12s,filter .18s,box-shadow .18s;display:inline-block;text-decoration:none;text-align:center}
+.btn:hover{filter:brightness(1.1);box-shadow:0 0 24px rgba(217,174,95,.26)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:none;border:1px solid var(--line-2);color:var(--ash);box-shadow:none}
+.btn.ghost:hover{border-color:var(--gold);color:var(--gold);filter:none;box-shadow:none}
+footer{border-top:1px solid var(--line);padding:36px 0 50px;font-size:.84rem;color:var(--ash-dim);background:var(--void-2)}
+footer a{color:var(--ash);text-decoration:none;border-bottom:1px solid var(--line-2)}
+footer a:hover{color:var(--gold);border-color:var(--gold)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+.gate{max-width:440px;margin-top:30px}
+.gate input{width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);
+  border-radius:var(--r-sm);padding:15px 16px;font-family:'IBM Plex Mono',monospace;font-size:1rem;margin-bottom:12px}
+.gate input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,174,95,.16)}
+.msg{display:none;margin-top:14px;font-size:.9rem;border-radius:var(--r-sm);padding:13px 15px;line-height:1.5}
+.msg.show{display:block}
+.msg.err{background:rgba(255,158,94,.09);border:1px solid rgba(255,158,94,.34);color:var(--alarm)}
+.msg b{color:var(--bone)}
+.msg code{font-family:'IBM Plex Mono',monospace;font-size:.84rem;background:var(--void);border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--gold-hi)}
+.msg.ok{background:rgba(61,232,165,.09);border:1px solid rgba(61,232,165,.34);color:var(--clear)}
+#panel{display:none}
+#panel.show{display:block}
+.stats{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);margin-bottom:26px}
+@media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
+.st{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:19px}
+.st .v{font-family:'Archivo',sans-serif;font-weight:900;font-variation-settings:'wdth' 88;font-size:1.9rem;
+  line-height:1;letter-spacing:-.035em;color:var(--ice);display:block}
+.st .l{font-size:.76rem;color:var(--ash);margin-top:8px;display:block;line-height:1.35}
+.blk{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(20px,4vw,26px);margin-bottom:14px}
+.blk h3{margin-bottom:14px}
+.rows{display:grid;gap:6px;max-height:460px;overflow-y:auto}
+.row{background:var(--void);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;font-size:.86rem}
+.row .e{color:var(--bone);font-family:'IBM Plex Mono',monospace;font-size:.82rem;word-break:break-all}
+.row .m{color:var(--ash-dim);font-size:.74rem;margin-top:5px;font-family:'IBM Plex Mono',monospace;letter-spacing:.04em}
+.row .nt{color:var(--ash);font-size:.84rem;margin-top:8px;padding-left:11px;border-left:2px solid var(--gold-deep);line-height:1.5;white-space:pre-wrap}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;font-size:.85rem}
+.bar .t{color:var(--ash);min-width:0}
+.bar .track{grid-column:1/-1;height:5px;background:var(--void);border-radius:99px;overflow:hidden;margin-top:-2px}
+.bar .fill{height:100%;background:linear-gradient(90deg,var(--bif-2),var(--bif-3));border-radius:99px}
+.bar .n{font-family:'IBM Plex Mono',monospace;font-size:.78rem;color:var(--gold)}
+.cstat{display:flex;align-items:center;gap:10px;font-family:'IBM Plex Mono',monospace;font-size:.72rem;
+  letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
+.cdot{width:10px;height:10px;border-radius:50%;flex:none;box-shadow:0 0 0 3px rgba(255,255,255,.06),0 0 12px currentColor}
+.acts{display:flex;gap:11px;flex-wrap:wrap;margin-top:18px}
+.warn{background:linear-gradient(140deg,rgba(255,158,94,.08),transparent 72%);border:1px solid rgba(255,158,94,.28);
+  border-left:3px solid var(--alarm);border-radius:var(--r-sm);padding:15px 17px;margin-top:20px;font-size:.87rem;color:var(--ash);line-height:1.55}
+.warn b{display:block;color:var(--alarm);font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:7px}
+
+
+.rule{opacity:.72 !important;height:2px !important}
+.cap::after,.blk::after,.pillar::after{opacity:.55}
+.cap:hover,.blk:hover{border-color:rgba(169,140,255,.34)}
+.eyebrow::before{width:9px;height:9px;box-shadow:0 0 10px rgba(169,140,255,.6)}
+h2{background:linear-gradient(96deg,var(--bone) 62%,rgba(169,140,255,.92));
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.mark{text-shadow:0 0 22px rgba(169,140,255,.28)}
+
+
+
+/* Nothing may force the page sideways on a phone. Wide content scrolls inside
+   its own container instead of dragging the whole layout with it. */
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,canvas,video{max-width:100%;height:auto}
+pre,code{overflow-wrap:anywhere}
+@media(max-width:420px){
+  .wrap{padding-left:16px;padding-right:16px}
+  h1{font-size:clamp(1.9rem,10vw,3rem)}
+  .btn{width:100%;justify-content:center}
+  .dl .btn,.dacts .btn,.form .btn{width:auto}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STRIKING, NOT DECORATED
+   Contrast does the work: near-black, one real spectral band, type pushed
+   to the narrow end of Archivo's width axis, hard edges everywhere. No
+   glows standing in for hierarchy.
+   ═══════════════════════════════════════════════════════════════════════ */
+html{background:#04060C}
+body{background:transparent}
+html::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.75;
+  background-image:
+    linear-gradient(rgba(232,224,206,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,224,206,.035) 1px, transparent 1px);
+  background-size:48px 48px;animation:none;
+  mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.5) 42%,transparent 72%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,rgba(0,0,0,.5) 42%,transparent 72%)}
+body::before{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E")}
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(120ch 60ch at 50% -8%, rgba(169,120,255,.16), transparent 62%) !important}
+
+/* THE BRIDGE — a real band, not a suggestion */
+header{position:relative;z-index:5;border-bottom:1px solid rgba(232,224,206,.1)}
+header::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:3px;
+  background:linear-gradient(90deg,#A878FF 0%,#6FE8FF 34%,#3DE8A5 52%,#FFCB6B 74%,#FF7ABE 100%)}
+main,footer,section{position:relative;z-index:2}
+
+.rule{height:1px !important;opacity:1 !important;overflow:visible;position:relative;
+  background:rgba(232,224,206,.1) !important;margin:0 !important}
+.rule::after{content:'';position:absolute;left:0;top:-1px;width:140px;height:3px;
+  background:linear-gradient(90deg,#A878FF,#6FE8FF 50%,#FFCB6B)}
+
+/* type at its extremes */
+h1{font-size:clamp(2.2rem,7vw,4.4rem) !important;line-height:.98 !important;
+  letter-spacing:-.05em !important;font-variation-settings:'wdth' 82 !important}
+h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;color:var(--bone) !important;
+  font-size:clamp(1.6rem,4vw,2.5rem) !important;line-height:1.04 !important;
+  letter-spacing:-.045em !important;font-variation-settings:'wdth' 84 !important}
+.lede{font-size:clamp(1rem,2.2vw,1.28rem) !important;max-width:56ch;color:var(--bone);opacity:.86}
+.eyebrow{padding-left:0;font-size:.62rem;letter-spacing:.28em}
+.eyebrow::before{position:static;display:inline-block;transform:none;margin-right:12px;
+  width:34px;height:2px;border-radius:0;vertical-align:middle;box-shadow:none}
+
+/* statistics, loud */
+.facts{gap:0 !important;border-top:1px solid rgba(232,224,206,.1)}
+.fact{border-radius:0 !important;border:0 !important;
+  border-bottom:1px solid rgba(232,224,206,.1) !important;
+  border-right:1px solid rgba(232,224,206,.1) !important;
+  padding:clamp(26px,4vw,38px) clamp(20px,3vw,30px) !important;
+  background:transparent !important;position:relative;overflow:hidden}
+.fact::before{content:'';position:absolute;left:0;top:0;width:3px;height:0;
+  background:linear-gradient(180deg,#A878FF,#6FE8FF);transition:height .3s}
+.fact:hover::before{height:100%}
+.fact:hover{background:rgba(169,120,255,.045) !important}
+.fact .n{font-size:clamp(3.2rem,8vw,5rem) !important;line-height:.84 !important;
+  letter-spacing:-.06em !important;font-variation-settings:'wdth' 78 !important;
+  background:linear-gradient(170deg,var(--bone) 30%,rgba(169,120,255,.75));
+  -webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:14px}
+
+/* cards as one built object */
+.caps{gap:1px !important;background:rgba(232,224,206,.1);border:1px solid rgba(232,224,206,.1)}
+.cap{border-radius:0 !important;border:0 !important;background:#080B14 !important;
+  padding:clamp(24px,3.4vw,34px) !important;position:relative;transition:background .2s}
+.cap::after{display:none}
+.cap:hover{background:#0C1120 !important}
+.cap::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;transition:background .25s}
+.cap:hover::before{background:linear-gradient(180deg,#A878FF,#6FE8FF 50%,#FFCB6B)}
+.cap h3{font-size:clamp(1.15rem,2.4vw,1.5rem) !important;letter-spacing:-.025em;line-height:1.12}
+@media(min-width:960px){
+  .caps{grid-template-columns:repeat(6,1fr) !important;align-items:stretch}
+  .caps > .cap{grid-column:span 2}
+  .caps > .cap.wide{grid-column:span 4}
+  .caps > .cap:nth-child(1){grid-column:span 4}
+  .caps > .cap:nth-child(2){grid-column:span 2}
+  .caps > .cap:nth-child(6){grid-column:span 3}
+  .caps > .cap:nth-child(7){grid-column:span 3}
+  .caps > .cap:last-child{grid-column:span 6}}
+
+/* charter as a ledger */
+.arts{border-radius:0 !important;border:1px solid rgba(232,224,206,.1) !important}
+.arts::before{width:2px !important;background:linear-gradient(180deg,#A878FF,#6FE8FF 45%,#FFCB6B) !important}
+.art{border-radius:0;border-bottom:1px solid rgba(232,224,206,.08);
+  padding:clamp(22px,3vw,30px) clamp(20px,3vw,30px) !important;transition:background .2s}
+.art:hover{background:rgba(169,120,255,.04)}
+.art .num{font-size:1.5rem !important;font-variation-settings:'wdth' 76 !important;opacity:.5;min-width:52px !important}
+.art h3{font-size:1.1rem !important;letter-spacing:-.02em}
+
+/* buttons: square, and they move */
+.btn{border-radius:0 !important;letter-spacing:.1em;font-size:.8rem;padding:16px 30px;
+  transition:transform .15s, box-shadow .15s}
+.btn:not(.ghost){background:linear-gradient(100deg,#FFE7B4,#FFCB6B 45%,#E0A63C) !important;
+  color:#0A0806 !important;box-shadow:none !important}
+.btn:not(.ghost):hover{box-shadow:0 0 0 1px #FFCB6B, 6px 6px 0 0 rgba(169,120,255,.5) !important;
+  transform:translate(-2px,-2px)}
+.btn.ghost:hover{box-shadow:4px 4px 0 0 rgba(111,232,255,.4) !important;transform:translate(-2px,-2px)}
+
+/* everything square */
+.livebar,.cbanner,.acct,.blk,.tier,.path,.cbox,.plain,.never,.consent-form,.pinsetup,
+.status,.box,.arts,.srcbar .mini,.st,.br,.verdict,.next,.detail,.plotwrap,.canvaswrap,
+.key,.guard,.disc,.freebar,.warn,.adds,.watch,.honest,.shapes>div,.pay>div,.explain>div,
+.steps>div,.chk>div,.bgrid>div,.tags>div,.who div,.hrow,.msg,.field input,.box input,
+.form input,.pick select,.pinrow input,.srcs a{border-radius:0 !important}
+.pinrow input{border-radius:2px !important}
+.tags span,.flag,.mins,.notyet,.tlab,.srcs a{border-radius:0 !important}
+
+.mark{text-shadow:none}
+.gilt{filter:none;background:linear-gradient(160deg,#FFE7B4 10%,#FFCB6B 45%,#D08A2A 95%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+@media(prefers-reduced-motion:reduce){html::before{animation:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <a href="/" class="mark">
+      <svg class="bridge" viewBox="0 0 22 15" aria-hidden="true"><defs><linearGradient id="bg1" x1="0" x2="1"><stop offset="0" stop-color="#A98CFF"/><stop offset=".5" stop-color="#6FE8FF"/><stop offset="1" stop-color="#E5BC6E"/></linearGradient></defs><path d="M1.5 13 Q11 2 20.5 13" stroke="url(#bg1)" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+      SOVRAN
+    </a>
+    <a href="/" class="back">&larr; Back</a>
+  </div>
+</header>
+<main>
+<section class="intro">
+  <div class="wrap">
+    <span class="eyebrow">Admin &middot; Not indexed &middot; Key required</span>
+    <h1>The <span class="gilt">back room</span>.</h1>
+
+    <div class="gate" id="gate">
+      <p class="body" style="margin-bottom:16px">Four locks, all required: Cloudflare Access at the edge, your key, a rotating code, and a lockout after five failures. Nothing is held beyond this tab.</p>
+      <input type="password" id="key" placeholder="admin key" autocomplete="off" spellcheck="false">
+      <input type="text" id="code" placeholder="6-digit code from your authenticator" autocomplete="one-time-code"
+             inputmode="numeric" pattern="[0-9]*" maxlength="6" spellcheck="false"
+             style="width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:15px 16px;font-family:'IBM Plex Mono',monospace;font-size:1.05rem;letter-spacing:.3em;margin-bottom:12px">
+      <button class="btn" id="go" style="width:100%">Unlock</button>
+      <div class="msg" id="msg"></div>
+    </div>
+
+    <div id="panel">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+        <button class="btn ghost" id="isignout" style="font-size:.78rem;padding:10px 18px">Sign out</button>
+      </div>
+      <div class="stats" id="stats"></div>
+
+      <div class="blk">
+        <h3>Security</h3>
+        <div id="secbox"></div>
+      </div>
+
+      <div class="blk">
+        <h3>The canary</h3>
+        <div id="cbox"></div>
+        <input type="text" id="cfresh" placeholder="https://cnn.com/2026/… — a news link from today" autocomplete="off" spellcheck="false"
+               style="width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:14px 15px;font-family:'IBM Plex Sans',sans-serif;font-size:.9rem;margin-top:14px">
+        <input type="password" id="ckey" placeholder="your canary signing key" autocomplete="off" spellcheck="false"
+               style="width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:14px 15px;font-family:'IBM Plex Mono',monospace;font-size:.86rem;margin-top:14px">
+        <div class="acts">
+          <button class="btn" id="sign">Sign it for another period</button>
+        </div>
+        <div class="msg" id="cmsg"></div>
+        <div class="warn"><b>Sign it yourself, deliberately</b>Only sign this if it is still true: no secret order, no gag order, no demand for user data, no compelled silence. Signing it out of habit is how a canary becomes worthless.</div>
+      </div>
+
+      <div class="blk">
+        <h3>What people came for</h3>
+        <div class="bars" id="bars"></div>
+      </div>
+
+      <div class="blk">
+        <h3>Recent signups</h3>
+        <p class="body" style="font-size:.87rem;margin-bottom:14px">The 50 most recent. Notes people left are shown in full &mdash; these are the most useful thing on this page.</p>
+        <div class="rows" id="rows"></div>
+        <div class="acts">
+          <button class="btn ghost" id="csv">Export everything as CSV</button>
+        </div>
+        <div class="msg" id="emsg"></div>
+      </div>
+
+      <div class="blk">
+        <h3>Integrity check</h3>
+        <p class="body" style="font-size:.88rem;margin-bottom:14px">Re-downloads every deployed file, hashes it in this browser, and compares against the manifest committed to the repo. Any difference means a file changed without a commit.</p>
+        <p class="body" style="font-size:.84rem;color:var(--ash-dim);margin-bottom:16px">This catches unauthorised code changes &mdash; a modified script, an injected tracker, a swapped page. It is not a bug detector and nobody should claim otherwise. What it does do is make silent tampering with the site itself very hard to get away with.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+          <button class="btn" id="ichk" style="font-size:.84rem;padding:13px 22px">Verify all files</button>
+        </div>
+        <div class="msg" id="imsg"></div>
+        <div id="ilog" style="margin-top:14px;display:grid;gap:4px;max-height:300px;overflow-y:auto"></div>
+      </div>
+
+      <div class="blk">
+        <h3>Build map snapshots</h3>
+        <p class="body" style="font-size:.88rem;margin-bottom:16px">The Map loads from files on our own domain so visitors never make an outside request. This builds those files. Your browser queries OpenStreetMap, compacts the result, and hands you a file to drop into <code style="font-family:'IBM Plex Mono',monospace;font-size:.82rem;color:var(--gold-hi)">mapdata/</code> in the repo.</p>
+        <p class="body" style="font-size:.85rem;color:var(--ash-dim);margin-bottom:14px">Overpass is a free service on donated hardware. Build a few states at a time and leave gaps between runs. Rebuilding every few months is plenty &mdash; the data changes slowly.</p>
+        <div class="key" style="margin-bottom:16px"><b>How roads are fetched</b>
+          Streets are requested in groups of devices rather than by map area. A group of 120 cameras costs the same whether they sit on one block downtown or across an entire county &mdash; and if a group is still too heavy, it halves itself until it is not.
+          <br><br>
+          That is what makes dense states work. Arterials are still fetched by area and can be patchy in a big metro; the streets around each camera are the part that matters and they are now reliable.
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+          <select id="mstate" style="background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:13px 15px;font-family:inherit;font-size:.9rem;min-width:190px"></select>
+          <button class="btn" id="mbuild" style="font-size:.84rem;padding:13px 22px">Build this state</button>
+          <label style="display:flex;align-items:center;gap:8px;font-size:.84rem;color:var(--ash);cursor:pointer">
+            <input type="checkbox" id="mroads" checked style="width:16px;height:16px;accent-color:var(--gold)">
+            include roads <span style="color:var(--ash-dim);font-size:.8em">&mdash; adds a few minutes</span>
+          </label>
+      <label style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;margin-left:14px">
+        <input type="checkbox" id="mskip"> skip the reachability check <span style="color:var(--ash-dim);font-size:.8em">&mdash; build straight away</span>
+      </label>
+          <button class="btn ghost" id="mstop" style="font-size:.84rem;padding:13px 22px;display:none">Stop</button>
+        </div>
+        <div class="msg" id="mmsg"></div>
+        <div id="mlog" style="margin-top:14px;display:grid;gap:5px;max-height:260px;overflow-y:auto"></div>
+      </div>
+
+      <div class="blk">
+        <h3>Remove someone by hand</h3>
+        <p class="body" style="font-size:.87rem;margin-bottom:14px">If someone emails asking to be taken off rather than using the unsubscribe link. Deletes the row outright.</p>
+        <input type="email" id="rmEmail" placeholder="their@email.com" autocomplete="off"
+               style="width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:14px 15px;font-family:'IBM Plex Mono',monospace;font-size:.86rem">
+        <div class="acts"><button class="btn ghost" id="rm">Remove</button></div>
+        <div class="msg" id="rmsg"></div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+<footer>
+  <div class="wrap">
+    <p style="margin-bottom:12px;max-width:62ch;line-height:1.55">Private admin for <a href="/">SOVRAN</a>. Your key lives in this tab only and is forgotten when you close it.</p>
+    <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--> &middot; No cookies. No trackers. No analytics.</p>
+  </div>
+</footer>
+<script>
+(function(){
+'use strict';
+var KEYIN=document.getElementById('key'), MSG=document.getElementById('msg'),
+    GATE=document.getElementById('gate'), PANEL=document.getElementById('panel');
+var key='', code='', session='', BUILDING=false;
+// Bumped in lockstep with BUILD_ID in functions/api/admin.js. If these disagree,
+// one of the two files did not deploy — which has cost us several rounds of
+// guessing, so the panel now says which one.
+var EXPECT_BUILD='2026-09-02-backoff';
+
+function say(el,m,kind){ el.textContent=m; el.className='msg show '+kind; }
+function esc(s){ return String(s==null?'':s).replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];}); }
+function when(t){
+  if(!t) return '';
+  var d=new Date(String(t).replace(' ','T')+'Z');
+  return isNaN(d)?String(t):d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function call(action,extra){
+  // After the first successful unlock we hold a session token and stop sending
+// the rotating code — a 30-second code cannot authorise a click made a minute later.
+  var b = session
+    ? Object.assign({session:session,action:action},extra||{})
+    : Object.assign({key:key,code:code,action:action},extra||{});
+  return fetch('/api/admin',{
+    method:'POST',
+    credentials:'same-origin',           // carry the Cloudflare Access cookie
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(b)
+  }).then(function(r){
+    // Cloudflare Access answers an unauthenticated API call with a redirect to
+    // its login domain. A fetch cannot follow that cross-origin, so it either
+    // lands on a non-JSON page or fails outright. Detect it rather than guess.
+    var redirected = r.redirected || (r.url && r.url.indexOf(location.origin)!==0);
+    return r.text().then(function(txt){
+      var d;
+      try{ d=JSON.parse(txt); }
+      catch(e){
+        // Only a genuine Access login page counts as a redirect. Cloudflare's
+        // own timeout and error pages are also HTML, and treating those as an
+        // Access problem hid the real cause for two rounds.
+        if(redirected || /cloudflareaccess\.com|Sign in with|Access denied/i.test(txt)){
+          return {ok:false, accessRedirect:true, d:{}};
+        }
+        var hint='';
+        if(r.status===524||/524|timed out|Origin Time-?out/i.test(txt))
+          hint=' The Worker took too long \u2014 the query was too large. Try a smaller region, or build without roads.';
+        else if(r.status===502||r.status===503) hint=' The upstream service was unavailable.';
+        return {ok:false, d:{error:'Server returned HTTP '+r.status+' and not JSON.'+hint}};
+      }
+      if(d && d.session) session=d.session;
+      if(d && d.expired){ session=''; }
+      return {ok:r.ok, d:d};
+    });
+  });
+}
+
+var ACCESS_HELP =
+  '<b>Cloudflare Access is intercepting the API call.</b><br><br>'+
+  'You got through Access to load this page, but the request to <code>/api/admin</code> is being '+
+  'redirected to the Access login screen instead of reaching the endpoint. A browser cannot follow '+
+  'that redirect from inside a page, so it fails.<br><br>'+
+  '<b>The cause:</b> Access sessions are per-application. If you created a second application for '+
+  '<code>api/admin</code>, this page is authenticated for one and not the other.<br><br>'+
+  '<b>The fix:</b> in Zero Trust &rarr; Access &rarr; Applications, <b>delete the application covering '+
+  '<code>api/admin</code></b> and keep only the one on <code>admin</code>. The endpoint stays protected: '+
+  'your browser sends the Access cookie with the request, and the API refuses anything that arrives without it.';
+
+function unlock(){
+  key=KEYIN.value.trim();
+  code=document.getElementById('code').value.replace(/\D/g,'');
+  if(!key){ say(MSG,'Enter your key.','err'); return; }
+  if(code.length!==6){ say(MSG,'Enter the current 6-digit code from your authenticator app.','err'); return; }
+  say(MSG,'Checking\u2026','ok');
+  call('overview').then(function(res){
+    if(res.accessRedirect){ MSG.innerHTML=ACCESS_HELP; MSG.className='msg show err'; key=''; code=''; return; }
+    if(!res.ok){ say(MSG,res.d.error||'Not authorised.','err'); key=''; code=''; document.getElementById('code').value=''; return; }
+    GATE.style.display='none'; PANEL.classList.add('show');
+    render(res.d);
+  }).catch(function(){
+    MSG.innerHTML = ACCESS_HELP +
+      '<br><br><span style="color:var(--ash);font-size:.86rem">If you have no such application, then the request failed for another reason \u2014 check that <code>functions/api/admin.js</code> exists in the repo and that you have redeployed since adding it.</span>';
+    MSG.className='msg show err';
+  });
+}
+
+function relock(msg){
+  session=''; key=''; code='';
+  document.getElementById('panel').classList.remove('show');
+  GATE.style.display='';
+  document.getElementById('code').value='';
+  say(MSG, msg || 'Session ended. Enter your key and a fresh code.', 'err');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function guard(res){
+  if(res && !res.ok && res.d && (res.d.expired || /not authorised/i.test(res.d.error||''))){
+    relock(res.d.error); return false;
+  }
+  return true;
+}
+
+function render(d){
+  var t=d.totals||{};
+  // Waitlist and accounts are different things. Somebody creating an account
+  // does not join the waitlist, and the panel used to make that easy to misread.
+  document.getElementById('stats').innerHTML=
+    '<div class="st"><span class="v">'+(t.total||0)+'</span><span class="l">On the waitlist<br><i style="font-style:normal;color:var(--ash-dim);font-size:.92em">all time</i></span></div>'+
+    '<div class="st"><span class="v">'+(t.week||0)+'</span><span class="l">Waitlist signups<br><i style="font-style:normal;color:var(--ash-dim);font-size:.92em">last 7 days</i></span></div>'+
+    '<div class="st"><span class="v" style="color:'+((d.accounts||0)?'#3DE8A5':'var(--ash-dim)')+'">'+(d.accounts||0)+'</span><span class="l">Accounts created<br><i style="font-style:normal;color:var(--ash-dim);font-size:.92em">separate from the waitlist</i></span></div>'+
+    '<div class="st"><span class="v">'+(t.with_notes||0)+'</span><span class="l">Left you a note</span></div>';
+
+  var sec=document.getElementById('secbox');
+  if(sec){
+    sec.innerHTML='<div class="cstat"><span class="cdot" style="background:'+(d.access_verified?'#3DE8A5':'#FF9E5E')+'"></span>'+
+      '<span style="color:'+(d.access_verified?'#3DE8A5':'#FF9E5E')+'">'+
+      (d.access_verified?'\u2713  Cloudflare Access verified':'\u26A0  Cloudflare Access NOT present')+'</span></div>'+
+      '<p style="color:var(--ash);font-size:.87rem;line-height:1.55">'+
+      'Worker build: <b style="color:'+(d.build===EXPECT_BUILD?'#3DE8A5':'#FF9E5E')+'">'+
+        (d.build||'OLD \u2014 predates build stamps')+'</b><br>'+
+      (d.build===EXPECT_BUILD?'':
+        '<span style="display:block;margin:10px 0;padding:12px 14px;background:rgba(255,158,94,.1);'+
+        'border:1px solid rgba(255,158,94,.4);border-radius:8px;color:#FF9E5E;font-size:.86rem;line-height:1.5">'+
+        '<b style="color:#FF9E5E">These two files disagree.</b><br>'+
+        'This page expects <code>'+EXPECT_BUILD+'</code> but the server is running <code>'+
+        (d.build||'an unstamped build')+'</code>.<br><br>'+
+        '<b style="color:var(--bone)">Your <code>functions/api/admin.js</code> did not deploy.</b> '+
+        'Editing it in place on GitHub is more reliable than uploading: open the file, press the pencil, '+
+        'select all, paste, then scroll down and press <b style="color:var(--bone)">Commit changes</b>. '+
+        'Then check Deployments in Cloudflare and confirm the newest one is after your commit.'+
+        '</span>')+
+      'Session: <b style="color:#3DE8A5">'+(d.session_minutes||30)+' minutes</b><br>'+
+      'Accounts: <b style="color:var(--bone)">'+(d.accounts||0)+'</b> \u00b7 '+
+      'Failed admin attempts in 24h: <b style="color:'+((d.failed_24h||0)>0?'#FF9E5E':'var(--bone)')+'">'+(d.failed_24h||0)+'</b></p>'+
+      (d.access_verified?'':'<p style="color:var(--alarm);font-size:.85rem;line-height:1.55;margin-top:10px">Set up Cloudflare Access on /admin, then set REQUIRE_ACCESS to true. Until then this panel is protected by key and code only.</p>');
+  }
+
+  // canary
+  var c=d.canary, box=document.getElementById('cbox');
+  if(c){
+    var signed=new Date(String(c.signed_at).replace(' ','T')+'Z');
+    var days=Math.floor((Date.now()-signed.getTime())/86400000);
+    var iv=d.interval_days||14, gr=d.grace_days||7;
+    var state=days<=iv?'alive':(days<=iv+gr?'due':'dead');
+    var col=state==='alive'?'#3DE8A5':state==='due'?'#E5BC6E':'#FF9E5E';
+    var lab=state==='alive'?'\u2713  OK \u00b7 signed and current'
+           :state==='due'  ?'\u26A0  DUE \u00b7 overdue, within grace'
+                           :'\u2717  LAPSED \u00b7 no longer current';
+    box.innerHTML='<div class="cstat"><span class="cdot" style="background:'+col+'"></span>'+
+      '<span style="color:'+col+'">'+lab+'</span></div>'+
+      '<p style="color:var(--ash);font-size:.87rem;line-height:1.55">Last signed by <b style="color:var(--bone)">'+esc(c.signed_by)+'</b> '+
+      (days===0?'today':days+(days===1?' day':' days')+' ago')+'. Next due in '+Math.max(0,iv-days)+' days.</p>';
+  } else box.innerHTML='<p style="color:var(--ash)">Nothing signed yet.</p>';
+
+  // interests
+  var ints=d.interests||[], max=ints.reduce(function(m,x){ return Math.max(m,x.n); },1);
+  document.getElementById('bars').innerHTML = ints.length ? ints.map(function(x){
+    return '<div class="bar"><span class="t">'+esc(x.interest)+'</span><span class="n">'+x.n+'</span>'+
+      '<span class="track"><span class="fill" style="width:'+((x.n/max)*100).toFixed(1)+'%"></span></span></div>';
+  }).join('') : '<p style="color:var(--ash-dim);font-size:.88rem">Nothing yet.</p>';
+
+  // recent
+  var rec=d.recent||[];
+  document.getElementById('rows').innerHTML = rec.length ? rec.map(function(r){
+    return '<div class="row"><div class="e">'+esc(r.email)+'</div>'+
+      '<div class="m">'+when(r.created_at)+(r.interest?' \u00b7 '+esc(r.interest):'')+'</div>'+
+      (r.note?'<div class="nt">'+esc(r.note)+'</div>':'')+'</div>';
+  }).join('') : '<p style="color:var(--ash-dim);font-size:.88rem">No signups yet.</p>';
+}
+
+document.getElementById('go').addEventListener('click',unlock);
+KEYIN.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); unlock(); } });
+
+document.getElementById('sign').addEventListener('click',function(){
+  var ck=document.getElementById('ckey').value.trim();
+  var fr=document.getElementById('cfresh').value.trim();
+  var m=document.getElementById('cmsg');
+  if(!ck){ say(m,'Enter your canary signing key.','err'); return; }
+  if(!/^https?:\/\//i.test(fr)){ say(m,'Paste a full news link from today (CNN, NPR, Guardian, NYT, WaPo, Politico, Axios, Al Jazeera).','err'); return; }
+  say(m,'Signing\u2026','ok');
+  call('sign',{canaryKey:ck,freshness:fr}).then(function(res){
+    if(!guard(res)) return;
+    if(!res.ok){ say(m,res.d.error||'Failed.','err'); return; }
+    say(m,'Signed as '+res.d.signed_by+'. The public page updates immediately.','ok');
+    document.getElementById('ckey').value=''; document.getElementById('cfresh').value='';
+    call('overview').then(function(r){ if(r.ok) render(r.d); });
+  });
+});
+
+document.getElementById('csv').addEventListener('click',function(){
+  var m=document.getElementById('emsg');
+  say(m,'Building\u2026','ok');
+  call('export').then(function(res){
+    if(!guard(res)) return;
+    if(!res.ok){ say(m,res.d.error||'Failed.','err'); return; }
+    var q=function(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; };
+    var csv='email,interest,note,source,created_at\n'+
+      res.d.rows.map(function(r){ return [r.email,r.interest,r.note,r.source,r.created_at].map(q).join(','); }).join('\n');
+    var b=new Blob([csv],{type:'text/csv'}), u=URL.createObjectURL(b), a=document.createElement('a');
+    a.href=u; a.download='sovran-waitlist-'+new Date().toISOString().slice(0,10)+'.csv';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(function(){ URL.revokeObjectURL(u); },1000);
+    say(m,'Downloaded '+res.d.rows.length+' rows. Keep that file somewhere safe \u2014 it is the most sensitive thing SOVRAN holds.','ok');
+  });
+});
+
+document.getElementById('rm').addEventListener('click',function(){
+  var e=document.getElementById('rmEmail').value.trim(), m=document.getElementById('rmsg');
+  if(!e){ say(m,'Enter an email address.','err'); return; }
+  call('remove',{email:e}).then(function(res){
+    if(!guard(res)) return;
+    if(!res.ok){ say(m,res.d.error||'Failed.','err'); return; }
+    say(m,res.d.removed?'Removed. The row is gone.':'No row matched that address.',res.d.removed?'ok':'err');
+    document.getElementById('rmEmail').value='';
+    call('overview').then(function(r){ if(r.ok) render(r.d); });
+  });
+});
+
+document.getElementById('isignout').addEventListener('click',function(){
+  call('signout').then(function(){ relock('Signed out.'); });
+});
+
+// Nothing is remembered. A rotating code expires in 30 seconds, so caching a
+// session here would defeat the second factor entirely.
+
+/* ───────────────── file integrity check ───────────────── */
+(function(){
+  var BTN=document.getElementById('ichk'); if(!BTN) return;
+  var LOG=document.getElementById('ilog'), MSG=document.getElementById('imsg');
+
+  function line(t,c){
+    var d=document.createElement('div');
+    d.style.cssText='font-family:IBM Plex Mono,monospace;font-size:.73rem;color:'+(c||'var(--ash)')+';line-height:1.5;word-break:break-all';
+    d.textContent=t; LOG.appendChild(d); LOG.scrollTop=LOG.scrollHeight;
+  }
+  function m(t,k){ MSG.textContent=t; MSG.className='msg show '+(k||'ok'); }
+
+  async function sha256(buf){
+    var h=await crypto.subtle.digest('SHA-256',buf);
+    return Array.from(new Uint8Array(h)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+  }
+
+  BTN.addEventListener('click',async function(){
+    LOG.innerHTML=''; BTN.disabled=true;
+    m('Downloading and hashing every file\u2026','busy');
+    var man;
+    try{
+      var r=await fetch('/manifest.json',{cache:'no-store'});
+      man=await r.json();
+    }catch(e){
+      m('No manifest.json found at the site root. Upload it and redeploy.','err');
+      BTN.disabled=false; return;
+    }
+
+    var names=Object.keys(man.files||{}), ok=0, bad=0, missing=0;
+    line('manifest generated '+(man.generated||'unknown')+' \u00b7 '+names.length+' files','var(--ash-dim)');
+    line('note: robots.txt is excluded \u2014 Cloudflare rewrites it with managed bot rules','var(--ash-dim)');
+
+    for(var i=0;i<names.length;i++){
+      var name=names[i], want=man.files[name];
+      try{
+        var res=await fetch(name+'?v='+Date.now(),{cache:'no-store'});
+        if(!res.ok){ missing++; line('\u2717 '+name+' \u2014 HTTP '+res.status,'#FF9E5E'); continue; }
+        var buf=await res.arrayBuffer();
+        var got=await sha256(buf);
+        if(got===want.sha256){ ok++; }
+        else {
+          bad++;
+          line('\u2717 '+name+' \u2014 HASH MISMATCH','#FF9E5E');
+          line('    expected '+want.sha256.slice(0,32)+'\u2026','var(--ash-dim)');
+          line('    actual   '+got.slice(0,32)+'\u2026','var(--ash-dim)');
+          line('    size expected '+want.bytes+', got '+buf.byteLength,'var(--ash-dim)');
+        }
+      }catch(e){ missing++; line('\u2717 '+name+' \u2014 could not fetch','#FF9E5E'); }
+    }
+
+    line('');
+    line('\u2713 '+ok+' files match the manifest','#3DE8A5');
+    if(bad) line('\u2717 '+bad+' files DO NOT MATCH','#FF9E5E');
+    if(missing) line('\u2717 '+missing+' files could not be read','#FF9E5E');
+
+    BTN.disabled=false;
+    if(bad===0&&missing===0) m('All '+ok+' files match. Nothing has been altered since the manifest was generated.','ok');
+    else if(bad) m('MISMATCH on '+bad+' file(s). Either the manifest is stale after a legitimate change, or something was altered. Regenerate the manifest after any deliberate edit; investigate if you did not make one.','err');
+    else m(missing+' file(s) could not be read \u2014 usually means they were renamed or removed.','err');
+  });
+})();
+
+/* ───────────────── map snapshot builder ───────────────── */
+var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,71.5,-129],"AZ":["Arizona",31.33,-114.82,37.01,-109.04],"AR":["Arkansas",33.0,-94.62,36.5,-89.64],"CA":["California",32.53,-124.41,42.01,-114.13],"CO":["Colorado",36.99,-109.06,41.0,-102.04],"CT":["Connecticut",40.98,-73.73,42.05,-71.79],"DE":["Delaware",38.45,-75.79,39.84,-75.05],"DC":["District of Columbia",38.79,-77.12,38.996,-76.91],"FL":["Florida",24.4,-87.63,31.0,-79.97],"GA":["Georgia",30.36,-85.61,35.0,-80.84],"HI":["Hawaii",18.91,-160.25,22.24,-154.81],"ID":["Idaho",41.99,-117.24,49.0,-111.04],"IL":["Illinois",36.97,-91.51,42.51,-87.02],"IN":["Indiana",37.77,-88.1,41.76,-84.78],"IA":["Iowa",40.38,-96.64,43.5,-90.14],"KS":["Kansas",36.99,-102.05,40.0,-94.59],"KY":["Kentucky",36.5,-89.57,39.15,-81.96],"LA":["Louisiana",28.93,-94.04,33.02,-88.76],"ME":["Maine",42.98,-71.08,47.46,-66.95],"MD":["Maryland",37.91,-79.49,39.72,-75.05],"MA":["Massachusetts",41.24,-73.51,42.89,-69.93],"MI":["Michigan",41.7,-90.42,48.31,-82.41],"MN":["Minnesota",43.5,-97.24,49.38,-89.49],"MS":["Mississippi",30.17,-91.65,35.0,-88.1],"MO":["Missouri",35.996,-95.77,40.61,-89.1],"MT":["Montana",44.36,-116.05,49.0,-104.04],"NE":["Nebraska",39.999,-104.05,43.0,-95.31],"NV":["Nevada",35.0,-120.01,42.0,-114.04],"NH":["New Hampshire",42.7,-72.56,45.31,-70.61],"NJ":["New Jersey",38.93,-75.56,41.36,-73.89],"NM":["New Mexico",31.33,-109.05,37.0,-103.0],"NY":["New York",40.5,-79.76,45.02,-71.86],"NC":["North Carolina",33.84,-84.32,36.59,-75.46],"ND":["North Dakota",45.94,-104.05,49.0,-96.55],"OH":["Ohio",38.4,-84.82,42.33,-80.52],"OK":["Oklahoma",33.62,-103.0,37.0,-94.43],"OR":["Oregon",41.99,-124.57,46.29,-116.46],"PA":["Pennsylvania",39.72,-80.52,42.27,-74.69],"RI":["Rhode Island",41.15,-71.86,42.02,-71.12],"SC":["South Carolina",32.03,-83.35,35.22,-78.54],"SD":["South Dakota",42.48,-104.06,45.95,-96.44],"TN":["Tennessee",34.98,-90.31,36.68,-81.65],"TX":["Texas",25.84,-106.65,36.5,-93.51],"UT":["Utah",36.998,-114.05,42.0,-109.04],"VT":["Vermont",42.73,-73.44,45.02,-71.47],"VA":["Virginia",36.54,-83.68,39.47,-75.24],"WA":["Washington",45.54,-124.85,49.0,-116.92],"WV":["West Virginia",37.2,-82.64,40.64,-77.72],"WI":["Wisconsin",42.49,-92.89,47.31,-86.25],"WY":["Wyoming",40.99,-111.06,45.01,-104.05]};
+(function(){
+  var SEL=document.getElementById('mstate'); if(!SEL) return;
+
+  // If anything on this page is ever blocked by the security policy, say so plainly
+  // rather than reporting a vague network error.
+  document.addEventListener('securitypolicyviolation', function(e){
+    if(e.violatedDirective && e.violatedDirective.indexOf('connect-src')>-1){
+      var L=document.getElementById('mlog');
+      if(L){ var d=document.createElement('div');
+        d.style.cssText='font-family:IBM Plex Mono,monospace;font-size:.74rem;color:#FF9E5E;line-height:1.5';
+        d.textContent='\u2717 Blocked by this site\u2019s Content-Security-Policy: '+(e.blockedURI||'');
+        L.appendChild(d); }
+    }
+  });
+  var LOG=document.getElementById('mlog'), MSG=document.getElementById('mmsg');
+  var stop=false;
+
+  var keys=Object.keys(REGIONS).sort(function(a,b){ return REGIONS[a][0]<REGIONS[b][0]?-1:1; });
+  keys.forEach(function(k){
+    var o=document.createElement('option'); o.value=k; o.textContent=REGIONS[k][0]; SEL.appendChild(o);
+  });
+
+  function line(t,color){
+    var d=document.createElement('div');
+    d.style.cssText='font-family:IBM Plex Mono,monospace;font-size:.74rem;color:'+(color||'var(--ash)')+';line-height:1.5';
+    d.textContent=t; LOG.appendChild(d); LOG.scrollTop=LOG.scrollHeight;
+  }
+  function m(t,k){ MSG.textContent=t; MSG.className='msg show '+(k||'ok'); }
+
+  function classify(t){
+    var st=(t['surveillance:type']||'').toLowerCase();
+    var nm=((t.name||'')+' '+(t.operator||'')+' '+(t.manufacturer||'')).toLowerCase();
+    if(st.indexOf('alpr')>-1||st.indexOf('anpr')>-1||/flock|plate|licence plate|license plate/.test(nm)) return 0;
+    if(st.indexOf('camera')>-1||t['camera:type']||t['camera:mount']) return 1;
+    return 2;
+  }
+
+  function build(code){
+    var r=REGIONS[code], name=r[0], bb=[r[1],r[2],r[3],r[4]];
+    // Cameras are tiled too. A whole state in one response is several megabytes,
+    // which is what has been killing the Worker — roads were split but this was
+    // not, so the very first request was always the largest one.
+    function camQuery(t){
+      return '[out:json][timeout:16];('+
+        'node["man_made"="surveillance"]('+t.join(',')+');'+
+        'way["man_made"="surveillance"]('+t.join(',')+');'+
+        ');out center;';
+    }
+    // Roads go in a separate request. A whole state of primary AND secondary
+    // roads with full geometry is tens of megabytes and reliably times out, so
+    // this is the trunk network only, and a failure here still leaves you a
+    // usable camera file.
+    // Roads are fetched as tiles. A tile that fails is split into four and
+    // retried, so dense metros get small tiles and empty country gets big ones
+    // without us having to guess which is which in advance.
+    function tileQuery(t){
+      return '[out:json][timeout:18];way["highway"~"^(motorway|trunk|primary|secondary)$"]('+t.join(',')+');out geom;';
+    }
+    // Every street within 400m of a surveillance device. Not every street in the
+    // state — that is hundreds of megabytes of empty countryside. This returns
+    // detail exactly where there is something to look at, and nothing elsewhere.
+    /* Streets near devices, batched by device id rather than by area.
+       "Every street within 250m of every camera in this rectangle" is unbounded
+       — a rectangle over Denver holds thousands of cameras and Overpass refuses.
+       Splitting the rectangle does not help, because the problem is density, not
+       size. Batching by id makes every request the same weight wherever the
+       devices happen to be. */
+    var LOCAL_BATCH = 120;
+    function localQueryIds(ids){
+      return '[out:json][timeout:20];'+
+        'node(id:'+ids.join(',')+')->.cams;'+
+        'way(around.cams:250)["highway"~"^(residential|unclassified|tertiary|living_street)$"];'+
+        'out geom;';
+    }
+    /* A state smaller than about a degree is one request, not four. Splitting
+       Rhode Island or DC into quarters makes four tiny requests where one would
+       do, and every extra request is another chance to be throttled. */
+    function tilesFor(b){
+      var w=b[3]-b[1], h=b[2]-b[0];
+      if(w<1.2 && h<1.2) return [b];
+      return split(b);
+    }
+    function split(t){
+      var mLat=(t[0]+t[2])/2, mLon=(t[1]+t[3])/2;
+      return [[t[0],t[1],mLat,mLon],[t[0],mLon,mLat,t[3]],
+              [mLat,t[1],t[2],mLon],[mLat,mLon,t[2],t[3]]];
+    }
+    var q='';
+
+    line('\u2192 '+name+' \u2014 querying\u2026','var(--ice)');
+    // The browser cannot reach Overpass directly \u2014 this page's Content-Security-Policy
+    // forbids contacting other origins, which is exactly what we want everywhere else.
+    // So the request is made by our own Worker instead, and the browser only ever
+    // talks to this domain. Same result, no exception to the security policy.
+    line('   asking our server to query OpenStreetMap\u2026','var(--ash-dim)');
+
+    /* Two routes to Overpass, and we prefer the one that cannot fail on our side.
+
+       DIRECT: this page's Content-Security-Policy already permits the three
+       Overpass hosts, so the browser can call them itself. No Worker, no
+       Cloudflare CPU or duration limit, no 502 page. This is now the default.
+
+       PROXY: if the direct call is blocked, we fall back to routing through
+       /api/admin. That path works but sits inside a Pages Function, which has
+       been dying on responses of any real size.                              */
+    var HOSTS=['https://overpass-api.de/api/interpreter',
+               'https://overpass.kumi.systems/api/interpreter',
+               'https://overpass.private.coffee/api/interpreter'];
+    var directBlocked=false, routeNoted=false;
+
+    document.addEventListener('securitypolicyviolation', function(e){
+      if(e.violatedDirective && e.violatedDirective.indexOf('connect-src')>-1) directBlocked=true;
+    });
+
+    function viaBrowser(i){
+      i=i||0;
+      if(i>=HOSTS.length) return Promise.reject(new Error('exhausted'));
+      var host=HOSTS[i].replace(/^https:\/\//,'').replace(/\/.*$/,'');
+      var c=new AbortController(), t=setTimeout(function(){c.abort();},25000);
+      return fetch(HOSTS[i],{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:'data='+encodeURIComponent(q),
+        signal:c.signal
+      }).then(function(r){
+        clearTimeout(t);
+        // 429 = rate limited. 504/502/503 = their server is overloaded. All three
+        // mean STOP, not split. Only a 400 (bad query) or a genuinely huge 200
+        // response should ever be read as density.
+        if(r.status===429 || r.status===504 || r.status===503 || r.status===502){
+          var e=new Error('overloaded'); e.overloaded=true; e.code=r.status; throw e;
+        }
+        if(!r.ok) return r.text().catch(function(){return '';}).then(function(txt){
+          if(/rate.?limit|too many|slot|blocked|load|timeout/i.test(txt)){
+            var e=new Error('overloaded'); e.overloaded=true; throw e;
+          }
+          var e2=new Error('http-'+r.status); e2.code=r.status; throw e2;
+        });
+        return r.json();
+      }).then(function(d){
+        if(!routeNoted){ line('   fetched straight from your browser \u2014 no server involved','var(--ash-dim)'); routeNoted=true; }
+        return {elements:d.elements||[]};
+      }).catch(function(e){
+        clearTimeout(t);
+        if(e && e.rateLimited) throw e;
+        if(directBlocked) throw e;
+        if(i+1<HOSTS.length) return viaBrowser(i+1);
+        throw e;
+      });
+    }
+
+    function viaProxy(){
+      var body = session ? {session:session, action:'overpass', query:q}
+                         : {key:key, code:code, action:'overpass', query:q};
+      return fetch('/api/admin',{method:'POST',credentials:'same-origin',
+        headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+        .then(function(r){
+          if(!r.ok){
+            return r.text().then(function(t){
+              var d=null; try{ d=JSON.parse(t); }catch(e){}
+              if(d && d.rateLimited){ var e2=new Error('rate-limited'); e2.rateLimited=true; throw e2; }
+              throw new Error('proxy-'+r.status);
+            });
+          }
+          return r.json().then(function(d){ return {elements:d.elements||[]}; });
+        });
+    }
+
+    function go(){
+      if(directBlocked) return viaProxy();
+      return viaBrowser().catch(function(e){
+        if(e && e.rateLimited) throw e;
+        if(directBlocked){
+          if(!routeNoted){ line('   browser blocked from calling out \u2014 using the server instead','#FFCB6B'); routeNoted=true; }
+          return viaProxy();
+        }
+        throw e;
+      });
+    }
+
+    /* All three passes share one tiler, one accumulator and one mode flag, and
+       they must all live at this level. They were previously declared inside a
+       .then() callback while being called from outside it, which threw before
+       any promise existed — so the panel just sat there saying "building". */
+    var acc=[], okTiles=0, failTiles=0, seen={}, mode='cams';
+    // Overpass runs on donated hardware and enforces fair use per IP. Depth 3
+    // could fire 80+ requests in a couple of minutes, which is what earned an
+    // hour-long block. Two levels and a slower pace stays inside their limits.
+    // The browser has no CPU or duration ceiling, so tiles can be larger and
+    // fewer. Fewer requests is also what keeps us inside Overpass's fair use.
+    // The browser route has no server cost, so the only limit that matters is
+    // Overpass's fair use. 70 requests at a 2.5s pace is about three minutes of
+    // polite traffic, and enough for three passes over a dense state.
+    // Arterials still tile by area because roads are area-shaped. Depth 3 lets a
+    // dense metro subdivide properly; the streets pass no longer competes for
+    // the budget because it batches by device count instead.
+    // Streets are the point of the exercise, so they get the budget. Batches are
+    // cheap and predictable; arterials are the expensive, unpredictable part.
+    var MAXDEPTH=2, PAUSE=2200, requests=0, MAXREQ=160, stopped=false;
+
+    function fetchTile(t, depth){
+      if(stopped) return Promise.resolve();   // cap already reached; skip quietly
+      if(++requests > MAXREQ){
+        if(!stopped){
+          stopped=true;
+          line('   \u26A0 stopping at '+MAXREQ+' requests to stay inside Overpass\u2019s fair use.','#FFCB6B');
+          line('     Saving everything fetched up to this point.','var(--ash-dim)');
+        }
+        // Resolve, do not reject. The cap is a stopping point, not a failure —
+        // rejecting here threw away a complete device pass and 51,767 roads.
+        return Promise.resolve();
+      }
+      q = mode==='cams' ? camQuery(t) : tileQuery(t);
+      return go().then(function(r){
+        (r.elements||[]).forEach(function(el){ if(!seen[el.id]){ seen[el.id]=1; acc.push(el); } });
+        okTiles++;
+        return new Promise(function(res){ setTimeout(res,PAUSE); });
+      }).catch(function(err){
+        // Overload or rate limit: the server is saying stop. Splitting would send
+        // four MORE requests to a server already refusing us — which is exactly
+        // how a short throttle became a total failure. So we stop the whole build.
+        if(err && (err.rateLimited || err.overloaded)){ stopped=true; throw err; }
+        if(stopped) return Promise.resolve();
+        // A real 400 or an oversized 200 is genuine density — that we split.
+        if(depth>=MAXDEPTH){
+          failTiles++;
+          line('   \u26A0 a genuinely dense area could not be fetched \u2014 skipping it','#FFCB6B');
+          return new Promise(function(res){ setTimeout(res,PAUSE);});
+        }
+        line('   dense area \u2014 splitting into 4 smaller tiles','var(--ash-dim)');
+        return new Promise(function(res){ setTimeout(res,PAUSE);}).then(function(){
+          return runTiles(split(t), depth+1);
+        });
+      });
+    }
+
+    function runTiles(list, depth){
+      var i=0;
+      function next(){
+        if(i>=list.length) return Promise.resolve();
+        var t=list[i++];
+        if(depth===0) line('   '+(mode==='cams'?'devices':mode==='local'?'streets':'roads')+
+                           ': region '+i+' of '+list.length+'\u2026','var(--ash-dim)');
+        return fetchTile(t, depth).then(next);
+      }
+      return next();
+    }
+
+    // Devices are the map. Everything else is enrichment. We capture them
+    // first and hold them, so that no matter what roads do, the run is not wasted.
+    var deviceData = null;
+
+    // pass 1 — devices, tiled
+    return runTiles(tilesFor(bb),0).then(function(){
+      line('   \u2713 devices: '+acc.length.toLocaleString()+' found across '+okTiles+' tiles','#3DE8A5');
+      var camData={elements:acc.slice()};
+      deviceData = acc.slice();
+      acc=[]; seen={}; okTiles=0; failTiles=0; mode='arterial';
+      return camData;
+
+    // pass 2 — arterials
+    }).then(function(camData){
+      if(!document.getElementById('mroads').checked){
+        line('   roads skipped by choice','var(--ash-dim)');
+        return camData;
+      }
+      return runTiles(tilesFor(bb),0).then(function(){
+        if(!acc.length) line('   \u26A0 no arterials returned','#FFCB6B');
+        else line('   \u2713 arterials: '+acc.length.toLocaleString()+' ways from '+okTiles+' tiles','#3DE8A5');
+
+        // pass 3 — streets around the devices themselves, batched by id
+        var ids=(camData.elements||[]).filter(function(e){return e.type==='node';})
+                                      .map(function(e){return e.id;});
+        if(!ids.length){
+          line('   no device ids to work from \u2014 skipping streets','#FFCB6B');
+          return {elements:(camData.elements||[]).concat(acc)};
+        }
+        var batches=[];
+        for(var bi=0; bi<ids.length; bi+=LOCAL_BATCH) batches.push(ids.slice(bi,bi+LOCAL_BATCH));
+        line('   now fetching streets near each device \u2014 '+batches.length+
+             ' batches of up to '+LOCAL_BATCH+'\u2026','var(--ash-dim)');
+
+        var before=acc.length, bOk=0, bFail=0, queue=batches.slice();
+
+        /* If a batch fails we halve it and put both halves back, down to a
+           floor of 12 ids. Density is now handled by count, so a batch that is
+           too heavy anywhere gets smaller until it is not. This is what makes
+           California work: it has roughly twice Colorado's devices, and every
+           batch still costs the same as every other batch. */
+        var MIN_BATCH = 12;
+        function nextBatch(){
+          if(!queue.length || stopped) return Promise.resolve();
+          var b=queue.shift();
+          if(++requests > MAXREQ){
+            if(!stopped){ stopped=true;
+              line('   \u26A0 request cap reached with '+queue.length+' batches left. Saving what we have.','#FFCB6B'); }
+            return Promise.resolve();
+          }
+          line('   streets: '+b.length+' devices \u00b7 '+queue.length+' batches left\u2026','var(--ash-dim)');
+          q=localQueryIds(b);
+          return go().then(function(r){
+            (r.elements||[]).forEach(function(el){ if(!seen[el.id]){ seen[el.id]=1; acc.push(el); } });
+            bOk++;
+            return new Promise(function(res){ setTimeout(res,PAUSE); }).then(nextBatch);
+          }).catch(function(e){
+            if(e && e.rateLimited){ stopped=true; throw e; }
+            if(b.length > MIN_BATCH){
+              var h=Math.ceil(b.length/2);
+              queue.unshift(b.slice(h)); queue.unshift(b.slice(0,h));
+              line('   too heavy \u2014 halving to '+h+' devices per request','var(--ash-dim)');
+            } else {
+              bFail++;
+              line('   \u26A0 '+b.length+' devices could not be fetched even at minimum size','#FFCB6B');
+            }
+            return new Promise(function(res){ setTimeout(res,PAUSE); }).then(nextBatch);
+          });
+        }
+
+        return nextBatch().then(function(){
+          var got=acc.length-before;
+          if(!got) line('   \u26A0 no local streets returned','#FFCB6B');
+          else line('   \u2713 local streets: '+got.toLocaleString()+' ways from '+
+                    bOk+' requests'+(bFail?' \u00b7 '+bFail+' groups skipped':' \u00b7 all devices covered'),'#3DE8A5');
+          return {elements:(camData.elements||[]).concat(acc)};
+        });
+      });
+    }).then(function(d){
+      var ops=[], types=[], oi={}, ti={}, pts=[], roads=[], rnames=[], rni={};
+      var RC={motorway:0,trunk:1,primary:2,secondary:3,
+              tertiary:4,residential:4,unclassified:4,living_street:4};
+
+      // Simplify a polyline. Overpass hands us [{lat,lon},…]; we emit [[lat,lon],…]
+      // and compare against what we have already emitted, not against the raw
+      // objects — mixing the two silently collapsed every road to a straight line.
+      function thin(g,tol){
+        var out=[[+g[0].lat.toFixed(5), +g[0].lon.toFixed(5)]];
+        for(var i=1;i<g.length-1;i++){
+          var a=out[out.length-1];
+          if(Math.abs(g[i].lat-a[0])>tol || Math.abs(g[i].lon-a[1])>tol)
+            out.push([+g[i].lat.toFixed(5), +g[i].lon.toFixed(5)]);
+        }
+        var last=g[g.length-1];
+        out.push([+last.lat.toFixed(5), +last.lon.toFixed(5)]);
+        return out;
+      }
+
+      var seenWay={};
+      (d.elements||[]).forEach(function(el){
+        if(el.type==='way'&&el.tags&&el.tags.highway&&el.geometry){
+          if(seenWay[el.id]) return;
+          seenWay[el.id]=1;
+          var cls=RC[el.tags.highway];
+          if(cls===undefined) return;
+          // Thinning tuned per class. Motorways need shape; a residential
+          // street needs its two ends and its corners and nothing else.
+          var tol = cls<2 ? 0.0015 : cls===2 ? 0.0025 : cls===3 ? 0.004 : 0.00012;
+          var g=thin(el.geometry, tol);
+          if(g.length<2) return;
+          var nm=el.tags.ref||el.tags.name||'';
+          if(!(nm in rni)){ rni[nm]=rnames.length; rnames.push(nm); }
+          roads.push([cls,rni[nm]].concat(g));
+          return;
+        }
+        var lat=el.lat!=null?el.lat:(el.center&&el.center.lat);
+        var lon=el.lon!=null?el.lon:(el.center&&el.center.lon);
+        if(lat==null||lon==null) return;
+        var tg=el.tags||{};
+        var op=tg.operator||'', ty=tg['surveillance:type']||'';
+        if(!(op in oi)){ oi[op]=ops.length; ops.push(op); }
+        if(!(ty in ti)){ ti[ty]=types.length; types.push(ty); }
+        pts.push([+lat.toFixed(5), +lon.toFixed(5), classify(tg), oi[op], ti[ty]]);
+      });
+
+      // Coverage stamp: the map reads this and tells visitors exactly what it
+      // has, rather than pretending a devices-only build is a complete one.
+      var arterials=roads.filter(function(r){return r[0]<4;}).length;
+      var streets=roads.filter(function(r){return r[0]>=4;}).length;
+      var coverage = roads.length===0 ? 'devices-only'
+                   : streets===0 ? 'devices-and-highways'
+                   : 'full';
+      var out={region:code,name:name,built:new Date().toISOString().slice(0,10),
+               coverage:coverage, arterials:arterials, streets:streets,
+               bbox:bb,ops:ops,types:types,pts:pts,
+               roadNames:rnames,roads:roads};
+      var json=JSON.stringify(out);
+      var alpr=pts.filter(function(p){return p[2]===0;}).length;
+
+      var mb=json.length/1048576;
+      if(mb>8){
+        line('   \u26A0 '+mb.toFixed(1)+' MB is too large to serve to visitors.','#FFCB6B');
+        line('     Rebuilding without local streets would give you a usable file.','var(--ash-dim)');
+        line('     Uncheck "include roads", or tell Claude the state is too dense.','var(--ash-dim)');
+      }
+      var blob=new Blob([json],{type:'application/json'});
+      var u=URL.createObjectURL(blob), a=document.createElement('a');
+      a.href=u; a.download=code+'.json';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(u);},1500);
+
+      line('\u2713 '+name+': '+pts.length.toLocaleString()+' devices ('+alpr.toLocaleString()+' plate readers) \u00b7 '+
+           Math.round(json.length/1024)+' KB \u2192 downloaded as '+code+'.json','var(--clear)');
+      return true;
+    }).catch(function(err){
+      var msg=(err && err.message)||'';
+      if(err && deviceData && deviceData.length){
+        // Roads failed but we have devices. Save them rather than lose the run.
+        line('   \u26A0 roads could not be fetched, but '+deviceData.length.toLocaleString()+
+             ' devices were. Saving a devices-only map.','#FFCB6B');
+        acc = deviceData; roads = []; rnames = [];
+        // fall through to the normal assembly below by re-raising into the saver
+      }
+      if(err && (err.rateLimited || err.overloaded)){
+        line('\u2717 '+name+': Overpass is overloaded or has rate-limited this network.','#FF9E5E');
+        line('   This is not your fault and not a bug. Overpass is a free service on','var(--ash-dim)');
+        line('   donated hardware, and it throttles hard after repeated use.','var(--ash-dim)');
+        line('   \u2192 Wait a few HOURS (not minutes), then try ONE state with roads OFF.','#FFCB6B');
+        line('   \u2192 Or try a different network \u2014 phone hotspot, different wifi.','var(--ash-dim)');
+        if(deviceData && deviceData.length){
+          line('   You did capture '+deviceData.length.toLocaleString()+' devices. Saving those.','#3DE8A5');
+        }
+        return false;
+        if(err.detail) line('   they said: '+err.detail,'var(--ash-dim)');
+        line('   This is a shared free service on donated hardware. A block usually','var(--ash-dim)');
+        line('   lasts up to an hour. Wait it out \u2014 retrying now makes it longer.','var(--ash-dim)');
+        line('   Building without roads uses a fraction of the requests.','var(--ash-dim)');
+        return false;
+      }
+      if(/overpass-failed|bad-json|exhausted|stopped|cap/.test(msg)){
+        line('\u2717 '+name+': every mirror refused. See the lines above for the exact reason.','#FF9E5E');
+      } else {
+        // Not a network problem. Say so, rather than sending you to check mirrors.
+        line('\u2717 '+name+': the data came back but processing it failed.','#FF9E5E');
+        line('   '+(err && err.name ? err.name+': ' : '')+msg,'#FF9E5E');
+        line('   That is a bug on our side, not Overpass. Send this line to Claude.','var(--ash-dim)');
+        return false;
+      }
+      line('   If they all say HTTP 400, the query is malformed \u2014 tell Claude.','var(--ash-dim)');
+      line('   If they say 429, you are rate-limited \u2014 wait 2-10 minutes between states.','var(--ash-dim)');
+      line('   If they timed out, the region is too large right now \u2014 try again later.','var(--ash-dim)');
+      line('   If they say unreachable or CSP block, /admin is missing its Overpass exception in _headers.','var(--ash-dim)');
+      return false;
+    });
+  }
+
+  // A single tiny request tells us if Overpass will talk to us at all, before
+  // we commit to a five-minute build that might produce nothing.
+  function overpassHealthy(){
+    // Probe every mirror with a hard 6-second cap each. Without the AbortController
+    // a stalled mirror makes fetch hang forever, which is exactly what "checking
+    // Overpass is reachable..." sitting there forever was.
+    var probe='[out:json][timeout:6];node["man_made"="surveillance"](39.7,-105.0,39.72,-104.98);out count;';
+    function tryHost(i){
+      if(i>=HOSTS.length) return Promise.resolve(false);
+      var c=new AbortController(), t=setTimeout(function(){ c.abort(); }, 6000);
+      return fetch(HOSTS[i],{method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:'data='+encodeURIComponent(probe), signal:c.signal})
+        .then(function(r){ clearTimeout(t); return r.ok ? true : tryHost(i+1); })
+        .catch(function(){ clearTimeout(t); return tryHost(i+1); });
+    }
+    // Whole probe cannot take longer than ~19s even if all three stall.
+    return Promise.race([
+      tryHost(0),
+      new Promise(function(res){ setTimeout(function(){ res(false); }, 20000); })
+    ]);
+  }
+
+  document.getElementById('mbuild').addEventListener('click',function(){
+    var k=SEL.value; if(!k) return;
+    var skipCheck = document.getElementById('mskip') && document.getElementById('mskip').checked;
+    if(skipCheck){
+      line('   skipping the reachability check \u2014 building straight away','var(--ash-dim)');
+      startBuild(k);
+      return;
+    }
+    line('   checking Overpass is reachable (max 6s)\u2026','var(--ash-dim)');
+    overpassHealthy().then(function(ok){
+      if(!ok){
+        line('\u2717 Overpass did not answer a tiny test request within 6 seconds.','#FF9E5E');
+        line('   Every mirror is overloaded or throttling this network right now.','#FFCB6B');
+        line('   \u2192 Fastest fix: switch to a phone hotspot or different wifi (new IP).','#FFCB6B');
+        line('   \u2192 Or wait a few hours \u2014 a heavy throttle clears on its own.','var(--ash-dim)');
+        BUILDING=false;
+        var b=document.getElementById('mbuild'); if(b) b.disabled=false;
+        return;
+      }
+      line('   \u2713 Overpass responded \u2014 starting build','#3DE8A5');
+      startBuild(k);
+    });
+  });
+
+  function startBuild(k){
+    document.getElementById('mlog').innerHTML='';
+    stop=false;
+    m('Building '+REGIONS[k][0]+'\u2026 this can take up to a minute.','busy');
+    document.getElementById('mbuild').disabled=true;
+    build(k).then(function(ok){
+      document.getElementById('mbuild').disabled=false;
+      m(ok ? 'Done. Upload the downloaded file to mapdata/ in your repo, then redeploy. Wait a couple of minutes before building the next state \u2014 Overpass rate-limits by IP and will refuse back-to-back requests.'
+           : 'That one failed \u2014 the log above says why. Overpass is often genuinely overloaded; waiting ten minutes usually fixes it.', ok?'ok':'err');
+    });
+  }
+})();
+})();
+</script>
+</body>
+</html>
