@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-07 13:30 UTC",
+ "generated": "2026-09-07 13:44 UTC",
  "note": "SHA-256 of every deployed file. robots.txt excluded because Cloudflare rewrites it. Fonts excluded from this build.",
  "files": {
   "/404.html": {
@@ -7,8 +7,8 @@
    "bytes": 14467
   },
   "/access.html": {
-   "sha256": "cabaa9d7a37baee19c96a1f2cbcee31af21362f38ad1cb09a37ce0edbac10f23",
-   "bytes": 48684
+   "sha256": "c45c8cb64ecd23ae3800afec7ae598f4c905beaa18b90f564a12baaaec0d600f",
+   "bytes": 51387
   },
   "/account.html": {
    "sha256": "c8aae565263ce182ab1aec7f43f475a8ce19a20e42ca55709703f8773d57fb2c",
@@ -19,16 +19,16 @@
    "bytes": 67087
   },
   "/audit.html": {
-   "sha256": "6c2a31ec2892c2c80b691fea15ffff92c9cf550d5a05402addbd7f520167a515",
-   "bytes": 66471
+   "sha256": "0e16f7fee26438fe4c7bb5c3d560f892626218e2aa1c2acbfc769e648161e23d",
+   "bytes": 70603
   },
   "/canary.html": {
    "sha256": "c950a06f00a9e760b6ac8223b57f4a11f7f0f7db3e67eb60e2a68a31ab6e03c2",
    "bytes": 46725
   },
   "/charter.html": {
-   "sha256": "4e4b5f8b9d2d5028a80581589f681d395f6836e14d83c316023def4c0551c062",
-   "bytes": 41187
+   "sha256": "83abbc4eeff8e98455e6fb3f2420a6a92b1a1d4b7ac63e541ca6759ff475f4d4",
+   "bytes": 45319
   },
   "/cities.json": {
    "sha256": "3de19588ded4e7ad5bfbd97895dc4d943cb5bbe9883b3cd310cff0ee6989eab7",
@@ -39,8 +39,8 @@
    "bytes": 37119
   },
   "/guide.html": {
-   "sha256": "20c5ef3699ad99f20b375452cf6a18ca40db4b996bb1d003daf1bad80d18b6a5",
-   "bytes": 66574
+   "sha256": "0cbb646ef0f0ff0ccd16cc6762416dc8ff324b338f91b6bbc4af4d5562296b9b",
+   "bytes": 70706
   },
   "/icon-192.png": {
    "sha256": "b1c5e14d9841968b1c8ad17294fe6150ce0605aa68a1f52b88c90a21b3df8f07",
@@ -55,8 +55,8 @@
    "bytes": 33614
   },
   "/index.html": {
-   "sha256": "5e753a2477642139178d0e1ec6051fc881ed83f9b2779087dea7de0c1d21f9f1",
-   "bytes": 85837
+   "sha256": "951ad9ae4ac2e0ec70233ae64024d8a7850d5659d8a85622f9e132bce1faba7b",
+   "bytes": 89969
   },
   "/jszip.min.js": {
    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",
@@ -67,8 +67,8 @@
    "bytes": 924
   },
   "/map.html": {
-   "sha256": "e5d9fa972703a10dfc357012bf3aa20307a9adc0fbfc94d395ccdef8eddb1dad",
-   "bytes": 95159
+   "sha256": "474b8127b9d8c02742bc6625ab51f6471974a641dcd0c4e35ba8b3e9fb7abdd6",
+   "bytes": 99291
   },
   "/panel.html": {
    "sha256": "b1c1e087d6d8a1496e98c898464d57f18cd84a09ce8efe76ebc6ba21949fa62c",
@@ -79,12 +79,12 @@
    "bytes": 41112
   },
   "/photo.html": {
-   "sha256": "3a3d0c1b1f88bd49ba4b3d482a7c78f16c2900e009c9885244e1455e328f944f",
-   "bytes": 58781
+   "sha256": "c919ccfd56481961b16fd73451906ccdf9de5adf9e77a4fb2cd51b23ca2d7920",
+   "bytes": 62913
   },
   "/rights.html": {
-   "sha256": "dac19f9a53762c30e30dd871463ad49c62367d8b554937be50c8a4c6eac50e19",
-   "bytes": 50184
+   "sha256": "2be7e2e48f81277463693e1f8a6434460f3aa8eab1d1ec002eeae6b221e8fa1e",
+   "bytes": 54316
   },
   "/sign.html": {
    "sha256": "3c052be385900e5831fce38f59975455f03cce9534d98fdf3d3b3391baa1b0e6",

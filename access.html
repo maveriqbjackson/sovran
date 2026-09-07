@@ -413,6 +413,14 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .fnav a{color:var(--ash);text-decoration:none;font-size:.87rem;border:0;width:fit-content;
   transition:color .18s;line-height:1.35}
 .fnav a:hover{color:var(--gold)}
+
+.ksplan{display:grid;gap:1px;background:rgba(232,224,206,.1);
+  border:1px solid rgba(232,224,206,.1);margin-top:20px}
+@media(min-width:820px){.ksplan{grid-template-columns:1fr 1fr}}
+.ksplan>div{background:#080B14;padding:24px 22px}
+.ksplan h3{font-size:1.06rem;margin-bottom:10px;letter-spacing:-.02em;color:var(--bone)}
+.ksplan p{font-size:.91rem;color:var(--ash);line-height:1.62;margin-bottom:10px}
+.ksplan p:last-child{margin-bottom:0}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -489,7 +497,13 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
         <a href="/rights">Your rights</a> than by paying anyone.
     </div>
 
-    <p class="soon">Neither paid tier is open yet. These prices are what we intend to charge, written down now so you can hold us to them. <a href="/#waitlist">Join the waitlist</a> and founding members keep this rate permanently, whatever happens later.</p>
+    <p class="soon">Neither paid tier is open yet. These prices are what we intend to charge, written down now so you can hold us to them. <a href="/#waitlist">Join the waitlist</a> and early members keep this rate for as long as they stay subscribed without a break.</p>
+    <div class="key" style="margin-top:16px"><b>Why not a lifetime price</b>
+      Because we could not keep it. A lifetime rate on a service with real ongoing costs &mdash; filings, monitoring, support &mdash; means either raising everyone else&rsquo;s price to cover it, or quietly degrading what those people get. Both happen constantly and neither is honest.
+      <br><br>
+      What we can promise is that your price does not change while you stay subscribed. Leave and come back and you pay whatever the rate is then. That is a commitment we can actually keep, which is the only kind worth making.
+    </div>
+    <p class="body" style="margin-top:16px"></p>
 
     <div class="big">
       <span class="pct">10%</span>
@@ -583,6 +597,34 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
       <div><b>Someone being harassed</b>A campaign of harassment does not check your bank balance first, and the cost of it is already being paid in other ways.</div>
       <div><b>Someone who is just broke</b>You do not need a story. Money is tight for an enormous number of people and that is reason enough.</div>
     </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section id="kickstarter">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">How this gets built</span>
+      <h2>The free tools exist. The paid one needs funding.</h2>
+      <p class="lede">Everything on this site was built without money and costs nothing to run. The removal engine is different &mdash; it needs lawyers in five countries, a catalogue of several hundred data brokers, and months of work.</p>
+    </div>
+
+    <div class="ksplan">
+      <div>
+        <h3>What we are raising for</h3>
+        <p>Legal standing to act as your authorised agent in the US, UK, EU, Canada and Australia. Without it, a removal request is a polite email a company can ignore. With it, it is something they have to answer.</p>
+        <p>Then the catalogue itself: every broker, every form, every trick they use to make removal difficult.</p>
+      </div>
+      <div>
+        <h3>What stays free regardless</h3>
+        <p>Every tool on this site. If the campaign fails completely, the Photo Check, the Audit, the Map, the Guide, the Passphrase, your Rights, your Panel and your Account all keep working exactly as they do today.</p>
+        <p>They cost nothing to run. That was the point of building them that way.</p>
+      </div>
+    </div>
+
+    <p class="body" style="margin-top:18px"><b style="color:var(--bone)">The campaign is not open yet.</b> When it is, the link will be here and on the front page. Until then the waitlist is the only way to be told.</p>
+    <a class="btn" href="/#waitlist">Join the waitlist</a>
   </div>
 </section>
 
