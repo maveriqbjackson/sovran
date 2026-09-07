@@ -83,7 +83,7 @@ header::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:3px
 main,footer,section{position:relative;z-index:2}
 
 .rule{height:1px !important;opacity:1 !important;overflow:visible;position:relative;
-  background:rgba(232,224,206,.1) !important;margin:clamp(56px,9vw,96px) 0 !important}
+  background:rgba(232,224,206,.1) !important;margin:0 !important}
 .rule::after{content:'';position:absolute;left:0;top:-1px;width:140px;height:3px;
   background:linear-gradient(90deg,#A878FF,#6FE8FF 50%,#FFCB6B)}
 
@@ -481,7 +481,7 @@ input::placeholder,textarea::placeholder{color:var(--ash-dim)}
 .status.err{background:rgba(91,184,212,.09);border:1px solid rgba(91,184,212,.34);color:var(--ice)}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 
-section{padding:clamp(56px,12vw,96px) 0;position:relative}
+section{padding:clamp(40px,6vw,68px) 0;position:relative}
 .rule{height:1px;border:0;background:linear-gradient(90deg,transparent,var(--bif-1) 22%,var(--bif-2) 50%,var(--bif-3) 78%,transparent);opacity:.42}
 .sec-head{max-width:64ch}
 .sec-head .eyebrow{display:block;margin-bottom:18px}
@@ -883,6 +883,34 @@ window.SV_KS = {
 
 <hr class="rule">
 
+<hr class="rule ksonly" hidden>
+
+<section class="ksonly" id="kssection" hidden>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Where this goes next</span>
+      <h2>Seven tools are free. The eighth costs money to run.</h2>
+      <p class="lede">Everything on this site works today and always will, free. What does not exist yet is the part that does the work for you.</p>
+    </div>
+
+    <div class="ksgrid">
+      <div>
+        <h3>What the money builds</h3>
+        <p>Filing removal requests with the hundreds of companies that buy and sell your address, your phone number, your relatives and your history. Then chasing them. Then proving it happened.</p>
+        <p>Every request produces a receipt &mdash; what was asked, of whom, on what date, and what came back. Signed, timestamped, and yours to keep even if we disappear.</p>
+      </div>
+      <div>
+        <h3>What stays free</h3>
+        <p>Every tool on this site. The Photo Check, the Audit, the Map, the Guide, the Passphrase, your Panel, your Account. None of them cost us anything to run, so none of them will ever cost you anything.</p>
+        <p>Ten percent of every subscription funds paid access for people who cannot afford it. No application and no means test.</p>
+      </div>
+    </div>
+
+    <a class="btn ksbtn" id="ksbtn" href="#" target="_blank" rel="noopener">Follow on Kickstarter</a>
+    <p class="ksnote" id="ksnote">Following costs nothing and commits you to nothing. It means you get told when the campaign opens, rather than finding out afterwards.</p>
+  </div>
+</section>
+
 <section class="close">
   <div class="wrap reveal">
     <span class="eyebrow">The long view</span>
@@ -1136,32 +1164,6 @@ window.SV_KS = {
 })();
 </script>
 </body>
-</html><hr class="rule ksonly" hidden>
-
-<section class="ksonly" id="kssection" hidden>
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="eyebrow">Where this goes next</span>
-      <h2>Seven tools are free. The eighth costs money to run.</h2>
-      <p class="lede">Everything on this site works today and always will, free. What does not exist yet is the part that does the work for you.</p>
-    </div>
-
-    <div class="ksgrid">
-      <div>
-        <h3>What the money builds</h3>
-        <p>Filing removal requests with the hundreds of companies that buy and sell your address, your phone number, your relatives and your history. Then chasing them. Then proving it happened.</p>
-        <p>Every request produces a receipt &mdash; what was asked, of whom, on what date, and what came back. Signed, timestamped, and yours to keep even if we disappear.</p>
-      </div>
-      <div>
-        <h3>What stays free</h3>
-        <p>Every tool on this site. The Photo Check, the Audit, the Map, the Guide, the Passphrase, your Panel, your Account. None of them cost us anything to run, so none of them will ever cost you anything.</p>
-        <p>Ten percent of every subscription funds paid access for people who cannot afford it. No application and no means test.</p>
-      </div>
-    </div>
-
-    <a class="btn ksbtn" id="ksbtn" href="#" target="_blank" rel="noopener">Follow on Kickstarter</a>
-    <p class="ksnote" id="ksnote">Following costs nothing and commits you to nothing. It means you get told when the campaign opens, rather than finding out afterwards.</p>
-  </div>
-</section>
+</html>
 
 
