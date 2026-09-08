@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-08 00:46 UTC",
+ "generated": "2026-09-08 23:03 UTC",
  "note": "SHA-256 of every deployed file.",
  "files": {
   "/404.html": {
@@ -55,8 +55,8 @@
    "bytes": 33614
   },
   "/index.html": {
-   "sha256": "4c360276d38a05cfae28a23b54bb08e86fcfd995184647f589cdf20b9afd912c",
-   "bytes": 93323
+   "sha256": "1432555b0d532329603b254bb1d0add6ffbb552934b7766c93c6d070715bb9f5",
+   "bytes": 96466
   },
   "/jszip.min.js": {
    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",
@@ -103,8 +103,8 @@
    "bytes": 2196
   },
   "/witness.html": {
-   "sha256": "276effd12e617cc018c4e6c64dd7404d58eacd7ad8a0aeeb1527c5e175597d0e",
-   "bytes": 46996
+   "sha256": "c407271b16c33f6beda58c6c70e141b239559f6b6d8f5fcaa9de59b92a807710",
+   "bytes": 50524
   },
   "/wordlist.txt": {
    "sha256": "abae49761b88f3f1ba31ef944bea1f61b795a3cd7e1cfb7d276ed45bf77967ba",
