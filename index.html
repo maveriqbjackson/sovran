@@ -491,6 +491,20 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   padding-left:18px;border-left:3px solid;border-image:linear-gradient(180deg,#A878FF,#FFCB6B) 1}
 .wf-note{font-size:.88rem;color:var(--ash-dim);line-height:1.6;
   background:#080B14;border:1px solid rgba(232,224,206,.1);padding:18px 20px}
+
+.wf-ribbon{display:block;margin:0 0 22px;padding:16px 20px;text-decoration:none;
+  background:linear-gradient(100deg,rgba(169,120,255,.14),rgba(255,203,107,.1));
+  border:1px solid rgba(255,203,107,.35);position:relative;overflow:hidden;
+  transition:border-color .2s,transform .15s}
+.wf-ribbon::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,#A878FF,#6FE8FF,#FFCB6B)}
+.wf-ribbon:hover{border-color:var(--gold);transform:translateX(2px)}
+.wf-ribbon-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.58rem;
+  font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#FFCB6B;margin-bottom:6px}
+.wf-ribbon-text{display:block;font-size:.98rem;color:var(--ash);line-height:1.5}
+.wf-ribbon-text b{color:var(--bone);font-family:'Archivo',sans-serif;font-weight:700}
+.wf-ribbon-go{color:var(--gold);white-space:nowrap;font-family:'IBM Plex Mono',monospace;
+  font-size:.8rem;letter-spacing:.06em}
 </style>
 <style>
 :root{--void:#04060F; --void-2:#070B18; --surface:#0C1424; --surface-2:#131E38;
@@ -787,6 +801,11 @@ window.SV_KS = {
       <span class="h1-line"><span class="detect warm" id="dbox2"><span class="gilt">sovereign</span><i class="cnr tl"></i><i class="cnr tr"></i><i class="cnr bl"></i><i class="cnr br"></i><span class="tag">NO CLAIM · YOURS</span></span>.</span>
     </h1>
     <p class="lede">Your face, your address, your habits, your children — collected by people you never met and sold to people you'll never see. SOVRAN finds it, takes it down, and shows you the surveillance you move through every day.</p>
+
+    <a class="wf-ribbon" href="/witness">
+      <span class="wf-ribbon-tag">New &middot; the big one</span>
+      <span class="wf-ribbon-text"><b>Get pulled over? Say one word</b> &mdash; and it&rsquo;s recorded, someone&rsquo;s told, and the footage is safe off your phone. <span class="wf-ribbon-go">Meet the Witness &rarr;</span></span>
+    </a>
 
     <div class="livebar">
       <span class="livebar-h"><i></i>Eight tools, built and free to use right now &mdash; and growing</span>

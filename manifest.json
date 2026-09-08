@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-08 23:03 UTC",
+ "generated": "2026-09-08 23:12 UTC",
  "note": "SHA-256 of every deployed file.",
  "files": {
   "/404.html": {
@@ -55,8 +55,8 @@
    "bytes": 33614
   },
   "/index.html": {
-   "sha256": "1432555b0d532329603b254bb1d0add6ffbb552934b7766c93c6d070715bb9f5",
-   "bytes": 96466
+   "sha256": "fbe0dc35ac5763467e9c09f7dd6c85b885a61a700c50c60bb98fd77744d31e79",
+   "bytes": 97798
   },
   "/jszip.min.js": {
    "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",
