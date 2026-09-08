@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Access — SOVRAN</title>
-<meta name="description" content="10% of every SOVRAN+ subscription funds free access. No proof of income, no application, no review. If you cannot afford it, you say so and we believe you.">
+<title>The Witness — SOVRAN</title>
+<meta name="description" content="If you are stopped by police, say a word — your camera records, someone you trust is alerted, and the footage is safe off your phone before it is over. A SOVRAN+ feature.">
 <meta name="theme-color" content="#04060C">
 <meta property="og:title" content="Access — SOVRAN">
 <meta property="og:description" content="10% of every subscription funds free access. No proof of income, no application, no review.">
@@ -388,19 +388,72 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .installbar .x{background:none;color:var(--ash-dim);padding:12px 6px;font-size:1.1rem;
   border:0;cursor:pointer;min-height:44px}
 
-.pricetbl{width:100%;border-collapse:collapse;margin:18px 0;font-size:.9rem}
-.pricetbl th,.pricetbl td{padding:12px 14px;text-align:left;
-  border-bottom:1px solid rgba(232,224,206,.1)}
-.pricetbl th{font-family:'IBM Plex Mono',monospace;font-size:.66rem;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--gold);font-weight:600}
-.pricetbl td{color:var(--ash)}
-.pricetbl td:first-child{color:var(--bone)}
+.rnav{display:flex;gap:1px;background:rgba(232,224,206,.1);border:1px solid rgba(232,224,206,.1);
+  margin:26px 0 8px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.rnav a{flex:1;min-width:118px;background:#080B14;padding:15px 12px;text-align:center;
+  text-decoration:none;border:0;font-family:'IBM Plex Mono',monospace;font-size:.68rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ash);transition:background .18s}
+.rnav a:hover,.rnav a:active{background:#0E1424;color:var(--gold)}
+.rnav a i{display:block;font-style:normal;font-size:1.3rem;margin-bottom:5px}
+.rgn{scroll-margin-top:70px}
+.rhead{display:flex;align-items:center;gap:16px;margin-bottom:18px}
+.rflag{font-size:2.4rem;line-height:1}
+.rhead h2{margin:0 0 3px;font-size:clamp(1.5rem,4vw,2.1rem) !important}
+.rlaw{font-family:'IBM Plex Mono',monospace;font-size:.74rem;letter-spacing:.08em;
+  color:var(--gold);margin:0;text-transform:uppercase}
+.rbody{display:grid;gap:1px;background:rgba(232,224,206,.1);border:1px solid rgba(232,224,206,.1)}
+.rrow{background:#080B14;padding:20px 22px}
+.rrow b{display:block;font-family:'Archivo',sans-serif;font-weight:700;font-size:1rem;
+  color:var(--bone);margin-bottom:7px;letter-spacing:-.015em}
+.rrow p{font-size:.92rem;color:var(--ash);line-height:1.62;margin:0}
+
+.covered{margin:26px 0 6px}
+.covlabel{display:block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;
+  letter-spacing:.24em;text-transform:uppercase;color:#3DE8A5;margin-bottom:12px}
+.covrow{display:grid;gap:1px;background:rgba(232,224,206,.1);
+  border:1px solid rgba(232,224,206,.1);grid-template-columns:repeat(2,1fr)}
+@media(min-width:700px){.covrow{grid-template-columns:repeat(5,1fr)}}
+.covrow.soon{margin-top:14px;grid-template-columns:repeat(2,1fr)}
+@media(min-width:700px){.covrow.soon{grid-template-columns:repeat(5,1fr);max-width:40%}}
+.cov{background:#080B14;padding:16px 12px;text-decoration:none;border:0;display:block;
+  text-align:center;transition:background .18s;position:relative}
+a.cov:hover,a.cov:active{background:#0E1424}
+a.cov::before{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;
+  background:transparent;transition:background .2s}
+a.cov:hover::before{background:linear-gradient(90deg,#A878FF,#6FE8FF,#FFCB6B)}
+.cov i{display:block;font-style:normal;font-size:1.75rem;line-height:1;margin-bottom:8px}
+.cov b{display:block;font-family:'Archivo',sans-serif;font-weight:700;font-size:.85rem;
+  color:var(--bone);margin-bottom:3px;letter-spacing:-.01em}
+.cov span{display:block;font-family:'IBM Plex Mono',monospace;font-size:.62rem;
+  letter-spacing:.06em;color:var(--ash-dim)}
+.cov.q{opacity:.45;cursor:default}
+.cov.q i{filter:grayscale(1)}
+.covnote{margin-top:14px;font-size:.86rem;color:var(--ash);line-height:1.55;max-width:62ch}
+.covnote b{color:var(--bone)}
 
 /* tabbar-desktop-guard — the bar is a mobile control. Without this it falls back
    to a static block on desktop and occupies the bottom of every page. */
 .tabbar{display:none}
 @media (max-width:820px) and (pointer:coarse){ .tabbar{display:grid} }
 @media (max-width:820px){ .tabbar{display:grid} }
+
+.acts{margin-top:20px}
+.actlabel{display:block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;
+  letter-spacing:.22em;text-transform:uppercase;color:#3DE8A5;margin-bottom:11px}
+.actgrid{display:grid;gap:1px;background:rgba(232,224,206,.1);
+  border:1px solid rgba(232,224,206,.1)}
+@media(min-width:760px){.actgrid{grid-template-columns:repeat(2,1fr)}}
+.actlink{background:#080B14;padding:15px 18px;text-decoration:none;border:0;display:block;
+  position:relative;transition:background .18s}
+.actlink:hover,.actlink:active{background:#0E1424}
+.actlink::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:transparent;transition:background .2s}
+.actlink:hover::before{background:linear-gradient(180deg,#3DE8A5,#6FE8FF)}
+.actlink b{display:block;font-family:'Archivo',sans-serif;font-weight:600;font-size:.94rem;
+  color:var(--bone);margin-bottom:3px;letter-spacing:-.01em}
+.actlink span{display:block;font-size:.8rem;color:var(--ash-dim);line-height:1.45}
+.actlink::after{content:'\2197';position:absolute;right:16px;top:15px;color:var(--ash-dim);
+  font-size:.85rem}
 
 /* four balanced columns rather than 8/5/2 across three */
 .fnav{display:grid;gap:26px 22px;margin-bottom:26px;padding-bottom:24px;
@@ -414,39 +467,37 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   transition:color .18s;line-height:1.35}
 .fnav a:hover{color:var(--gold)}
 
-.ksplan{display:grid;gap:1px;background:rgba(232,224,206,.1);
-  border:1px solid rgba(232,224,206,.1);margin-top:20px}
-@media(min-width:820px){.ksplan{grid-template-columns:1fr 1fr}}
-.ksplan>div{background:#080B14;padding:24px 22px}
-.ksplan h3{font-size:1.06rem;margin-bottom:10px;letter-spacing:-.02em;color:var(--bone)}
-.ksplan p{font-size:.91rem;color:var(--ash);line-height:1.62;margin-bottom:10px}
-.ksplan p:last-child{margin-bottom:0}
+/* Share, without loading anything.
+   Every share widget from Facebook, X or LinkedIn loads a script that tracks the
+   person before they click. On this site of all sites that is not acceptable, so
+   these are plain links and a copy button. Nothing third-party loads, and nothing
+   knows you were here until you choose to send something. */
+.share{margin-top:26px;padding-top:22px;border-top:1px solid rgba(232,224,206,.1)}
+.sharehead{font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--gold);display:block;margin-bottom:5px}
+.sharesub{font-size:.83rem;color:var(--ash-dim);line-height:1.5;margin-bottom:14px;max-width:56ch}
+.sharerow{display:flex;gap:9px;flex-wrap:wrap}
+.sharebtn{display:inline-flex;align-items:center;gap:8px;background:#080B14;
+  border:1px solid rgba(232,224,206,.14);color:var(--ash);text-decoration:none;
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:.09em;
+  text-transform:uppercase;padding:12px 15px;cursor:pointer;min-height:44px;
+  transition:border-color .18s,color .18s}
+.sharebtn:hover{border-color:var(--gold);color:var(--gold)}
+.sharebtn svg{flex:none;width:15px;height:15px;fill:currentColor}
+.sharebtn.done{border-color:#3DE8A5;color:#3DE8A5}
 
-.ksflag{display:flex;align-items:center;gap:9px;margin:-4px 0 14px;padding:10px 13px;
-  background:rgba(255,203,107,.07);border:1px solid rgba(255,203,107,.3);
-  text-decoration:none;border-radius:0;font-size:.78rem;color:var(--ash);
-  line-height:1.4;transition:border-color .18s;flex-wrap:wrap}
-.ksflag:hover{border-color:var(--gold)}
-.ksflag b{color:var(--gold);font-family:'IBM Plex Mono',monospace;font-size:.66rem;
-  letter-spacing:.09em;text-transform:uppercase;font-weight:600}
-.ksdot2{width:7px;height:7px;flex:none;background:#FFCB6B;border-radius:50%;
-  box-shadow:0 0 0 3px rgba(255,203,107,.16)}
-
-.regional{margin:26px 0}
-.reglabel{display:block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;
-  letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
-.pricetbl{width:100%;border-collapse:collapse;font-size:.88rem;
-  border:1px solid rgba(232,224,206,.1)}
-.pricetbl th,.pricetbl td{padding:11px 14px;text-align:left;
-  border-bottom:1px solid rgba(232,224,206,.08)}
-.pricetbl th{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--gold);font-weight:600;background:#080B14}
-.pricetbl td{color:var(--ash)}
-.pricetbl td:first-child{color:var(--bone)}
-.pricetbl tr:last-child td{border-bottom:0}
-.regnote{margin-top:12px;font-size:.84rem;color:var(--ash-dim);line-height:1.55;max-width:62ch}
-.regnote a{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,203,107,.35)}
-@media(max-width:600px){.pricetbl{font-size:.8rem}.pricetbl th,.pricetbl td{padding:9px 10px}}
+.wgrid{display:grid;gap:1px;background:rgba(232,224,206,.1);border:1px solid rgba(232,224,206,.1);margin-top:22px}
+@media(min-width:760px){.wgrid{grid-template-columns:repeat(3,1fr)}}
+.wgrid>div{background:#080B14;padding:24px 22px}
+.wgrid .wn{font-family:'Archivo',sans-serif;font-weight:900;font-variation-settings:'wdth' 78;font-size:1.9rem;color:rgba(168,120,255,.5);display:block;margin-bottom:8px;letter-spacing:-.04em}
+.wgrid h3{font-size:1.08rem;margin-bottom:8px;letter-spacing:-.02em;color:var(--bone)}
+.wgrid p{font-size:.9rem;color:var(--ash);line-height:1.6;margin:0}
+.wgrid .wlast{background:#0F0B16}
+.wways{display:grid;gap:1px;background:rgba(232,224,206,.1);border:1px solid rgba(232,224,206,.1);margin-top:20px}
+@media(min-width:760px){.wways{grid-template-columns:repeat(3,1fr)}}
+.wways>div{background:#080B14;padding:22px 20px}
+.wways h3{font-size:1.05rem;margin-bottom:8px;color:var(--bone);letter-spacing:-.02em}
+.wways p{font-size:.9rem;color:var(--ash);line-height:1.6;margin:0}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -466,78 +517,11 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   </div>
 </header>
 <main>
-<section class="intro">
+<section class="hero" style="padding-top:clamp(40px,7vw,72px)">
   <div class="wrap">
-    <span class="eyebrow">Access &middot; Our commitment</span>
-    <h1>Nobody is turned away<br>for <span class="gilt">lack of money</span>.</h1>
-    <p class="lede">Two prices, and a very large amount that stays free. The people who most need protection are very often the people least able to pay for it, and any product that forgets this ends up defending the people who were already safest.</p>
-
-    <div class="tiers">
-      <div class="tier">
-        <span class="tlab">Free forever</span>
-        <div class="tprice"><b>$0</b></div>
-        <p class="tsub">No account. No card. No trial that ends.</p>
-        <ul>
-          <li>All eight tools: the Photo Check, the Audit, the Map, the Guide, Your Rights, the Passphrase, your Panel, and your Account</li>
-          <li>Every tool we add from here &mdash; if it costs nothing to run, it costs nothing to use</li>
-          <li>Knowing what is exposed about you</li>
-          <li>Knowing every right you hold and how to use it yourself</li>
-          <li>Every removal route, filed by hand, for nothing</li>
-        </ul>
-        <p class="tnote">Everything that costs us nothing to run is free, permanently. Paywalling knowledge would mean selling you the right itself.</p>
-      </div>
-
-      <div class="tier hero">
-        <a class="ksflag" href="#kickstarter"><span class="ksdot2"></span>Not open yet &mdash; funded by our Kickstarter <b>Read what it pays for &rarr;</b></a>
-        <span class="tlab gold">SOVRAN+ &middot; ongoing</span>
-        <div class="tprice"><b>$12</b><i>/ month</i></div>
-        <p class="tsub">Or <b style="color:var(--bone)">$110 a year</b>, which saves you $34. Regional pricing in the UK, EU, Canada and Australia.</p>
-        <ul>
-          <li>Every broker deletion filed for you, and chased to a real answer</li>
-          <li>Refiled automatically when they quietly repopulate</li>
-          <li>Takedowns for photos you own and images posted without consent</li>
-          <li>Alerts when something new appears about you</li>
-          <li>The successor switch, and your panel synced across devices</li>
-        </ul>
-        <p class="tnote"><b>For a life that keeps generating records.</b> You move, you vote, you register a car. Every one of those repopulates the brokers within months. Removal is not a task you finish &mdash; it is one you maintain.</p>
-      </div>
-
-      <div class="tier alt">
-        <a class="ksflag" href="#kickstarter"><span class="ksdot2"></span>Not open yet &mdash; funded by our Kickstarter <b>Read what it pays for &rarr;</b></a>
-        <span class="tlab green">The Clean Break &middot; once</span>
-        <div class="tprice"><b>$129</b><i>one payment</i></div>
-        <p class="tsub">Paid once. No subscription, no renewal, no relationship afterwards.</p>
-        <ul>
-          <li>The entire removal sweep in one pass &mdash; every broker, every route</li>
-          <li>Everything a year of SOVRAN+ would file, done at once</li>
-          <li>A written record of what was removed and where</li>
-          <li>Then it is finished. We do not keep your file.</li>
-        </ul>
-        <p class="tnote"><b>For a life that is about to stop generating them.</b> Leaving the country. Going properly off-grid. Closing a chapter and not opening another. If there is nothing new for the brokers to find, one sweep holds.</p>
-      </div>
-    </div>
-
-    <div class="honest">
-      <b>We will tell you which one you need</b>
-      Describe your situation and if the honest answer is &ldquo;the one-time sweep is enough for you&rdquo;, that is what we will say &mdash; even though the subscription is worth more to us over time. A privacy company that upsells you is telling you something about itself.
-      <br><br>
-      And if the answer is &ldquo;you do not need either of these yet&rdquo;, we will say that too. Most people are better served by an afternoon with <a href="/guide">The Guide</a>
-        <a href="/rights">Your rights</a> than by paying anyone.
-    </div>
-
-    <p class="soon">Neither paid tier is open yet. These prices are what we intend to charge, written down now so you can hold us to them. <a href="/#waitlist">Join the waitlist</a> and early members keep this rate for as long as they stay subscribed without a break.</p>
-    <div class="key" style="margin-top:16px"><b>Why not a lifetime price</b>
-      Because we could not keep it. A lifetime rate on a service with real ongoing costs &mdash; filings, monitoring, support &mdash; means either raising everyone else&rsquo;s price to cover it, or quietly degrading what those people get. Both happen constantly and neither is honest.
-      <br><br>
-      What we can promise is that your price does not change while you stay subscribed. Leave and come back and you pay whatever the rate is then. That is a commitment we can actually keep, which is the only kind worth making.
-    </div>
-    <p class="body" style="margin-top:16px"></p>
-
-    <div class="big">
-      <span class="pct">10%</span>
-      <h2>of every subscription funds free access</h2>
-      <p>Not "a portion." Not "a share." Ten percent of every dollar SOVRAN+ ever takes in goes directly to covering people who cannot pay. We will publish the number of funded accounts, and we will raise the percentage before we ever lower it.</p>
-    </div>
+    <span class="eyebrow">A SOVRAN+ feature &middot; coming after launch</span>
+    <h1>If something happens,<br>it is already recorded.</h1>
+    <p class="lede">You scanned a sticker, or you found this on your own. Here is what it means. If you are stopped by police, you say one word &mdash; and your camera records, someone you chose is told where you are, and the footage is somewhere safe before the stop is even over. You never touch your phone.</p>
   </div>
 </section>
 
@@ -545,129 +529,32 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 
 <section>
   <div class="wrap">
-    <h2>How to ask</h2>
-    <p class="body">You click a link that says you need it. That is the whole process.</p>
-
-    <p class="body"><strong>There is no application.</strong> Here is a complete list of what we will never ask you for:</p>
-    <ul class="nolist">
-      <li>Proof of income, pay stubs, or tax returns</li>
-      <li>A benefits letter, EBT card, or case number</li>
-      <li>A referral from a caseworker, shelter, or agency</li>
-      <li>An explanation of your circumstances</li>
-      <li>A review period, an appeal, or a decision from anybody</li>
-      <li>Re-certification later to prove you still qualify</li>
-    </ul>
-
-    <p class="body">Here is what actually happens:</p>
-    <ul class="yeslist">
-      <li>You choose the free option at checkout, or email us</li>
-      <li>We say yes</li>
-      <li>That is it. No follow-up, no expiry, no annual review.</li>
-    </ul>
-
-    <div class="key"><b>Why we refuse to check</b>Requiring proof would mean building a database of exactly who is poor, disabled, unemployed, fleeing, or undocumented. That list is one of the most dangerous documents a person could appear on &mdash; and it is precisely the kind of thing this entire project exists to argue against.<br><br>We are not going to protect people from surveillance by surveilling them first. "We don't collect your identity" and "we don't collect your poverty" are the same commitment applied twice.</div>
-
-    <p class="body">Some people who could afford it will use the free option. We know. That is a far smaller problem than one person in danger going without, and we are not going to build a machine for catching the first kind of person at the cost of the second.</p>
+    <h2>Why a record you cannot lose is self-protection</h2>
+    <p class="body">A recording that only lives on your phone can be deleted off your phone. Seized, wiped, broken &mdash; and it is gone. The Witness makes the footage leave your phone the instant it starts, so by the time anyone could take your device, what happened already exists somewhere they cannot reach.</p>
+    <p class="body">This is not about confrontation. Nothing is hidden from anyone. A sticker on the car states plainly that recording happens &mdash; and that openness is the point. Everyone knows there is a record, which keeps things calm, without a camera being pushed in anyone's face.</p>
+    <div class="key"><b>Recording police in public is protected</b>
+      Every US federal appeals court to rule on it has agreed that recording officers performing their duties in public is protected by the First Amendment. The Witness is built entirely on that right &mdash; openly, with notice given, never in secret.
+    </div>
   </div>
 </section>
 
 <hr class="rule">
 
 <section>
-  <div class="wrap">
-    <h2>How paying will work</h2>
-    <p class="body">SOVRAN+ is not open yet. When it is, here is the shape of it &mdash; written down now so you can hold us to it later.</p>
-
-    <div class="key"><b>The rule</b>Your payment and your account will never share an identifier. Not a customer number, not an email, not a reference code. Nothing that could be used to join the two together will exist in any database we hold.</div>
-
-    <p class="body">Almost every service does the opposite: you pay, your subscription attaches to your account, and their database now links a real name and a card to everything that account ever does. That link is the honeypot all over again, and we are not building it.</p>
-
-    <h3 style="margin:30px 0 14px">Instead, you buy a token</h3>
-    <ol class="steps">
-      <li><b>Your account already has a token.</b> A random string like <code>sv-4kx9-mnp2-7wqr</code>, created the moment you sign up, with no time on it. It is not derived from your email and means nothing on its own.</li>
-      <li><b>You buy time on a separate checkout page.</b> No login, no account, nothing connecting the two. Our payment processor sees a card. It does not see a SOVRAN account, because none is involved.</li>
-      <li><b>You paste the code into your account.</b> Your account record then says one thing: <i>paid until this date</i>.</li>
-      <li><b>Nothing joins them.</b> Handed both databases, we could not tell you which customer is which user. Neither could anyone who took them from us.</li>
-    </ol>
-
-    <h3 style="margin:30px 0 14px">Ways to pay, from ordinary to invisible</h3>
-    <div class="pay">
-      <div><span class="ph">Card</span><p>Normal checkout. Card details go straight to the payment processor and never touch our servers. We would see an email and the last four digits, attached to nothing you do here.</p></div>
-      <div><span class="ph">Prepaid card</span><p>Buy a prepaid Visa or Mastercard with cash at any supermarket and use it at normal checkout. No bank account, no name, no trace back to you. <b>Most services quietly block these. We will not.</b></p></div>
-      <div><span class="ph">Cash in an envelope</span><p>Write your token number on a slip of paper, put it in with cash, post it. We open it, credit the token, and that is the end of it. <b>We never send anything back, so you never need to include a return address.</b> The envelope holds a random number and some money and identifies nobody.</p></div>
-    </div>
-
-    <div class="key" style="border-left-color:var(--alarm);background:linear-gradient(140deg,rgba(255,158,94,.07),transparent 70%)"><b>Being straight about the cash option</b>Post it plain and untracked, in small amounts, and understand it is at your own risk. A courier would give you tracking but requires your name and address, which destroys the only reason to do it this way. If an envelope goes missing you have lost the money and revealed nothing &mdash; that trade is the whole design.</div>
-
-    <h3 style="margin:30px 0 14px">What happens when someone cheats</h3>
-    <p class="body">Anonymous payment attracts fraud. Handling it without surveillance is possible, and it comes out cleaner than the usual approach:</p>
-    <ul class="yeslist">
-      <li>We sell time, never lifetime access &mdash; a fraudulent payment costs a month, not forever</li>
-      <li>A stolen card means we void that token, not investigate a person</li>
-      <li>Cash and prepaid cannot be charged back at all, so the most private methods are also the safest for us</li>
-      <li>A token used from thirty places at once is visible as a <i>count</i> &mdash; we never need to know where any of them are</li>
-    </ul>
-    <p class="body" style="margin-top:16px">None of that requires knowing who you are. It never will.</p>
-  </div>
-</section>
-
-<hr class="rule">
-
-<section>
-  <div class="wrap">
-    <h2>Who this is for</h2>
-    <p class="body">Not an eligibility list &mdash; there is no eligibility. Just who we had in mind, so you know you are not an exception being tolerated.</p>
-    <div class="who">
-      <div><b>Someone leaving</b>A person getting out of an abusive home, whose safety depends on an address staying unfindable, and whose money is often controlled by the person they are leaving.</div>
-      <div><b>Someone on a fixed income</b>Disability, retirement, or benefits, where a monthly subscription is a real decision and not a rounding error.</div>
-      <div><b>Someone whose records are dangerous</b>People for whom an immigration status, a medical history, or a legal history turns ordinary data exposure into serious risk.</div>
-      <div><b>Someone doing risky work</b>Journalists, organisers, and advocates who are targeted for what they do and rarely paid enough to buy their way out of it.</div>
-      <div><b>Someone being harassed</b>A campaign of harassment does not check your bank balance first, and the cost of it is already being paid in other ways.</div>
-      <div><b>Someone who is just broke</b>You do not need a story. Money is tight for an enormous number of people and that is reason enough.</div>
-    </div>
-  </div>
-</section>
-
-<div class="wrap"><div class="regional">
-      <span class="reglabel">What it costs where you live</span>
-      <table class="pricetbl">
-        <tr><th>Region</th><th>Monthly</th><th>Yearly</th><th>Works out at</th></tr>
-        <tr><td>United States</td><td>$12</td><td>$110</td><td>$9.17 / month</td></tr>
-        <tr><td>United Kingdom</td><td>&pound;10</td><td>&pound;92</td><td>&pound;7.67 / month</td></tr>
-        <tr><td>European Union</td><td>&euro;11</td><td>&euro;99</td><td>&euro;8.25 / month</td></tr>
-        <tr><td>Canada</td><td>C$16</td><td>C$148</td><td>C$12.33 / month</td></tr>
-        <tr><td>Australia</td><td>A$18</td><td>A$165</td><td>A$13.75 / month</td></tr>
-      </table>
-      <p class="regnote">Priced to the local market rather than converted from dollars, because a straight conversion makes it expensive in some countries and cheap in others for no good reason. <a href="/rights">Your rights differ by country too</a>.</p>
-    </div>
-
-    </div>
-
-<hr class="rule">
-
-<section id="kickstarter">
   <div class="wrap">
     <div class="sec-head">
-      <span class="eyebrow">How this gets built</span>
-      <h2>The free tools exist. The paid one needs funding.</h2>
-      <p class="lede">Everything on this site was built without money and costs nothing to run. The removal engine is different &mdash; it needs lawyers in five countries, a catalogue of several hundred data brokers, and months of work.</p>
+      <span class="eyebrow">What happens</span>
+      <h2>One word. Five things at once.</h2>
+      <p class="lede">You say your phrase &mdash; or tap once, or press the side button five times. You do not have to look at your phone. From that second:</p>
     </div>
-
-    <div class="ksplan">
-      <div>
-        <h3>What we are raising for</h3>
-        <p>Legal standing to act as your authorised agent in the US, UK, EU, Canada and Australia. Without it, a removal request is a polite email a company can ignore. With it, it is something they have to answer.</p>
-        <p>Then the catalogue itself: every broker, every form, every trick they use to make removal difficult.</p>
-      </div>
-      <div>
-        <h3>What stays free regardless</h3>
-        <p>Every tool on this site. If the campaign fails completely, the Photo Check, the Audit, the Map, the Guide, the Passphrase, your Rights, your Panel and your Account all keep working exactly as they do today.</p>
-        <p>They cost nothing to run. That was the point of building them that way.</p>
-      </div>
+    <div class="wgrid">
+      <div><span class="wn">01</span><h3>It records</h3><p>Your mounted camera starts capturing video and audio. The app shows you your state's recording-consent rule the first time, so you always know where you stand.</p></div>
+      <div><span class="wn">02</span><h3>It pins you</h3><p>Your exact location and the time are captured and stamped onto everything that follows.</p></div>
+      <div><span class="wn">03</span><h3>It alerts someone</h3><p>A text goes to the person you chose: where you are, what time, and that this is an automated SOVRAN alert. They need nothing installed &mdash; it is just a message.</p></div>
+      <div><span class="wn">04</span><h3>It goes somewhere safe</h3><p>The footage streams off your phone as it records, so it exists even if your phone is taken. Your contact gets a link to watch it live.</p></div>
+      <div><span class="wn">05</span><h3>It proves itself</h3><p>A fingerprint of the recording is anchored publicly the moment it is made, so no one can later claim it was edited.</p></div>
+      <div class="wlast"><h3>And then you carry on</h3><p>You have done nothing but speak. The phone stays mounted. The sticker already told everyone this was going to happen.</p></div>
     </div>
-
-    <p class="body" style="margin-top:18px"><b style="color:var(--bone)">The campaign is not open yet.</b> When it is, the link will be here and on the front page. Until then the waitlist is the only way to be told.</p>
-    <a class="btn" href="/#waitlist">Join the waitlist</a>
   </div>
 </section>
 
@@ -675,22 +562,31 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 
 <section>
   <div class="wrap">
-    <h2>And most of it is free anyway</h2>
-    <p class="body">Before any of the above matters: <strong>everything that costs us nothing to run is free for everyone, permanently.</strong> That is eight tools today and it will be more, because the rule is about what a thing costs to operate, not about how much we can fence off. Knowing what is exposed about you, and knowing what you can do about it, is never behind a payment.</p>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:22px">
-      <a href="/photo" class="btn ghost">The Photo Check</a>
-      <a href="/audit" class="btn ghost">The Audit</a>
-      <a href="/map" class="btn ghost">The Map</a>
-      <a href="/guide" class="btn ghost">The Guide</a>
-      <a href="/passphrase" class="btn ghost">The Passphrase</a>
-      <a href="/panel" class="btn ghost">Your Panel</a>
-      <a href="/account" class="btn ghost">Your Account</a>
+    <h2>Three ways to start it, hands-free</h2>
+    <div class="wways">
+      <div><h3>Say it</h3><p>A phrase you choose &mdash; &ldquo;SOVRAN, I'm being stopped.&rdquo; It runs through your phone's own assistant, so SOVRAN is never listening to your microphone. The assistant is; SOVRAN only responds when called.</p></div>
+      <div><h3>Tap it</h3><p>One large button on the SOVRAN screen. No setup, always works, for when you would rather not speak.</p></div>
+      <div><h3>Click it</h3><p>Five fast presses of the side button &mdash; the same gesture that launches emergency features on your phone. Works from your pocket, no looking, no speaking.</p></div>
     </div>
-    <p class="body" style="margin-top:24px">The paid tier is for the ongoing labour &mdash; filing hundreds of deletion requests, chasing each to a real answer, and refiling when brokers quietly repopulate. That is work with a real cost, which is the only reason it costs anything.</p><div class="key" style="margin-top:20px"><b>A line we are not going to cross</b>Nothing currently free will ever move behind the paywall. Not the Photo Check, not the Audit, not the Guide, and not the Map &mdash; especially not the Map, which is public records mapped by volunteers and was never ours to sell. When SOVRAN+ opens, it will contain new work, not fenced-off old work.</div>
-    <div style="margin-top:26px"><a href="/#waitlist" class="btn">Join the waitlist</a></div>
+    <p class="body" style="margin-top:18px">You can turn on all three. Use whichever fits the moment.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section>
+  <div class="wrap">
+    <h2>The honest part</h2>
+    <p class="body"><b style="color:var(--bone)">This is not built yet.</b> The Witness is a SOVRAN+ feature planned for after launch, and it needs its own legal review &mdash; recording-consent law differs by state &mdash; before it ships. It is described here in full because a sticker on a car should point somewhere that tells the whole truth, not a teaser.</p>
+    <p class="body">It will be included in SOVRAN+ at no extra cost. It does not cost much to run, and charging separately for the thing that protects you in the worst moment would be the wrong call.</p>
+    <div class="key"><b>What it will and will not do</b>
+      It records openly, with notice, and puts the footage beyond anyone's single reach. It does <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">not</b> record anyone secretly, does not track anyone, and does not do anything to the officer &mdash; it only makes sure there is a record of what happens to you. Openness is what makes it both legal and safe.
+    </div>
+    <a class="btn" href="/#waitlist">Join the waitlist to hear when it ships</a>
   </div>
 </section>
 </main>
+
 <footer>
   <div class="wrap">
     <nav class="fnav">
@@ -729,17 +625,6 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
     <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--> &middot; No cookies. No trackers. No analytics.</p>
   </div>
 </footer>
-<script>
-(function(){
-  try{
-    var a=document.getElementById('acctlink');
-    if(a && localStorage.getItem('sv-signed-in')==='1'){
-      a.classList.add('in'); a.href='/panel';
-      var l=document.getElementById('acctlabel'); if(l) l.textContent='Your panel';
-    }
-  }catch(e){}
-})();
-</script>
 <nav class="tabbar" aria-label="Main">
   <a href="/" data-t="/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg>Home</a>
   <a href="/photo" data-t="/photo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="14" rx="2"/><circle cx="12" cy="12.5" r="3.4"/><path d="M7.5 5.5 8.8 3h6.4l1.3 2.5"/></svg>Photo</a>
@@ -793,14 +678,24 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 })();
 </script>
 <script>
-/* REVEAL FAILSAFE — an element that never gets .in stays at opacity 0 while
-   still occupying its full height, which reads as an unexplained gap. Nothing
-   may stay invisible, whatever the observer did. */
 (function(){
-  function show(){ document.querySelectorAll('.reveal').forEach(function(el){ el.classList.add('in'); }); }
-  setTimeout(show, 1800);
-  window.addEventListener('load', function(){ setTimeout(show, 300); });
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) show();
+  var url = location.origin + '/';
+  var text = 'SOVRAN \u2014 privacy tools that never learn who you are. Everything runs on your own device.';
+  var copy = document.getElementById('copylink');
+  if(copy) copy.addEventListener('click', function(){
+    var done = function(){ copy.classList.add('done'); copy.lastChild.nodeValue='Copied';
+      setTimeout(function(){ copy.classList.remove('done'); copy.lastChild.nodeValue='Copy the link'; }, 2000); };
+    if(navigator.clipboard) navigator.clipboard.writeText(url).then(done).catch(function(){});
+    else { var t=document.createElement('textarea'); t.value=url; document.body.appendChild(t);
+           t.select(); try{ document.execCommand('copy'); done(); }catch(e){} document.body.removeChild(t); }
+  });
+  var nat = document.getElementById('natshare');
+  if(nat && navigator.share){
+    nat.hidden = false;
+    nat.addEventListener('click', function(){
+      navigator.share({ title:'SOVRAN', text:text, url:url }).catch(function(){});
+    });
+  }
 })();
 </script>
 </body>
