@@ -506,6 +506,29 @@ a.cov:hover::before{background:linear-gradient(90deg,#A878FF,#6FE8FF,#FFCB6B)}
 .setupsteps .sn{font-family:'Archivo',sans-serif;font-weight:900;font-variation-settings:'wdth' 78;font-size:1.7rem;color:rgba(255,203,107,.55);display:block;margin-bottom:8px;letter-spacing:-.04em}
 .setupsteps h3{font-size:1.05rem;margin-bottom:8px;color:var(--bone);letter-spacing:-.02em}
 .setupsteps p{font-size:.89rem;color:var(--ash);line-height:1.6;margin:0}
+
+.txtphone{margin-top:24px;max-width:440px}
+.txtbubble{background:#0E1424;border:1px solid rgba(232,224,206,.12);border-radius:18px;
+  padding:20px 22px;position:relative}
+.txtbubble::before{content:'';position:absolute;left:-8px;bottom:22px;width:16px;height:16px;
+  background:#0E1424;border-left:1px solid rgba(232,224,206,.12);border-bottom:1px solid rgba(232,224,206,.12);
+  transform:rotate(45deg)}
+.txt-line{font-size:.92rem;color:var(--ash);line-height:1.5;margin-bottom:10px}
+.txt-line b{color:var(--bone)}
+.txt-warn{background:rgba(255,110,110,.08);border:1px solid rgba(255,110,110,.3);
+  border-radius:10px;padding:12px 14px;color:#FFB3B3;font-size:.88rem}
+.txt-dim{color:var(--ash-dim);font-size:.84rem;font-style:italic;margin-bottom:0}
+.svgrid{display:grid;gap:1px;background:rgba(232,224,206,.1);border:1px solid rgba(232,224,206,.1);margin-top:20px}
+@media(min-width:760px){.svgrid{grid-template-columns:1fr 1fr}}
+.svgrid>div{background:#080B14;padding:24px 22px}
+.svgrid h3{font-size:1.05rem;margin-bottom:12px;letter-spacing:-.02em}
+.svkeep h3{color:#3DE8A5}
+.svlimit h3{color:#FFCB6B}
+.svgrid ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.svgrid li{position:relative;padding-left:20px;font-size:.9rem;color:var(--ash);line-height:1.5}
+.svkeep li::before{content:'\2713';position:absolute;left:0;color:#3DE8A5;font-weight:700}
+.svlimit li::before{content:'\2022';position:absolute;left:2px;color:#FFCB6B;font-weight:700}
+.svgrid li b{color:var(--bone)}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -568,6 +591,37 @@ a.cov:hover::before{background:linear-gradient(90deg,#A878FF,#6FE8FF,#FFCB6B)}
 
 <hr class="rule">
 
+<section id="survives">
+  <div class="wrap">
+    <h2>What happens if they take your phone</h2>
+    <p class="body">This is the question that matters most, so here is the honest answer.</p>
+    <div class="svgrid">
+      <div class="svkeep">
+        <h3>Keeps working</h3>
+        <ul>
+          <li>Everything already recorded is <b>off your phone within seconds</b> &mdash; taking the phone cannot delete it</li>
+          <li>The alert and your location already reached your contact</li>
+          <li>Audio can keep recording even with the screen locked</li>
+          <li>The public fingerprint proving nothing was edited is already anchored</li>
+        </ul>
+      </div>
+      <div class="svlimit">
+        <h3>Has limits</h3>
+        <ul>
+          <li>Video capture pauses if the screen is locked &mdash; phones restrict the camera in the background</li>
+          <li>That is why setup keeps the phone <b>mounted and awake</b>, so it keeps filming on its own</li>
+          <li>If the phone is locked or taken, video stops &mdash; but everything up to that second is already safe elsewhere</li>
+        </ul>
+      </div>
+    </div>
+    <div class="key" style="margin-top:22px"><b>The whole design in one line</b>
+      Nothing anyone does to the phone can delete what already left it. The recording&rsquo;s safety never depends on the phone surviving &mdash; only on it having started.
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
 <section>
   <div class="wrap">
     <h2>Three ways to start it, hands-free</h2>
@@ -581,6 +635,32 @@ a.cov:hover::before{background:linear-gradient(90deg,#A878FF,#6FE8FF,#FFCB6B)}
 </section>
 
 <hr class="rule">
+
+<hr class="rule">
+
+<section id="example">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">What your contact receives</span>
+      <h2>The text that goes out.</h2>
+      <p class="lede">The moment it fires, the person you chose gets a message like this. It tells them what is happening, where, and &mdash; just as importantly &mdash; what not to do.</p>
+    </div>
+
+    <div class="txtphone">
+      <div class="txtbubble">
+        <p class="txt-line"><b>SOVRAN automated alert</b></p>
+        <p class="txt-line">[Your name] has started a Witness recording. This usually means a police stop or another encounter they wanted recorded.</p>
+        <p class="txt-line"><b>Location:</b> [live map link]</p>
+        <p class="txt-line"><b>Time:</b> [timestamp]</p>
+        <p class="txt-line"><b>Watch live:</b> [secure link]</p>
+        <p class="txt-line txt-warn">Please do NOT drive to this location or intervene. Showing up can make a tense situation worse and put both of you at risk. Your job is simply to be aware, keep this message, and watch if you can. If you truly believe someone is in danger, call 911 &mdash; do not go yourself.</p>
+        <p class="txt-line txt-dim">This recording and its location are already saved off [name]&rsquo;s phone. Nothing you do or don&rsquo;t do changes that.</p>
+      </div>
+    </div>
+
+    <p class="body" style="margin-top:20px;max-width:60ch">That warning is deliberate and it is not optional. The Witness exists to create a record, not to summon help to a roadside. The safest thing your contact can do is stay exactly where they are and simply know.</p>
+  </div>
+</section>
 
 <hr class="rule">
 
