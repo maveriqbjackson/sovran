@@ -24,6 +24,12 @@
 /sv-crypto.js
   Cache-Control: public, max-age=86400
 
+# The Kickstarter switch. Never cached — when this flips on launch day it has to
+# take effect for everyone immediately, not whenever their cache happens to expire.
+# It is about 1 KB, so re-fetching it on every page load costs nothing.
+/sv-ks.js
+  Cache-Control: no-store
+
 /jszip.min.js
   Cache-Control: public, max-age=31536000, immutable
 

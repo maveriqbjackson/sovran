@@ -354,7 +354,10 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .ksgrid h3{font-size:1.12rem;margin-bottom:11px;letter-spacing:-.02em;color:var(--bone)}
 .ksgrid p{font-size:.92rem;color:var(--ash);line-height:1.62;margin-bottom:11px}
 .ksgrid p:last-child{margin-bottom:0}
-.ksbtn{display:inline-flex}
+/* Full-width gold bar, text centred. .btn is width:100% site-wide, so this
+   goes with that rather than against it — a left-aligned label in a stretched
+   bar was the accident. */
+.ksbtn{display:flex;align-items:center;justify-content:center;text-align:center}
 .ksnote{margin-top:14px;font-size:.85rem;color:var(--ash-dim);line-height:1.55;max-width:58ch}
 
 /* tabbar-desktop-guard — the bar is a mobile control. Without this it falls back
@@ -717,16 +720,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,te
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SOVRAN">
-<script>
-/* Kickstarter announcement.
-   Set LIVE to true once the pre-launch page exists, and paste the URL. Nothing
-   renders until both are set, so this is safe to deploy before the page is up. */
-window.SV_KS = {
-  LIVE: false,
-  URL:  "https://www.kickstarter.com/projects/YOUR-HANDLE/sovran",
-  STAGE: "prelaunch"   // "prelaunch" while collecting followers, "live" during the campaign
-};
-</script>
+<!-- Kickstarter switch. Edit /sv-ks.js only — never this line. -->
+<script src="/sv-ks.js"></script>
 </head>
 <body>
 
@@ -1376,14 +1371,15 @@ window.SV_KS = {
 <script>
 (function(){
   var C = window.SV_KS || {};
-  if(!C.LIVE || !C.URL || C.URL.indexOf('YOUR-HANDLE') > -1) return;
+  var S = (C.state && C.state()) || null;
+  if(!S) return;
 
   // The full section always shows once the campaign exists.
   document.querySelectorAll('.ksonly').forEach(function(el){ el.hidden = false; });
   var btn = document.getElementById('ksbtn');
-  if(btn) btn.href = C.URL;
+  if(btn) btn.href = S.url;
 
-  var live = C.STAGE === 'live';
+  var live = S.live;
   if(live){
     var h=document.getElementById('kshead'), sub=document.getElementById('kssub'),
         note=document.getElementById('ksnote'), go=document.getElementById('ksgo');
@@ -1396,12 +1392,12 @@ window.SV_KS = {
 
   // The strip is dismissible and remembers. It is an announcement, not a wall.
   var bar = document.getElementById('ksbar');
-  var key = 'sv-ks-' + (C.STAGE || 'x');
+  var key = 'sv-ks-' + (C.stage || 'x');
   var hidden = false;
   try{ hidden = localStorage.getItem(key) === '1'; }catch(e){}
   if(bar && !hidden){
     bar.hidden = false;
-    var a=document.getElementById('ksgo'); if(a) a.href = C.URL;
+    var a=document.getElementById('ksgo'); if(a) a.href = S.url;
     var x=document.getElementById('ksx');
     if(x) x.addEventListener('click', function(){
       bar.hidden = true;

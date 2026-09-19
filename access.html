@@ -453,6 +453,8 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="SOVRAN">
+<!-- Kickstarter switch. Edit /sv-ks.js only. -->
+<script src="/sv-ks.js"></script>
 </head>
 <body>
 <header>
@@ -666,8 +668,8 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
       </div>
     </div>
 
-    <p class="body" style="margin-top:18px"><b style="color:var(--bone)">The campaign is not open yet.</b> When it is, the link will be here and on the front page. Until then the waitlist is the only way to be told.</p>
-    <a class="btn" href="/#waitlist">Join the waitlist</a>
+    <p class="body" style="margin-top:18px" id="kstatus"><b style="color:var(--bone)">The campaign is not open yet.</b> When it is, the link will be here and on the front page. Until then the waitlist is the only way to be told.</p>
+    <a class="btn" href="/#waitlist" id="ksaction">Join the waitlist</a>
   </div>
 </section>
 
@@ -801,6 +803,38 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   setTimeout(show, 1800);
   window.addEventListener('load', function(){ setTimeout(show, 300); });
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) show();
+})();
+</script>
+<script>
+/* Kickstarter state for this page. Driven entirely by /sv-ks.js. */
+(function(){
+  var S = (window.SV_KS && window.SV_KS.state && window.SV_KS.state()) || null;
+  if(!S) return;
+
+  var status = document.getElementById('kstatus');
+  var action = document.getElementById('ksaction');
+
+  if(S.live){
+    if(status) status.innerHTML = '<b style="color:var(--bone)">The campaign is live now.</b> '
+      + 'Backing it is what pays for the legal standing and the broker catalogue. '
+      + 'The eight free tools on this site stay free either way.';
+    if(action){ action.textContent = 'Back it on Kickstarter';
+      action.href = S.url; action.target = '_blank'; action.rel = 'noopener'; }
+  } else {
+    if(status) status.innerHTML = '<b style="color:var(--bone)">The campaign is not open yet.</b> '
+      + 'The page is up and you can follow it &mdash; Kickstarter will tell you the moment it launches. '
+      + 'Nothing to pay yet.';
+    if(action){ action.textContent = 'Follow on Kickstarter';
+      action.href = S.url; action.target = '_blank'; action.rel = 'noopener'; }
+  }
+
+  // The little flag on each paid tier.
+  document.querySelectorAll('.ksflag').forEach(function(a){
+    a.href = S.url; a.target = '_blank'; a.rel = 'noopener';
+    a.innerHTML = '<span class="ksdot2"></span>'
+      + (S.live ? 'Being funded now &mdash; on Kickstarter <b>Back it &rarr;</b>'
+                : 'Not open yet &mdash; follow it on Kickstarter <b>Get told first &rarr;</b>');
+  });
 })();
 </script>
 </body>
