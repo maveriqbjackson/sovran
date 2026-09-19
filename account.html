@@ -404,6 +404,23 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 .fnav a{color:var(--ash);text-decoration:none;font-size:.87rem;border:0;width:fit-content;
   transition:color .18s;line-height:1.35}
 .fnav a:hover{color:var(--gold)}
+
+.wcontacts{background:var(--surface);border:1px solid rgba(232,224,206,.14);padding:22px 24px}
+.wcontacts h4{font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.wcontacts>p{font-size:.9rem;color:var(--ash);line-height:1.6;margin-bottom:4px}
+.wclist{display:grid;gap:10px;margin-top:6px}
+.wcrow{display:grid;gap:8px;background:#080B14;border:1px solid rgba(232,224,206,.1);padding:14px 16px}
+@media(min-width:560px){.wcrow{grid-template-columns:1fr 1fr auto;align-items:center}}
+.wcrow input{background:#04060C;border:1px solid rgba(232,224,206,.14);color:var(--bone);
+  padding:11px 13px;font-size:16px;font-family:inherit;min-height:46px;border-radius:0}
+.wcrow input:focus{outline:none;border-color:var(--gold)}
+.wcdel{background:none;border:1px solid rgba(255,110,110,.35);color:#FF9E5E;cursor:pointer;
+  padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.1em;
+  text-transform:uppercase;min-height:46px}
+.wcdel:hover{border-color:#FF6E6E;color:#FF6E6E}
+.wcnote{font-size:.8rem;color:var(--ash-dim);line-height:1.5;margin-top:14px}
+.wcfull{color:#FFCB6B;font-size:.84rem;margin-top:10px}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -686,6 +703,20 @@ $('del').addEventListener('click',function(){
   if(t) obs.observe(t,{attributes:true,attributeFilter:['class']});
 })();
 </script>
+<div class="wrap" id="witnesswrap" style="display:none;max-width:640px;margin:0 auto 40px">
+  <div class="wcontacts">
+    <h4>Witness contacts &middot; coming with SOVRAN+</h4>
+    <p>The people who get a text the moment you trigger the Witness &mdash; your location, the time, and a link to watch live. Up to three. You can change them any time, and changes take effect immediately.</p>
+    <div class="key" style="margin:14px 0"><b>Pick at least one who would not be with you</b>
+      If your only witness is in your passenger seat, you can both end up detained and nobody outside has the footage. Your partner at home, your mother, a friend in another city.
+    </div>
+
+    <div class="wclist" id="wclist"></div>
+    <button class="btn ghost" id="wcadd" style="font-size:.82rem;padding:12px 18px;margin-top:12px">Add a contact</button>
+    <p class="wcnote" id="wcnote">Saved on this device for now. When the Witness launches, these sync to your encrypted vault like everything else.</p>
+  </div>
+</div>
+
 <div class="wrap" id="pinwrap" style="display:none;max-width:640px;margin:0 auto 40px">
   <div class="pinsetup">
     <h4>Screen lock &middot; optional</h4>
@@ -886,6 +917,57 @@ document.getElementById('lockout').addEventListener('click', function(){
     bar.classList.remove('show');
     try{ localStorage.setItem('sv-install-no','1'); }catch(e){}
   });
+})();
+</script>
+<script>
+(function(){
+  // Witness contacts — editable now, stored locally until the feature ships.
+  // Kept deliberately simple: name + number, up to three, delete any time.
+  var wrap=document.getElementById('witnesswrap'); if(!wrap) return;
+  var list=document.getElementById('wclist'), addBtn=document.getElementById('wcadd');
+  var MAX=3, KEY='sv-witness-contacts';
+
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); }catch(e){ return []; } }
+  function save(v){ try{ localStorage.setItem(KEY, JSON.stringify(v)); }catch(e){} }
+
+  function render(){
+    var data=load();
+    list.innerHTML='';
+    data.forEach(function(c,i){
+      var row=document.createElement('div'); row.className='wcrow';
+      var n=document.createElement('input'); n.type='text'; n.placeholder='Name'; n.value=c.name||'';
+      var p=document.createElement('input'); p.type='tel'; p.placeholder='Phone number'; p.value=c.phone||'';
+      var d=document.createElement('button'); d.className='wcdel'; d.textContent='Remove';
+      n.addEventListener('input',function(){ var v=load(); v[i].name=n.value; save(v); });
+      p.addEventListener('input',function(){ var v=load(); v[i].phone=p.value; save(v); });
+      d.addEventListener('click',function(){ var v=load(); v.splice(i,1); save(v); render(); });
+      row.appendChild(n); row.appendChild(p); row.appendChild(d);
+      list.appendChild(row);
+    });
+    if(data.length>=MAX){
+      addBtn.style.display='none';
+      var f=document.createElement('p'); f.className='wcfull';
+      f.textContent='Three is the maximum. Remove one to add another.';
+      list.appendChild(f);
+    } else { addBtn.style.display=''; }
+    if(!data.length){
+      var e=document.createElement('p'); e.className='wcnote';
+      e.textContent='No contacts yet. Add at least one — ideally two, with one who would not be travelling with you.';
+      list.appendChild(e);
+    }
+  }
+
+  addBtn.addEventListener('click',function(){
+    var v=load(); if(v.length>=MAX) return;
+    v.push({name:'',phone:''}); save(v); render();
+    var inputs=list.querySelectorAll('input'); if(inputs.length) inputs[inputs.length-2].focus();
+  });
+
+  // only show once signed in
+  var panel=document.getElementById('panel');
+  function sync(){ wrap.style.display=(panel&&panel.classList.contains('show'))?'block':'none'; }
+  if(panel) new MutationObserver(sync).observe(panel,{attributes:true,attributeFilter:['class']});
+  sync(); render();
 })();
 </script>
 </body>

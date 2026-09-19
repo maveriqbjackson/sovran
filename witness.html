@@ -529,6 +529,15 @@ a.cov:hover::before{background:linear-gradient(90deg,#A878FF,#6FE8FF,#FFCB6B)}
 .svkeep li::before{content:'\2713';position:absolute;left:0;color:#3DE8A5;font-weight:700}
 .svlimit li::before{content:'\2022';position:absolute;left:2px;color:#FFCB6B;font-weight:700}
 .svgrid li b{color:var(--bone)}
+
+.doors{display:grid;gap:1px;background:rgba(232,224,206,.1);border:1px solid rgba(232,224,206,.1);margin-top:22px}
+@media(min-width:820px){.doors{grid-template-columns:repeat(2,1fr)}}
+.doors>div{background:#080B14;padding:24px 22px}
+.doors .dn{display:block;font-family:'IBM Plex Mono',monospace;font-size:.6rem;letter-spacing:.2em;
+  text-transform:uppercase;color:#3DE8A5;margin-bottom:8px}
+.doors h3{font-size:1.06rem;margin-bottom:9px;color:var(--bone);letter-spacing:-.02em}
+.doors p{font-size:.9rem;color:var(--ash);line-height:1.62;margin:0}
+.doors p b{color:var(--bone)}
 </style>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -638,6 +647,61 @@ a.cov:hover::before{background:linear-gradient(90deg,#A878FF,#6FE8FF,#FFCB6B)}
 
 <hr class="rule">
 
+<section id="recovery">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">The question that matters most</span>
+      <h2>If you are arrested, how does the footage get out?</h2>
+      <p class="lede">You are in a cell with nothing. Your phone is in an evidence bag. This is exactly the situation the Witness is built for, so here is precisely how the recording is reached &mdash; without you doing anything at all.</p>
+    </div>
+
+    <div class="doors">
+      <div>
+        <span class="dn">Door 1</span>
+        <h3>Your witnesses already have it</h3>
+        <p>Every contact you chose received a link the moment it started. That link keeps working. They can watch it and download it from any phone or computer &mdash; <b>no account, no login, no password</b>. A lawyer needing that footage at two in the morning should never hit a signup wall.</p>
+      </div>
+      <div>
+        <span class="dn">Door 2</span>
+        <h3>Someone you trust with your passphrase</h3>
+        <p>The finished recording is saved to your encrypted vault. Because we never hold your key, the only way in is your passphrase &mdash; so decide <b>now</b>, while nothing is wrong, who should have it.</p>
+        <p style="margin-top:10px">A spouse. A parent. A sibling who lives elsewhere. Write it down and seal it somewhere they can reach, or hand it over in person. They sign in from any computer, days later, and download everything. <b>Your phone is never needed, and neither are you.</b></p>
+        <p style="margin-top:10px;color:var(--ash-dim);font-size:.86rem">The trade is real and worth saying plainly: whoever holds your passphrase can read everything in your vault. Choose one person you would trust with all of it, not three you would trust with most of it.</p>
+      </div>
+      <div>
+        <span class="dn">Door 3</span>
+        <h3>A recovery code, for the lawyer you have not hired yet</h3>
+        <p>At setup you are given a recovery code &mdash; a long line of words, shown once, that you print or write down. It does <b>one narrow thing</b>: it releases your Witness recordings. It cannot read your notes, your checklist, or anything else in your vault.</p>
+        <p style="margin-top:10px">That narrowness is the point. You can hand it to an attorney the way you would a power of attorney, or seal it in a safe with your other documents, without giving anyone the keys to your whole account. A lawyer hired <i>after</i> the arrest &mdash; who was never a witness and never got the text &mdash; walks in with that code and gets the footage.</p>
+        <p style="margin-top:10px;color:var(--ash-dim);font-size:.86rem">Lose it and you generate a new one from your account at any time, which instantly retires the old one.</p>
+      </div>
+      <div>
+        <span class="dn">Door 4</span>
+        <h3>The proof travels with it</h3>
+        <p>The public fingerprint does not hold the video &mdash; it proves the video existed at that exact time and has not been altered since. Whichever door the copy comes through, this is what lets a lawyer authenticate it.</p>
+      </div>
+    </div>
+
+    <div class="key" style="margin-top:22px"><b>Two decisions to make while nothing is wrong</b>
+      <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">Who holds your passphrase.</b> One person, chosen deliberately, who can reach your whole vault if you cannot. Not a group chat &mdash; one person.
+      <br><br>
+      <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">Where your recovery code lives.</b> With your attorney, in a safe, or with a second family member. It only opens the footage, so it is safe to place more widely than the passphrase.
+      <br><br>
+      Neither decision feels urgent until it is, and by then you cannot make it. That is the entire reason to do it today.
+    </div>
+
+    <div class="key" style="margin-top:24px"><b>Choose at least one witness who would not be with you</b>
+      This matters more than any other setup choice. If your only witness is the friend in your passenger seat, and you are both arrested, nobody outside has the footage.
+      <br><br>
+      So pick your partner at home. Your mother across town. A friend in another city. <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">The whole point of a witness is that they are somewhere else.</b> You can add up to three, and we recommend at least two.
+    </div>
+
+    <p class="body" style="margin-top:20px;max-width:62ch">The rule underneath all of this: <b style="color:var(--bone)">the footage must always be reachable by at least one person who is not at the scene.</b> No single arrest, no single dead phone, and no single person in a cell can put it out of reach.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
 <section id="example">
   <div class="wrap">
     <div class="sec-head">
@@ -686,7 +750,7 @@ a.cov:hover::before{background:linear-gradient(90deg,#A878FF,#6FE8FF,#FFCB6B)}
       <div>
         <span class="sn">03</span>
         <h3>Pick who gets told</h3>
-        <p>One or more people who receive a text the moment it fires &mdash; your location, the time, and a link to watch live. They need nothing installed. It is just a message to their phone. Choose someone likely to have their phone nearby.</p>
+        <p>Up to three people who receive a text the moment it fires &mdash; your location, the time, and a link to watch live. They need nothing installed. <b>Choose at least one who would not be with you</b> &mdash; if your only witness is in your passenger seat, you can both end up detained and nobody outside has it. You can change these any time from your account.</p>
       </div>
       <div>
         <span class="sn">04</span>
@@ -720,6 +784,7 @@ a.cov:hover::before{background:linear-gradient(90deg,#A878FF,#6FE8FF,#FFCB6B)}
       It records openly, with notice, and puts the footage beyond anyone's single reach. It does <b style="display:inline;font-size:inherit;letter-spacing:0;text-transform:none;color:var(--bone)">not</b> record anyone secretly, does not track anyone, and does not do anything to the officer &mdash; it only makes sure there is a record of what happens to you. Openness is what makes it both legal and safe.
     </div>
     <a class="btn" href="/#waitlist">Join the waitlist to hear when it ships</a>
+    <p class="body" style="margin-top:14px;font-size:.88rem">Already have an account? You can <a href="/account" style="color:var(--gold)">manage your witness contacts</a> now &mdash; they will be ready the day this ships.</p>
   </div>
 </section>
 </main>

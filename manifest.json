@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-08 23:18 UTC",
+ "generated": "2026-09-19 00:37 UTC",
  "note": "SHA-256 of every deployed file.",
  "files": {
   "/404.html": {
@@ -11,8 +11,8 @@
    "bytes": 54361
   },
   "/account.html": {
-   "sha256": "33d6879cc2feda42ddbd2653964d0ea49124507a26039be1586fdead9e1a4afd",
-   "bytes": 54325
+   "sha256": "ed4e8cacdb03d037c604d56b59bb15163263c35d909e0e95f940fc28d55e8112",
+   "bytes": 59030
   },
   "/admin.html": {
    "sha256": "0b317978be311a123ec3e6f03658836a33576336be4998c8ad1c9edd6a53505e",
@@ -103,8 +103,8 @@
    "bytes": 2196
   },
   "/witness.html": {
-   "sha256": "c225d3ec14a3b559ecb62f6340a8a51cc11a03dcd6593af2120bd6b2a508f354",
-   "bytes": 55111
+   "sha256": "16edd071496352db3f4773247f0bb840559d4c28ed768b13e849967c59553fd4",
+   "bytes": 60932
   },
   "/wordlist.txt": {
    "sha256": "abae49761b88f3f1ba31ef944bea1f61b795a3cd7e1cfb7d276ed45bf77967ba",
