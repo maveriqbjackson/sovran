@@ -520,6 +520,7 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
         <option value="camera">Cameras only</option>
       </select>
       <button class="btn" id="go">Show the map</button>
+      <p id="builthint" style="display:none;flex-basis:100%;margin:6px 0 0;font-family:'IBM Plex Mono',monospace;font-size:.68rem;color:var(--ash-dim)"></p>
     </div>
     <div class="prog" id="prog"></div>
     <div class="err" id="err">
@@ -563,8 +564,8 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
         <span><i style="background:#FF9E5E"></i>Plate readers</span>
         <span><i style="background:#6BCBE8"></i>Cameras</span>
         <span><i style="background:#A8B0C8"></i>Other</span>
-        <span><i style="background:rgba(255,203,107,.55);border-radius:1px;width:14px;height:3px"></i>Highways</span>
-        <span id="roadleg" style="display:none"><i style="background:#FFCB6B;border-radius:0;width:14px;height:3px"></i>Highways</span>
+        <span id="roadleg" style="display:none"><i style="background:#FFCB6B;border-radius:0;width:14px;height:3px"></i>Interstates &amp; highways</span>
+        <span id="roadleg3" style="display:none"><i style="background:#B8C8E8;border-radius:0;width:14px;height:3px"></i>Main roads</span>
         <span id="roadleg2" style="display:none"><i style="background:#8494B4;border-radius:0;width:14px;height:2px"></i>Streets &middot; zoom in</span>
         <span style="margin-left:auto">Scroll or pinch to zoom &middot; drag to pan &middot; <b style="color:var(--gold)">tap any device to act on it</b> &middot; keep zooming for street names</span>
       </div>
@@ -707,8 +708,34 @@ document.addEventListener('securitypolicyviolation', function(e){
 
 var keys=Object.keys(REGIONS).sort(function(a,b){ return REGIONS[a][0]<REGIONS[b][0]?-1:1; });
 keys.forEach(function(k){
-  var o=document.createElement('option'); o.value=k; o.textContent=REGIONS[k][0]; SEL.appendChild(o);
+  var o=document.createElement('option'); o.value=k; o.textContent=REGIONS[k][0];
+  o.dataset.name=REGIONS[k][0]; SEL.appendChild(o);
 });
+
+/* Which regions are actually built.
+   /mapdata/index.json is a one-line file listing the codes that have data:
+       {"built":["CO","AL","CA"]}
+   If it is there, ready regions are ticked in the dropdown and named when
+   someone picks one we have not done yet. If it is missing, nothing breaks —
+   the page simply stops claiming to know, rather than naming a stale list. */
+var BUILT=null;
+fetch('/mapdata/index.json',{cache:'no-store'})
+  .then(function(r){ return r.ok ? r.json() : null; })
+  .then(function(j){
+    if(!j || !j.built || !j.built.length) return;
+    BUILT=j.built.filter(function(c){ return REGIONS[c]; });
+    Array.prototype.forEach.call(SEL.options,function(o){
+      if(!o.value) return;
+      o.textContent = (BUILT.indexOf(o.value)>-1 ? '✓ ' : '   ') + o.dataset.name;
+    });
+    var hint=document.getElementById('builthint');
+    if(hint){
+      hint.textContent='✓ marks the '+BUILT.length+' region'+(BUILT.length===1?'':'s')+
+        ' already built. The rest are on the way.';
+      hint.style.display='';
+    }
+  })
+  .catch(function(){});
 
 function say(m){ PROG.innerHTML=m; PROG.classList.add('show'); }
 function fail(m){ ERR.innerHTML=m; ERR.classList.add('show'); PROG.classList.remove('show'); }
@@ -747,7 +774,10 @@ function notBuilt(code){
     'Every region on this map is a file stored on our own servers, so that looking at it '+
     'costs you no outside request and works with your connection switched off. Building one '+
     'takes a few minutes of our time and we are working through them.<br><br>'+
-    '<b>Available now:</b> Colorado. More are added regularly.<br><br>'+
+    (BUILT && BUILT.length
+      ? '<b>Ready now:</b> '+BUILT.map(function(c){return esc(REGIONS[c][0]);}).join(', ')+
+        '.<br><br>'
+      : '')+
     'Want yours next? <!--email_off--><a href="mailto:maveriqbjackson@proton.me?subject=Map%20region%20request%3A%20'+
     encodeURIComponent(name)+'" style="color:var(--gold)">Ask for '+esc(name)+'</a><!--/email_off--> and we\u2019ll prioritise it. '+
     'Or build it into OpenStreetMap yourself &mdash; scroll down for how.';
@@ -791,8 +821,12 @@ function render(s,w,n,e){
     CITIES=res[1]||[];
     view.cities=CITIES.filter(function(c){ return c[2]>=s&&c[2]<=n&&c[3]>=w&&c[3]<=e; });
     // Roads are optional. Their absence is not a fault worth flagging to a visitor.
-    var rl=document.getElementById('roadleg'), rl2=document.getElementById('roadleg2');
-    if(rl) rl.style.display = ROADS.length ? '' : 'none';
+    // Each legend row appears only if that class of road is actually in the file,
+    // so the key never promises something the map does not draw.
+    var rl=document.getElementById('roadleg'), rl2=document.getElementById('roadleg2'),
+        rl3=document.getElementById('roadleg3');
+    if(rl) rl.style.display = ROADS.some(function(r){return r[0]<=1;}) ? '' : 'none';
+    if(rl3) rl3.style.display = ROADS.some(function(r){return r[0]===2||r[0]===3;}) ? '' : 'none';
     if(rl2) rl2.style.display = ROADS.some(function(r){return r[0]>=4;}) ? '' : 'none';
     showLayers(layerNotes);
     initMap();
@@ -1169,6 +1203,10 @@ function drawMap(){
   // so junctions read correctly and lines separate from the background. Classes
   // appear progressively — arterials always, streets once you are close enough
   // for them to mean something.
+  // Road names are collected here but drawn much further down — after the
+  // devices. Drawn before them, a dense cluster of dots buries every street
+  // name, which is the difference between a map and a scatter of dots.
+  var pending=[];
   if(ROADS.length){
     var RS=[
       {c:'#FFCB6B', w:3.4, min:0,   cas:'#3A2A0E', label:1.8},  // motorway
@@ -1177,7 +1215,7 @@ function drawMap(){
       {c:'#93A5C8', w:1.7, min:2.0, cas:'#161C2E', label:4.5},  // secondary
       {c:'#8494B4', w:1.4, min:2.8, cas:'#131828', label:6}     // tertiary + residential
     ];
-    var labelled={}, pending=[];
+    var labelled={};
 
     // two passes: every casing first, then every fill, so roads join cleanly
     [0,1].forEach(function(pass){
@@ -1215,18 +1253,6 @@ function drawMap(){
       });
     });
 
-    // labels last, so no road is drawn over a name
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    pending.forEach(function(L){
-      var big=L[3]<=1;
-      ctx.font=(big?'600 10.5px':'500 10px')+' "IBM Plex Mono", monospace';
-      var tw=ctx.measureText(L[0]).width;
-      ctx.fillStyle='rgba(4,6,15,.82)';
-      ctx.fillRect(L[1]-tw/2-4,L[2]-7.5,tw+8,15);
-      ctx.fillStyle=big?'rgba(255,203,107,.95)':'rgba(212,222,242,.85)';
-      ctx.fillText(L[0],L[1],L[2]);
-    });
-    ctx.textAlign='left';
   }
 
   // devices
@@ -1241,14 +1267,87 @@ function drawMap(){
     ctx.fill(); ctx.globalAlpha=1;
   });
 
+  /* Labels compete for the same few pixels. Town names matter most — they are
+     the only thing telling someone where they are looking — so they claim their
+     space first and street names give way. A skipped name is better than two
+     names printed on top of each other. */
+  var taken=[];
+  function fits(x0,y0,x1,y1){
+    for(var i=0;i<taken.length;i++){
+      var t=taken[i];
+      if(x0 < t[2] && x1 > t[0] && y0 < t[3] && y1 > t[1]) return false;
+    }
+    return true;
+  }
+
+  var townCap = T.k>6 ? 60 : T.k>2 ? 30 : 16;
+  var towns=[];
+  ctx.font='600 12px "IBM Plex Mono", monospace';
+  for(var ci=0; ci<view.cities.length && towns.length<townCap; ci++){
+    var c=view.cities[ci], cq=px(c[3],c[2]);
+    if(cq[0]<-30||cq[0]>W+30||cq[1]<-20||cq[1]>H+20) continue;
+    var ctw=ctx.measureText(c[0]).width;
+    var box=[cq[0]-6, cq[1]-10, cq[0]+9+ctw+10, cq[1]+10];
+    if(!fits(box[0],box[1],box[2],box[3])) continue;   // another town already there
+    taken.push(box);
+    towns.push([c, cq, ctw]);
+  }
+
+  // Street names go on TOP of the devices. Each one sits on its own plate so it
+  // stays readable even where the dots are thickest — which is exactly where
+  // someone most wants to know what street they are looking at.
+  if(pending.length){
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    pending.forEach(function(L){
+      var big=L[3]<=1;
+      ctx.font=(big?'600 10.5px':'500 10px')+' "IBM Plex Mono", monospace';
+      var tw=ctx.measureText(L[0]).width;
+      var x0=L[1]-tw/2-5, y0=L[2]-8, x1=L[1]+tw/2+5, y1=L[2]+8;
+      if(!fits(x0,y0,x1,y1)) return;                   // a town or another street holds this spot
+      taken.push([x0,y0,x1,y1]);
+      ctx.fillStyle='rgba(4,6,15,.9)';
+      ctx.fillRect(x0,y0,tw+10,16);
+      ctx.fillStyle=big?'rgba(255,203,107,.98)':'rgba(222,231,247,.94)';
+      ctx.fillText(L[0],L[1],L[2]);
+    });
+    ctx.textAlign='left';
+  }
+
+  // Zoomed into somewhere with nothing in it, a blank grid reads as a broken
+  // page. Say plainly that the area is empty rather than leaving them guessing.
+  if(rows.length){
+    var inView=0;
+    for(var vi=0; vi<rows.length; vi++){
+      var vq=px(rows[vi].lon, rows[vi].lat);
+      if(vq[0]>=0 && vq[0]<=W && vq[1]>=0 && vq[1]<=H){ inView++; if(inView>0) break; }
+    }
+    if(!inView && T.k > 1.6){
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.font='600 13px "IBM Plex Mono", monospace';
+      var m1='Nothing mapped in this view.';
+      var m2='Zoom out, or drag toward a town — '+rows.length.toLocaleString()+
+             ' devices are on this map.';
+      var w1=ctx.measureText(m1).width;
+      ctx.font='500 12px "IBM Plex Mono", monospace';
+      var w2=ctx.measureText(m2).width, bw=Math.max(w1,w2)+44;
+      ctx.fillStyle='rgba(6,9,18,.92)';
+      ctx.fillRect(W/2-bw/2, H/2-34, bw, 68);
+      ctx.strokeStyle='rgba(72,84,110,.7)'; ctx.lineWidth=1;
+      ctx.strokeRect(W/2-bw/2, H/2-34, bw, 68);
+      ctx.font='600 13px "IBM Plex Mono", monospace';
+      ctx.fillStyle='rgba(255,203,107,.95)'; ctx.fillText(m1, W/2, H/2-11);
+      ctx.font='500 12px "IBM Plex Mono", monospace';
+      ctx.fillStyle='rgba(168,176,200,.9)'; ctx.fillText(m2, W/2, H/2+13);
+      ctx.textAlign='left';
+    }
+  }
+
   // Towns last and unmissable — they are the only thing telling someone where
   // they are looking. Drawn after roads and devices so nothing covers them.
   ctx.textBaseline='middle'; ctx.textAlign='left';
-  var shown=0, cap = T.k>6 ? 60 : T.k>2 ? 30 : 16;
-  view.cities.forEach(function(c){
-    if(shown>=cap) return;
-    var q=px(c[3],c[2]);
-    if(q[0]<-30||q[0]>W+30||q[1]<-20||q[1]>H+20) return;
+  var shown=0;
+  towns.forEach(function(rec){
+    var c=rec[0], q=rec[1];
     shown++;
     // marker: a filled ring so it reads against both roads and dots
     ctx.beginPath(); ctx.arc(q[0],q[1],4.4,0,6.2832);
