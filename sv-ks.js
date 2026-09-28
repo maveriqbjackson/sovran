@@ -25,9 +25,9 @@
 
 window.SV_KS = {
 
-  on: false,
+  on: true,
 
-  stage: "prelaunch",
+  stage: "live",
 
   url: "https://www.kickstarter.com/projects/maveriqbjackson/sovran-privacy-tools-that-never-learn-who-you-are"
 
