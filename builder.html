@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOVRAN Map Builder</title>
+<!--
+  SOVRAN — offline map data builder.
+
+  WHY THIS EXISTS, AND WHY IT IS NOT A PAGE ON THE SITE
+  ----------------------------------------------------
+  The admin page asked a Cloudflare function to query Overpass. Cloudflare
+  terminates any request at roughly 100 seconds. Overpass queues requests when
+  it is busy, and queue time has nothing to do with how much data you asked
+  for — so a tile would die at the edge before Overpass ever answered.
+
+  The code read that as "too much data" and split the tile into four. That
+  made it worse: four times the requests, against a service that allows about
+  two at a time per address. More splitting, more queueing, more deaths. Hence
+  "a genuinely dense area could not be fetched" on an area that is not the
+  problem.
+
+  This file removes the server from the path. Your browser talks to Overpass
+  directly, one request at a time, with a pause between them and a real
+  backoff when it is told to wait. Nothing can time it out but you. It takes
+  minutes rather than seconds, which is the correct trade for a job you run
+  twice a year.
+
+  HOW TO USE
+  ----------
+  This file must be SERVED, not opened from disk. A page opened with file://
+  has an opaque origin and the browser blocks all of its network requests, so
+  nothing reaches Overpass at all.
+
+  1. Upload it to the repo as builder.html, then open
+     https://mysovran.online/builder.html
+     (or serve the folder locally: python -m http.server 8000)
+  2. Pick a state and press Build.
+  3. Leave the tab open. Progress is printed as it goes.
+  4. When it finishes, press Download and you get <CODE>.json.
+  5. Put that file in mapdata/ in the repo, commit, done.
+
+  It never silently skips anything. If something genuinely cannot be fetched
+  it says so, in red, and tells you what it was.
+-->
+<style>
+  :root{
+    --void:#04060F; --surface:#0C1424; --line:rgba(236,230,220,.14);
+    --bone:#F4F0E8; --ash:#A2AEC6; --dim:#74809B;
+    --gold:#FFCB6B; --clear:#3DE8A5; --alarm:#FF9E5E; --ice:#5AF0FF;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--void);color:var(--bone);
+    font:16px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    padding:32px 20px 80px}
+  .wrap{max-width:860px;margin:0 auto}
+  h1{font-size:1.7rem;line-height:1.1;letter-spacing:-.02em;margin-bottom:8px}
+  .sub{color:var(--ash);margin-bottom:28px;max-width:62ch}
+  .panel{background:var(--surface);border:1px solid var(--line);padding:22px;margin-bottom:16px}
+  label{display:block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--gold);margin-bottom:8px;font-family:ui-monospace,Menlo,Consolas,monospace}
+  select,button{font:inherit}
+  select{background:var(--void);color:var(--bone);border:1px solid var(--line);
+    padding:13px 15px;min-width:240px}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+  button{background:linear-gradient(100deg,#FFE7B4,#FFCB6B 45%,#E0A63C);color:#0A0806;
+    border:0;padding:15px 28px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    font-size:.84rem;cursor:pointer}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  button.ghost{background:none;border:1px solid var(--line);color:var(--ash)}
+  #log{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.78rem;line-height:1.75;
+    white-space:pre-wrap;word-break:break-word;margin-top:20px;max-height:460px;overflow:auto}
+  .i{color:var(--ash)} .g{color:var(--clear)} .w{color:var(--gold)}
+  .e{color:var(--alarm)} .h{color:var(--ice)}
+  .stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;
+    background:var(--line);border:1px solid var(--line);margin-top:18px}
+  .stat div{background:var(--surface);padding:14px 16px}
+  .stat b{display:block;font-size:1.5rem;letter-spacing:-.03em;color:var(--gold)}
+  .stat span{font-size:.72rem;color:var(--ash)}
+  .note{font-size:.84rem;color:var(--dim);margin-top:14px;line-height:1.55}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;
+    background:var(--void);border:1px solid var(--line);padding:1px 6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>SOVRAN map builder</h1>
+  <p class="sub">Builds one state's <code>mapdata/&lt;CODE&gt;.json</code> by talking to
+  OpenStreetMap directly from this browser. No server in the middle, so nothing can
+  time it out. Expect five to twenty minutes for a busy state — leave the tab open.</p>
+
+  <div id="originwarn" style="display:none;background:linear-gradient(140deg,rgba(255,158,94,.12),transparent 72%);
+    border:1px solid rgba(255,158,94,.45);border-left:3px solid var(--alarm);padding:20px 22px;margin-bottom:18px">
+    <strong style="display:block;color:var(--alarm);font-family:ui-monospace,Menlo,Consolas,monospace;
+      font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:10px">This page cannot run from your hard drive</strong>
+    <p style="color:var(--ash);font-size:.92rem;line-height:1.6;margin-bottom:10px">You opened it with
+    <code>file://</code>. A page loaded straight off disk gets no origin, and the browser will not let it
+    reach the internet — every request fails before it leaves your machine. That is a browser rule, not
+    something this file can work around.</p>
+    <p style="color:var(--ash);font-size:.92rem;line-height:1.6;margin-bottom:0">Put it on your own site
+    and open it there: upload this file to the repo as <code>builder.html</code>, then go to
+    <code>https://mysovran.online/builder.html</code>. Everything below will work from that address.</p>
+  </div>
+
+  <div class="panel">
+    <label for="st">State</label>
+    <div class="row">
+      <select id="st"></select>
+      <button id="go">Build</button>
+      <button id="dl" class="ghost" disabled>Download JSON</button>
+      <button id="stop" class="ghost" disabled>Stop</button>
+    </div>
+    <div class="stat" id="stat" style="display:none">
+      <div><b id="nDev">0</b><span>devices</span></div>
+      <div><b id="nAlpr">0</b><span>plate readers</span></div>
+      <div><b id="nRoad">0</b><span>road segments</span></div>
+      <div><b id="nReq">0</b><span>requests made</span></div>
+    </div>
+    <div id="log"></div>
+    <p class="note">One request at a time, with a pause between them. If OpenStreetMap
+    asks us to wait, we wait and try again rather than firing more requests at it — that
+    is the thing the old version got wrong.</p>
+  </div>
+</div>
+
+<script>
+/* ── the same bounding boxes map.html uses, so the data lines up exactly ── */
+var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,71.5,-129],
+"AZ":["Arizona",31.33,-114.82,37.01,-109.04],"AR":["Arkansas",33.0,-94.62,36.5,-89.64],
+"CA":["California",32.53,-124.41,42.01,-114.13],"CO":["Colorado",36.99,-109.06,41.0,-102.04],
+"CT":["Connecticut",40.98,-73.73,42.05,-71.79],"DE":["Delaware",38.45,-75.79,39.84,-75.05],
+"DC":["District of Columbia",38.79,-77.12,38.996,-76.91],"FL":["Florida",24.4,-87.63,31.0,-79.97],
+"GA":["Georgia",30.36,-85.61,35.0,-80.84],"HI":["Hawaii",18.91,-160.25,22.24,-154.81],
+"ID":["Idaho",41.99,-117.24,49.0,-111.04],"IL":["Illinois",36.97,-91.51,42.51,-87.02],
+"IN":["Indiana",37.77,-88.1,41.76,-84.78],"IA":["Iowa",40.38,-96.64,43.5,-90.14],
+"KS":["Kansas",36.99,-102.05,40.0,-94.59],"KY":["Kentucky",36.5,-89.57,39.15,-81.96],
+"LA":["Louisiana",28.93,-94.04,33.02,-88.76],"ME":["Maine",42.98,-71.08,47.46,-66.95],
+"MD":["Maryland",37.91,-79.49,39.72,-75.05],"MA":["Massachusetts",41.24,-73.51,42.89,-69.93],
+"MI":["Michigan",41.7,-90.42,48.31,-82.41],"MN":["Minnesota",43.5,-97.24,49.38,-89.49],
+"MS":["Mississippi",30.17,-91.65,35.0,-88.1],"MO":["Missouri",35.996,-95.77,40.61,-89.1],
+"MT":["Montana",44.36,-116.05,49.0,-104.04],"NE":["Nebraska",39.999,-104.05,43.0,-95.31],
+"NV":["Nevada",35.0,-120.01,42.0,-114.04],"NH":["New Hampshire",42.7,-72.56,45.31,-70.61],
+"NJ":["New Jersey",38.93,-75.56,41.36,-73.89],"NM":["New Mexico",31.33,-109.05,37.0,-103.0],
+"NY":["New York",40.5,-79.76,45.02,-71.86],"NC":["North Carolina",33.84,-84.32,36.59,-75.46],
+"ND":["North Dakota",45.94,-104.05,49.0,-96.55],"OH":["Ohio",38.4,-84.82,42.33,-80.52],
+"OK":["Oklahoma",33.62,-103.0,37.0,-94.43],"OR":["Oregon",41.99,-124.57,46.29,-116.46],
+"PA":["Pennsylvania",39.72,-80.52,42.27,-74.69],"RI":["Rhode Island",41.15,-71.86,42.02,-71.12],
+"SC":["South Carolina",32.03,-83.35,35.22,-78.54],"SD":["South Dakota",42.48,-104.06,45.95,-96.44],
+"TN":["Tennessee",34.98,-90.31,36.68,-81.65],"TX":["Texas",25.84,-106.65,36.5,-93.51],
+"UT":["Utah",36.998,-114.05,42.0,-109.04],"VT":["Vermont",42.73,-73.44,45.02,-71.47],
+"VA":["Virginia",36.54,-83.68,39.47,-75.24],"WA":["Washington",45.54,-124.85,49.0,-116.92],
+"WV":["West Virginia",37.2,-82.64,40.64,-77.72],"WI":["Wisconsin",42.49,-92.89,47.31,-86.25],
+"WY":["Wyoming",40.99,-111.06,45.01,-104.05]};
+
+/* Overpass mirrors. We use one until it refuses, then move down the list.
+   We never run two at once — concurrency is what got the old build rate-limited. */
+var ENDPOINTS=[
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter'
+];
+var ep=0, requests=0, stopped=false, RESULT=null, CODE='';
+
+var $=function(id){return document.getElementById(id);};
+
+/* A page served from file:// has an opaque origin, and Chromium-based browsers
+   block its requests to the network outright. Overpass is never contacted and
+   fetch rejects with a bare "Failed to fetch", which reads like the server is
+   down when it is nothing of the sort. Catch it up front and say so. */
+var BAD_ORIGIN = (location.protocol === 'file:');
+var LOG=$('log');
+function log(msg,cls){
+  var d=document.createElement('div');
+  d.className=cls||'i'; d.textContent=msg; LOG.appendChild(d);
+  LOG.scrollTop=LOG.scrollHeight;
+}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+
+/* ── one Overpass call, patient and honest ──────────────────────────────────
+   Retries on 429 (slow down) and 504 (gateway timeout) with growing waits,
+   and moves to another mirror after repeated refusals. It gives up only after
+   genuinely exhausting every option, and then it says exactly what failed. */
+async function overpass(query,label){
+  var attempt=0, waits=[3000,8000,20000,45000,90000];
+  while(attempt<waits.length+1){
+    if(stopped) throw new Error('stopped');
+    requests++; $('nReq').textContent=requests;
+    try{
+      var res=await fetch(ENDPOINTS[ep],{
+        method:'POST',
+        headers:{'Content-Type':'application/x-www-form-urlencoded'},
+        body:'data='+encodeURIComponent(query)
+      });
+      if(res.status===429||res.status===504||res.status===503){
+        var w=waits[Math.min(attempt,waits.length-1)];
+        log('  '+label+': server said wait ('+res.status+') — pausing '+(w/1000)+'s',(attempt>2?'e':'w'));
+        attempt++;
+        if(attempt===3&&ep<ENDPOINTS.length-1){ ep++; log('  switching to mirror '+(ep+1),'w'); }
+        await sleep(w);
+        continue;
+      }
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      var json=await res.json();
+      if(json.remark&&/timed out|out of memory/i.test(json.remark)){
+        throw new Error('overpass: '+json.remark);
+      }
+      return json.elements||[];
+    }catch(err){
+      if(stopped) throw err;
+      if(attempt>=waits.length){
+        throw new Error(label+' failed after '+(attempt+1)+' attempts — '+err.message);
+      }
+      var w2=waits[Math.min(attempt,waits.length-1)];
+      var why=err.message;
+      if(/failed to fetch|networkerror|load failed/i.test(why)){
+        why = BAD_ORIGIN
+          ? 'blocked because this page is running from your hard drive, not a website'
+          : 'could not reach the server (connection, DNS, or the mirror is down)';
+      }
+      log('  '+label+': '+why+' — retrying in '+(w2/1000)+'s','w');
+      attempt++;
+      await sleep(w2);
+    }
+  }
+}
+
+/* ── classification, copied from map.html so the two agree ── */
+function classify(t){
+  var st=(t['surveillance:type']||'').toLowerCase();
+  var nm=((t.name||'')+' '+(t.operator||'')+' '+(t.manufacturer||'')).toLowerCase();
+  if(st.indexOf('alpr')>-1||st.indexOf('anpr')>-1||/flock|plate|licence plate|license plate/.test(nm)) return 0;
+  if(st.indexOf('camera')>-1||(t['man_made']==='surveillance'&&t['camera:type'])) return 1;
+  if(st.indexOf('guard')>-1) return 2;
+  return (t['camera:type']||t['camera:mount']) ? 1 : 2;
+}
+var ROADCLASS={motorway:0,motorway_link:0,trunk:1,trunk_link:1,primary:2,primary_link:2,
+  secondary:3,secondary_link:3,tertiary:4,tertiary_link:4,residential:4,unclassified:4};
+
+/* ── cluster devices so roads are fetched around them, not across empty plains ── */
+function cluster(pts,deg){
+  var cells={};
+  pts.forEach(function(p){
+    var k=Math.floor(p[0]/deg)+'/'+Math.floor(p[1]/deg);
+    (cells[k]=cells[k]||[]).push(p);
+  });
+  return Object.keys(cells).map(function(k){
+    var g=cells[k], la=g.map(function(p){return p[0];}), lo=g.map(function(p){return p[1];});
+    return {s:Math.min.apply(null,la)-0.02, w:Math.min.apply(null,lo)-0.02,
+            n:Math.max.apply(null,la)+0.02, e:Math.max.apply(null,lo)+0.02, count:g.length};
+  }).sort(function(a,b){return b.count-a.count;});
+}
+
+async function build(code){
+  var r=REGIONS[code], s=r[1], w=r[2], n=r[3], e=r[4];
+  var bbox=s+','+w+','+n+','+e;
+  stopped=false; requests=0; RESULT=null; CODE=code;
+  LOG.innerHTML=''; $('stat').style.display='grid';
+  ['nDev','nAlpr','nRoad','nReq'].forEach(function(i){$(i).textContent='0';});
+  $('dl').disabled=true;
+
+  log('Building '+r[0]+'  ['+bbox+']','h');
+  log('');
+
+  /* ── 1. every surveillance device in the state, in ONE query.
+         This is the query the old build could never finish, because Cloudflare
+         killed it while Overpass was still queueing. Here it just takes as long
+         as it takes. ── */
+  log('1/3  devices — asking OpenStreetMap for the whole state in one go','h');
+  log('     (this is the slow one, often 30-90s. It is not stuck.)');
+  var els=await overpass(
+    '[out:json][timeout:600];(' +
+      'node["man_made"="surveillance"]('+bbox+');' +
+      'way["man_made"="surveillance"]('+bbox+');' +
+    ');out center tags;', 'devices');
+
+  var ops=[], types=[], opIx={}, tyIx={}, pts=[];
+  els.forEach(function(el){
+    var la=el.lat!=null?el.lat:(el.center&&el.center.lat);
+    var lo=el.lon!=null?el.lon:(el.center&&el.center.lon);
+    if(la==null||lo==null) return;
+    var t=el.tags||{};
+    var o=t.operator||'', ty=t['surveillance:type']||t['camera:type']||'';
+    if(o&&opIx[o]==null){ opIx[o]=ops.length; ops.push(o); }
+    if(ty&&tyIx[ty]==null){ tyIx[ty]=types.length; types.push(ty); }
+    pts.push([ +la.toFixed(5), +lo.toFixed(5), classify(t),
+               o?opIx[o]:-1, ty?tyIx[ty]:-1 ]);
+  });
+  $('nDev').textContent=pts.length.toLocaleString();
+  $('nAlpr').textContent=pts.filter(function(p){return p[2]===0;}).length.toLocaleString();
+  log('     '+pts.length.toLocaleString()+' devices, '+
+      pts.filter(function(p){return p[2]===0;}).length.toLocaleString()+' of them plate readers','g');
+  log('');
+
+  if(!pts.length){
+    log('No devices mapped in this state yet. That is a real answer, not a failure —','w');
+    log('OpenStreetMap simply has no surveillance nodes here.','w');
+  }
+
+  /* ── 2. the big roads, statewide. Sparse enough to come back in one query,
+         and they are what stops the map looking like dots in a void. ── */
+  log('2/3  major roads — motorway, trunk and primary across the state','h');
+  var roads=[], roadNames=[], rnIx={};
+  function addWays(ways){
+    ways.forEach(function(way){
+      if(!way.geometry||way.geometry.length<2) return;
+      var cls=ROADCLASS[(way.tags||{}).highway];
+      if(cls==null) return;
+      var nm=(way.tags||{}).name||'';
+      if(nm&&rnIx[nm]==null){ rnIx[nm]=roadNames.length; roadNames.push(nm); }
+      var row=[cls, nm?rnIx[nm]:-1];
+      /* thin the geometry — the renderer cannot show sub-metre detail and the
+         file would be five times bigger for nothing */
+      var step=way.geometry.length>240?3:(way.geometry.length>90?2:1);
+      for(var i=0;i<way.geometry.length;i+=step){
+        row.push([+way.geometry[i].lat.toFixed(5), +way.geometry[i].lon.toFixed(5)]);
+      }
+      var last=way.geometry[way.geometry.length-1];
+      row.push([+last.lat.toFixed(5), +last.lon.toFixed(5)]);
+      if(row.length>3) roads.push(row);
+    });
+  }
+  addWays(await overpass(
+    '[out:json][timeout:600];' +
+    'way["highway"~"^(motorway|trunk|primary)(_link)?$"]('+bbox+');' +
+    'out geom;', 'major roads'));
+  $('nRoad').textContent=roads.length.toLocaleString();
+  log('     '+roads.length.toLocaleString()+' major road segments','g');
+  log('');
+
+  /* ── 3. local streets, but only around the devices.
+         Fetching every residential street in a state is hundreds of megabytes
+         and pointless — what matters is the street each camera sits on. ── */
+  if(pts.length){
+    var groups=cluster(pts,0.25);
+    log('3/3  local streets — '+groups.length+' areas where devices actually are','h');
+    log('     one request each, ~2s apart, so we stay inside the rate limit');
+    for(var i=0;i<groups.length;i++){
+      if(stopped){ log('Stopped by you.','e'); return null; }
+      var g=groups[i];
+      var gb=g.s.toFixed(4)+','+g.w.toFixed(4)+','+g.n.toFixed(4)+','+g.e.toFixed(4);
+      var before=roads.length;
+      addWays(await overpass(
+        '[out:json][timeout:300];' +
+        'way["highway"~"^(secondary|tertiary|residential|unclassified)(_link)?$"]('+gb+');' +
+        'out geom;', 'area '+(i+1)+'/'+groups.length));
+      log('     area '+(i+1)+'/'+groups.length+'  ('+g.count+' devices)  +'+
+          (roads.length-before).toLocaleString()+' streets');
+      $('nRoad').textContent=roads.length.toLocaleString();
+      await sleep(2000);
+    }
+    log('');
+  }
+
+  var months=['January','February','March','April','May','June','July',
+              'August','September','October','November','December'];
+  var now=new Date();
+  RESULT={
+    built: now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear(),
+    pts: pts, ops: ops, types: types, roads: roads, roadNames: roadNames
+  };
+  var kb=Math.round(JSON.stringify(RESULT).length/1024);
+  log('Done.  '+pts.length.toLocaleString()+' devices, '+roads.length.toLocaleString()+
+      ' road segments, '+requests+' requests, '+kb.toLocaleString()+' KB','g');
+  log('Press Download, then put '+code+'.json into mapdata/ in the repo.','g');
+  $('dl').disabled=false;
+  return RESULT;
+}
+
+/* ── wiring ── */
+var sel=$('st');
+Object.keys(REGIONS).sort(function(a,b){return REGIONS[a][0]<REGIONS[b][0]?-1:1;})
+  .forEach(function(k){
+    var o=document.createElement('option');
+    o.value=k; o.textContent=REGIONS[k][0]+'  ('+k+')';
+    if(k==='CO') o.selected=true;
+    sel.appendChild(o);
+  });
+
+if(BAD_ORIGIN){
+  $('originwarn').style.display='block';
+  $('go').disabled=true;
+  $('go').title='Serve this page over http(s) first';
+}
+
+$('go').onclick=function(){
+  if(BAD_ORIGIN) return;
+  $('go').disabled=true; $('stop').disabled=false;
+  build(sel.value).catch(function(err){
+    if(String(err.message)!=='stopped'){
+      log('');
+      log('STOPPED: '+err.message,'e');
+      log('Nothing was silently skipped — this is the real reason it could not finish.','e');
+      log('Try again in a few minutes; Overpass load varies a lot through the day.','e');
+    }
+  }).finally(function(){
+    $('go').disabled=false; $('stop').disabled=true;
+  });
+};
+$('stop').onclick=function(){ stopped=true; log('Stopping after this request…','w'); };
+$('dl').onclick=function(){
+  var blob=new Blob([JSON.stringify(RESULT)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=CODE+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
+};
+</script>
+</body>
+</html>
