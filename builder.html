@@ -108,7 +108,7 @@
       <select id="st"></select>
       <button id="go">Build</button>
       <button id="dl" class="ghost" disabled>Download JSON</button>
-      <button id="stop" class="ghost" disabled>Stop</button>
+      <button id="stop" class="ghost" disabled>Stop &amp; keep what I have</button>
     </div>
     <div class="stat" id="stat" style="display:none">
       <div><b id="nDev">0</b><span>devices</span></div>
@@ -330,23 +330,50 @@ async function build(code){
   /* ── 3. local streets, but only around the devices.
          Fetching every residential street in a state is hundreds of megabytes
          and pointless — what matters is the street each camera sits on. ── */
+  /* Everything above is the map. What follows is extra detail, and it is the
+     part Overpass rate-limits hardest — so it is explicitly optional. Areas run
+     busiest-first, so stopping early still leaves you the places that matter.
+     A stop, or a run of failures, finishes the file rather than discarding it. */
   if(pts.length){
     var groups=cluster(pts,0.25);
-    log('3/3  local streets — '+groups.length+' areas where devices actually are','h');
-    log('     one request each, ~2s apart, so we stay inside the rate limit');
+    var covered=0, total=pts.length, misses=0;
+    log('3/3  local streets — '+groups.length+' areas, busiest first','h');
+    log('     OPTIONAL. You already have a working map. Press Stop whenever you','w');
+    log('     like and the file is built from what has arrived so far.','w');
     for(var i=0;i<groups.length;i++){
-      if(stopped){ log('Stopped by you.','e'); return null; }
+      if(stopped){ log('     stopping here, as asked — keeping everything fetched so far','w'); break; }
       var g=groups[i];
       var gb=g.s.toFixed(4)+','+g.w.toFixed(4)+','+g.n.toFixed(4)+','+g.e.toFixed(4);
       var before=roads.length;
-      addWays(await overpass(
-        '[out:json][timeout:300];' +
-        'way["highway"~"^(secondary|tertiary|residential|unclassified)(_link)?$"]('+gb+');' +
-        'out geom;', 'area '+(i+1)+'/'+groups.length));
-      log('     area '+(i+1)+'/'+groups.length+'  ('+g.count+' devices)  +'+
-          (roads.length-before).toLocaleString()+' streets');
-      $('nRoad').textContent=roads.length.toLocaleString();
+      try{
+        addWays(await overpass(
+          '[out:json][timeout:300];' +
+          'way["highway"~"^(secondary|tertiary|residential|unclassified)(_link)?$"]('+gb+');' +
+          'out geom;', 'area '+(i+1)+'/'+groups.length));
+        misses=0;
+        covered+=g.count;
+        log('     area '+(i+1)+'/'+groups.length+'  ('+g.count+' devices)  +'+
+            (roads.length-before).toLocaleString()+' streets   ['+
+            Math.round(covered/total*100)+'% of devices have their streets]');
+        $('nRoad').textContent=roads.length.toLocaleString();
+      }catch(err){
+        if(String(err.message)==='stopped'){
+          log('     stopping here, as asked — keeping everything fetched so far','w'); break;
+        }
+        misses++;
+        log('     area '+(i+1)+' skipped — '+err.message,'e');
+        if(misses>=3){
+          log('     Overpass is refusing repeatedly. Stopping the optional pass here','w');
+          log('     and building the file with what we have. Run it again later if','w');
+          log('     you want the remaining street detail.','w');
+          break;
+        }
+      }
       await sleep(2000);
+    }
+    if(covered<total){
+      log('     street detail covers '+Math.round(covered/total*100)+'% of devices; '+
+          'the rest still plot on major roads','w');
     }
     log('');
   }
@@ -396,7 +423,10 @@ $('go').onclick=function(){
     $('go').disabled=false; $('stop').disabled=true;
   });
 };
-$('stop').onclick=function(){ stopped=true; log('Stopping after this request…','w'); };
+$('stop').onclick=function(){
+  stopped=true;
+  log('Finishing after this request — your file will be built from what arrived.','w');
+};
 $('dl').onclick=function(){
   var blob=new Blob([JSON.stringify(RESULT)],{type:'application/json'});
   var a=document.createElement('a');
