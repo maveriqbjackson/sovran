@@ -795,6 +795,7 @@ $('go').addEventListener('click',function(){
   loadStatic(k).then(function(d){
     rows=expand(d);
     ROADS=d.roads||[]; ROADNAMES=d.roadNames||[];
+    buildRoadIndex();
     var f=$('kind').value;
     if(f!=='all') rows=rows.filter(function(x){ return x.kind===f; });
     if(!rows.length){ fail('Nothing matched that filter in our copy of '+esc(regionName)+'. Try \u201cEverything\u201d.'); return; }
@@ -829,6 +830,7 @@ function render(s,w,n,e){
     if(rl3) rl3.style.display = ROADS.some(function(r){return r[0]===2||r[0]===3;}) ? '' : 'none';
     if(rl2) rl2.style.display = ROADS.some(function(r){return r[0]>=4;}) ? '' : 'none';
     showLayers(layerNotes);
+    fillPanels();
     initMap();
   });
 
@@ -907,6 +909,12 @@ function tally(field,label){
         '<span class="track"><span class="fill" style="width:'+((x[1]/max)*100).toFixed(1)+'%"></span></span></div>';
     }).join('');
   }
+  /* These read view.cities, which only exists once /cities.json has come back.
+     They used to run synchronously, right after the fetch was started — so the
+     town list was always built from an empty array and "Jump to a town" was
+     permanently empty even when the towns loaded fine a moment later.
+     fillPanels() is now called from inside the .then above. */
+  function fillPanels(){
   brief();
   $('ops').innerHTML=bars(tally('op','(no operator recorded)'));
   $('kinds').innerHTML=bars(tally('type','(type not specified)'));
@@ -932,6 +940,7 @@ function tally(field,label){
         if(k<1) requestAnimationFrame(fly);
       })(t0);
     };
+  }
   }
   var src=document.getElementById('src');
   if(src){
@@ -1157,6 +1166,63 @@ function fit(){
   T={k:1,x:0,y:0};
 }
 
+/* ── road spatial index ──────────────────────────────────────────────────
+   drawMap used to transform every point of every segment and only afterwards
+   ask whether any of it was on screen. Zoomed into one city that is roughly
+   three million coordinate transforms per frame, almost all discarded. Each
+   segment now gets a lat/lon bounding box once, bucketed into a grid, so a
+   frame touches only what can actually be visible. ── */
+var RIDX=null, RBOX=null, RSEEN=null, RGEN=0, RCELL=0.08;
+function buildRoadIndex(){
+  /* One grid per road class. Zoomed out, residential streets are not drawn at
+     all, and a per-class grid means the frame never even walks past them —
+     with a single grid we were iterating 102,000 entries to draw 24,000. */
+  RIDX=[{},{},{},{},{}];
+  RBOX=new Float64Array(ROADS.length*4);
+  RSEEN=new Int32Array(ROADS.length); RGEN=0;
+  for(var i=0;i<ROADS.length;i++){
+    var r=ROADS[i], s0=90,w0=180,n0=-90,e0=-180;
+    for(var j=2;j<r.length;j++){
+      var la=r[j][0], lo=r[j][1];
+      if(la<s0)s0=la; if(la>n0)n0=la; if(lo<w0)w0=lo; if(lo>e0)e0=lo;
+    }
+    RBOX[i*4]=s0; RBOX[i*4+1]=w0; RBOX[i*4+2]=n0; RBOX[i*4+3]=e0;
+    var g=RIDX[r[0]]||RIDX[4];
+    var y1=Math.floor(n0/RCELL), x1=Math.floor(e0/RCELL);
+    for(var gy=Math.floor(s0/RCELL); gy<=y1; gy++){
+      for(var gx=Math.floor(w0/RCELL); gx<=x1; gx++){
+        var k=gy+':'+gx; (g[k]||(g[k]=[])).push(i);
+      }
+    }
+  }
+}
+/* Segment ids of one class whose bbox overlaps the view and which are big
+   enough on screen to be worth a path. degPerPx lets a frame drop the
+   thousands of tiny OSM ways that collapse into a single pixel when zoomed
+   out — they cost a full path each and draw nothing a human can see. */
+function roadsInView(cls,s0,w0,n0,e0,degPerPx){
+  if(!RIDX) return [];
+  var g=RIDX[cls]; if(!g) return [];
+  var out=[], y1=Math.floor(n0/RCELL), x1=Math.floor(e0/RCELL);
+  var minDeg=degPerPx*1.4;
+  RGEN++;
+  for(var gy=Math.floor(s0/RCELL); gy<=y1; gy++){
+    for(var gx=Math.floor(w0/RCELL); gx<=x1; gx++){
+      var b=g[gy+':'+gx]; if(!b) continue;
+      for(var i=0;i<b.length;i++){
+        var id=b[i];
+        if(RSEEN[id]===RGEN) continue;
+        RSEEN[id]=RGEN;
+        var bs=RBOX[id*4], bw=RBOX[id*4+1], bn=RBOX[id*4+2], be=RBOX[id*4+3];
+        if(bs>n0||bn<s0||bw>e0||be<w0) continue;
+        if(cls>=1 && (bn-bs)<minDeg && (be-bw)<minDeg) continue;
+        out.push(id);
+      }
+    }
+  }
+  return out;
+}
+
 function px(lon,lat){
   return [ base.ox + (lon-base.w)*Math.PI/180*base.scale*T.k + T.x,
            base.oy + (base.mTop-mercY(lat))*base.scale*T.k + T.y ];
@@ -1217,53 +1283,106 @@ function drawMap(){
     ];
     var labelled={};
 
-    // two passes: every casing first, then every fill, so roads join cleanly
+    /* What can be seen, in degrees, with a margin so a road entering from
+       off-screen still draws its approach. */
+    var c0=unpx(-60,-60), c1=unpx(W+60,H+60);
+    var vW=Math.min(c0[0],c1[0]), vE=Math.max(c0[0],c1[0]);
+    var vS=Math.min(c0[1],c1[1]), vN=Math.max(c0[1],c1[1]);
+    /* how many degrees of longitude one pixel covers at this zoom */
+    var degPerPx=(vE-vW)/Math.max(1,W+120);
+    var CL=[], ci2;
+    for(ci2=0; ci2<RS.length; ci2++){
+      var f0=Math.min(1,(T.k-RS[ci2].min)/0.85);
+      CL.push(f0>0 ? roadsInView(ci2,vS,vW,vN,vE,degPerPx) : []);
+    }
+    var cand=[];
+    for(ci2=0; ci2<CL.length; ci2++) cand=cand.concat(CL[ci2]);
+
+    /* px(), unrolled. The per-point cost is what decides whether panning holds
+       60fps, so the constant part of the transform is lifted out of the loop. */
+    var AX=base.scale*T.k*Math.PI/180;
+    var AOX=base.ox - base.w*AX + T.x;
+    var BK=base.scale*T.k;
+    var BOY=base.oy + base.mTop*BK + T.y;
+
+    /* At low zoom a segment's intermediate points land inside the same pixel,
+       so stepping over them is free detail to give up. */
+    var step=T.k<1.6?3:(T.k<4?2:1);
+    var scale=Math.min(2.6,Math.pow(T.k,0.42));
+    ctx.lineCap='round'; ctx.lineJoin='round';
+
+    /* One path per class per pass. Every segment of a class shares a colour and
+       a width, so they can all be subpaths of a single path — twenty thousand
+       stroke calls a frame become ten. Casings all go down first so junctions
+       join cleanly. Detail arrives over a zoom band rather than appearing at
+       once, because a hard cutoff reads as the map glitching. */
     [0,1].forEach(function(pass){
-      ROADS.forEach(function(r){
-        var cls=r[0], st=RS[cls]||RS[4];
-        if(T.k<st.min) return;
-        var on=false;
+      for(var cls=0; cls<RS.length; cls++){
+        var ids=CL[cls]; if(!ids.length) continue;
+        var st=RS[cls];
+        var fade=Math.min(1,(T.k-st.min)/0.85);
+        if(fade<=0) continue;
         ctx.beginPath();
-        for(var i2=2;i2<r.length;i2++){
-          var q=px(r[i2][1],r[i2][0]);
-          if(i2===2) ctx.moveTo(q[0],q[1]); else ctx.lineTo(q[0],q[1]);
-          if(q[0]>-40&&q[0]<W+40&&q[1]>-40&&q[1]<H+40) on=true;
-        }
-        if(!on) return;
-        var scale=Math.min(2.6,Math.pow(T.k,0.42));
-        ctx.lineCap='round'; ctx.lineJoin='round';
-        if(pass===0){
-          ctx.strokeStyle=st.cas; ctx.lineWidth=(st.w+1.5)*scale;
-        } else {
-          ctx.strokeStyle=st.c; ctx.lineWidth=st.w*scale;
-          if(cls>=4) ctx.globalAlpha=Math.min(1,(T.k-st.min)/2+.35);
-        }
-        ctx.stroke(); ctx.globalAlpha=1;
-        if(pass===1 && T.k>=st.label){
-          var nm=ROADNAMES[r[1]];
-          if(nm && !labelled[nm]){
-            var mid=r[Math.floor(r.length/2)];
-            var mq=px(mid[1],mid[0]);
-            if(mq[0]>46&&mq[0]<W-46&&mq[1]>14&&mq[1]<H-14){
-              labelled[nm]=1;
-              pending.push([nm,mq[0],mq[1],cls]);
-            }
+        for(var ci=0; ci<ids.length; ci++){
+          var r=ROADS[ids[ci]], last=r.length-1;
+          for(var i2=2;i2<=last;i2+=step){
+            var pnt=r[i2];
+            var qx=pnt[1]*AX+AOX, qy=BOY-mercY(pnt[0])*BK;
+            if(i2===2) ctx.moveTo(qx,qy); else ctx.lineTo(qx,qy);
+          }
+          if((last-2)%step!==0){
+            var lp=r[last];
+            ctx.lineTo(lp[1]*AX+AOX, BOY-mercY(lp[0])*BK);
           }
         }
-      });
+        if(pass===0){
+          ctx.strokeStyle=st.cas; ctx.lineWidth=(st.w+1.5)*scale;
+          ctx.globalAlpha=fade;
+        } else {
+          ctx.strokeStyle=st.c; ctx.lineWidth=st.w*scale;
+          ctx.globalAlpha=cls>=4 ? fade*Math.min(1,(T.k-st.min)/2+.35) : fade;
+        }
+        ctx.stroke(); ctx.globalAlpha=1;
+      }
     });
+
+    /* Street names, once, after the geometry. */
+    for(var li=0; li<cand.length; li++){
+      var lr=ROADS[cand[li]], lcls=lr[0], lst=RS[lcls]||RS[4];
+      if(T.k<lst.label) continue;
+      var nm=ROADNAMES[lr[1]];
+      if(!nm || labelled[nm]) continue;
+      var mid=lr[Math.floor(lr.length/2)];
+      var mq=px(mid[1],mid[0]);
+      if(mq[0]>46&&mq[0]<W-46&&mq[1]>14&&mq[1]<H-14){
+        labelled[nm]=1;
+        pending.push([nm,mq[0],mq[1],lcls]);
+      }
+    }
 
   }
 
   // devices
+  /* Same batching as the roads: one path per colour instead of one per dot.
+     Plate readers are drawn last so they sit on top of the rest. */
   var C={alpr:'#FF9E5E',camera:'#6BCBE8',other:'#A8B0C8'};
+  var ALPHA={alpr:0.92,camera:0.66,other:0.66};
   var r=Math.max(1.6,Math.min(5,2.1*Math.sqrt(T.k)));
-  rows.forEach(function(p){
-    var q=px(p.lon,p.lat);
-    if(q[0]<-20||q[0]>W+20||q[1]<-20||q[1]>H+20) return;
-    ctx.beginPath(); ctx.arc(q[0],q[1],r,0,6.2832);
-    ctx.fillStyle=C[p.kind]||C.other;
-    ctx.globalAlpha=p.kind==='alpr'?0.92:0.66;
+  var DAX=base.scale*T.k*Math.PI/180, DOX=base.ox-base.w*DAX+T.x;
+  var DBK=base.scale*T.k, DOY=base.oy+base.mTop*DBK+T.y;
+  ['camera','other','alpr'].forEach(function(kind){
+    var any=false;
+    ctx.beginPath();
+    for(var di=0; di<rows.length; di++){
+      var p=rows[di];
+      if((p.kind||'other')!==kind) continue;
+      var qx=p.lon*DAX+DOX, qy=DOY-mercY(p.lat)*DBK;
+      if(qx<-20||qx>W+20||qy<-20||qy>H+20) continue;
+      ctx.moveTo(qx+r,qy); ctx.arc(qx,qy,r,0,6.2832);
+      any=true;
+    }
+    if(!any) return;
+    ctx.fillStyle=C[kind]; ctx.globalAlpha=ALPHA[kind];
     ctx.fill(); ctx.globalAlpha=1;
   });
 
@@ -1415,6 +1534,7 @@ function bindMap(){
     var p=rel(e);
     var d=e.deltaMode===1 ? e.deltaY*16 : e.deltaY;
     var f=Math.exp(-Math.max(-90,Math.min(90,d))*0.0035);
+    stopGlide();
     pendingZoom=[p[0],p[1],f];
     if(!wheelRaf) wheelRaf=requestAnimationFrame(function(){
       wheelRaf=0;
@@ -1422,16 +1542,45 @@ function bindMap(){
     });
   },{passive:false});
 
+  /* ── momentum ──────────────────────────────────────────────────────────
+     A map that stops dead the instant you lift your finger feels like a
+     document, not a map. Velocity is tracked across the last few pointer
+     events and decays after release, so a flick coasts and settles. ── */
+  var vx=0, vy=0, vT=0, glideRaf=0;
+  function stopGlide(){ if(glideRaf){ cancelAnimationFrame(glideRaf); glideRaf=0; } vx=vy=0; }
+  function startGlide(){
+    stopGlide();
+    var last=performance.now();
+    glideRaf=requestAnimationFrame(function step(now){
+      var dt=Math.min(34, now-last); last=now;
+      var decay=Math.pow(0.935, dt/16.67);
+      vx*=decay; vy*=decay;
+      T.x+=vx*dt; T.y+=vy*dt;
+      drawMap();
+      glideRaf = (Math.abs(vx)>0.012||Math.abs(vy)>0.012)
+        ? requestAnimationFrame(step) : 0;
+    });
+  }
+
   cv.addEventListener('pointerdown',function(e){
+    stopGlide();
     dragging=true; moved=false; cv.classList.add('drag');
     var p=rel(e); lx=p[0]; ly=p[1];
+    vT=performance.now();
     cv.setPointerCapture(e.pointerId);
   });
   cv.addEventListener('pointermove',function(e){
     var p=rel(e);
     if(dragging){
-      T.x+=p[0]-lx; T.y+=p[1]-ly; lx=p[0]; ly=p[1];
+      var dx=p[0]-lx, dy=p[1]-ly;
+      T.x+=dx; T.y+=dy; lx=p[0]; ly=p[1];
       moved=true;
+      var now=performance.now(), dt=now-vT;
+      if(dt>0&&dt<120){            // smooth the estimate; one stray event should not fling it
+        vx=vx*0.72+(dx/dt)*0.28;
+        vy=vy*0.72+(dy/dt)*0.28;
+      }
+      vT=now;
       // Coalesce redraws to one per animation frame. Panning was redrawing on
       // every pointer event, which is why it felt like it was catching.
       if(!raf) raf=requestAnimationFrame(function(){ raf=0; drawMap(); });
@@ -1439,7 +1588,26 @@ function bindMap(){
   });
   cv.addEventListener('pointerup',function(e){
     dragging=false; cv.classList.remove('drag');
-    if(!moved){ var p=rel(e); openDetail(p[0],p[1]); }
+    if(!moved){ stopGlide(); var p=rel(e); openDetail(p[0],p[1]); return; }
+    // a flick only counts if the pointer was still moving when it left
+    if(performance.now()-vT < 110 && (Math.abs(vx)>0.045||Math.abs(vy)>0.045)) startGlide();
+    else stopGlide();
+  });
+
+  /* Double-click zooms toward the cursor over a few frames rather than
+     jumping — the jump is the single most jarring thing a map can do. */
+  cv.addEventListener('dblclick',function(e){
+    e.preventDefault(); stopGlide();
+    var p=rel(e), anchor=unpx(p[0],p[1]);
+    var k0=T.k, k1=Math.max(1,Math.min(60,T.k*2)), t0=performance.now();
+    (function ease(now){
+      var u=Math.min(1,(now-t0)/320), g=1-Math.pow(1-u,3);
+      T.k=k0+(k1-k0)*g;
+      var a=px(anchor[0],anchor[1]);
+      T.x+=p[0]-a[0]; T.y+=p[1]-a[1];
+      drawMap();
+      if(u<1) requestAnimationFrame(ease);
+    })(t0);
   });
   cv.addEventListener('pointerleave',function(){
     dragging=false; cv.classList.remove('drag');
