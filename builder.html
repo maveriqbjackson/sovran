@@ -80,14 +80,33 @@
   .note{font-size:.84rem;color:var(--dim);margin-top:14px;line-height:1.55}
   code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;
     background:var(--void);border:1px solid var(--line);padding:1px 6px}
+  .states{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));
+    gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:14px;
+    max-height:280px;overflow:auto}
+  .states label{display:flex;align-items:center;gap:9px;background:var(--surface);
+    padding:9px 12px;margin:0;cursor:pointer;font-family:inherit;font-size:.82rem;
+    letter-spacing:0;text-transform:none;color:var(--bone)}
+  .states label:hover{background:#111B2E}
+  .states input{accent-color:#FFCB6B;width:15px;height:15px;flex:none}
+  .states label.done{color:var(--dim)}
+  .states label.done::after{content:'built';margin-left:auto;font-size:.62rem;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--clear)}
+  .mini{background:none;border:1px solid var(--line);color:var(--ash);
+    padding:8px 14px;font-size:.7rem;letter-spacing:.1em}
+  .qbar{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.74rem;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--ice);
+    border-left:2px solid var(--ice);padding:7px 0 7px 12px;margin-bottom:14px;display:none}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>SOVRAN map builder</h1>
-  <p class="sub">Builds one state's <code>mapdata/&lt;CODE&gt;.json</code> by talking to
-  OpenStreetMap directly from this browser. No server in the middle, so nothing can
-  time it out. Expect five to twenty minutes for a busy state — leave the tab open.</p>
+  <p class="sub">Builds <code>mapdata/&lt;CODE&gt;.json</code> for every state you tick, one after another,
+  by talking to OpenStreetMap directly from this browser. No server in the middle, so nothing
+  can time it out, and the request comes from your own connection rather than a datacenter —
+  which is the only reason OpenStreetMap tolerates it. Budget fifteen to twenty-five minutes
+  per busy state and leave the tab open. It writes <code>index.json</code> for you at the end,
+  so there is nothing to hand-edit.</p>
 
   <div id="originwarn" style="display:none;background:linear-gradient(140deg,rgba(255,158,94,.12),transparent 72%);
     border:1px solid rgba(255,158,94,.45);border-left:3px solid var(--alarm);padding:20px 22px;margin-bottom:18px">
@@ -103,11 +122,18 @@
   </div>
 
   <div class="panel">
-    <label for="st">State</label>
+    <label>States to build</label>
+    <div class="row" style="margin-bottom:12px">
+      <button class="mini" id="pTop">Top 10 by population</button>
+      <button class="mini" id="pAll">All 50</button>
+      <button class="mini" id="pMissing">Everything not built yet</button>
+      <button class="mini" id="pNone">Clear</button>
+    </div>
+    <div class="states" id="st"></div>
+    <div class="qbar" id="qbar"></div>
     <div class="row">
-      <select id="st"></select>
-      <button id="go">Build</button>
-      <button id="dl" class="ghost" disabled>Download JSON</button>
+      <button id="go">Build selected</button>
+      <button id="dl" class="ghost" disabled>Re-download last state</button>
       <button id="stop" class="ghost" disabled>Stop &amp; keep what I have</button>
     </div>
     <div class="stat" id="stat" style="display:none">
@@ -254,7 +280,7 @@ async function build(code){
   var r=REGIONS[code], s=r[1], w=r[2], n=r[3], e=r[4];
   var bbox=s+','+w+','+n+','+e;
   stopped=false; requests=0; RESULT=null; CODE=code;
-  LOG.innerHTML=''; $('stat').style.display='grid';
+  $('stat').style.display='grid';
   ['nDev','nAlpr','nRoad','nReq'].forEach(function(i){$(i).textContent='0';});
   $('dl').disabled=true;
 
@@ -378,6 +404,52 @@ async function build(code){
     log('');
   }
 
+  /* ── 4. trim. Step 3 asks for every residential street inside each cluster
+         box, and those boxes are roughly seventeen miles across — so a state
+         comes back with ten times the streets the map can draw. Colorado's first
+         full run was 282,442 segments and 66 MB, which neither GitHub nor
+         Cloudflare Pages will accept. Every major road is kept. A residential
+         street is kept only when a device actually sits on it, which is what
+         step 3 was for in the first place. ── */
+  (function(){
+    var CELL=0.003, R=150, grid={}, before=roads.length;
+    pts.forEach(function(p){
+      var k=Math.floor(p[0]/CELL)+':'+Math.floor(p[1]/CELL);
+      (grid[k]||(grid[k]=[])).push(p);
+    });
+    function near(la,lo){
+      var gy=Math.floor(la/CELL), gx=Math.floor(lo/CELL);
+      var dla=R/111000, dlo=R/(111000*Math.max(0.2,Math.cos(la*Math.PI/180)));
+      for(var y=gy-1;y<=gy+1;y++){ for(var x=gx-1;x<=gx+1;x++){
+        var c=grid[y+':'+x]; if(!c) continue;
+        for(var i=0;i<c.length;i++){
+          if(Math.abs(c[i][0]-la)<=dla && Math.abs(c[i][1]-lo)<=dlo) return true;
+        }
+      }}
+      return false;
+    }
+    var keep=[];
+    for(var i=0;i<roads.length;i++){
+      var r=roads[i];
+      if(r[0]<=3){ keep.push(r); continue; }
+      for(var j=2;j<r.length;j++){ if(near(r[j][0],r[j][1])){ keep.push(r); break; } }
+    }
+    var used={}, nn=[], out=[];
+    keep.forEach(function(r){
+      var ni=r[1];
+      if(ni>=0){ if(used[ni]==null){ used[ni]=nn.length; nn.push(roadNames[ni]); } ni=used[ni]; }
+      out.push([r[0],ni].concat(r.slice(2)));
+    });
+    roads=out; roadNames=nn;
+    if(before-out.length>0){
+      log('     trimmed '+(before-out.length).toLocaleString()+
+          ' residential streets with no device on them','w');
+      log('     '+out.length.toLocaleString()+' segments kept (every major road, plus '+
+          'the streets cameras actually sit on)','g');
+    }
+    $('nRoad').textContent=roads.length.toLocaleString();
+  })();
+
   var months=['January','February','March','April','May','June','July',
               'August','September','October','November','December'];
   var now=new Date();
@@ -393,15 +465,57 @@ async function build(code){
   return RESULT;
 }
 
+/* ── saving ─────────────────────────────────────────────────────────────────
+   Each state is written to disk the moment it finishes rather than at the end.
+   If the queue dies at state 30, you keep the 29 that already landed. ── */
+function saveFile(name,obj){
+  var blob=new Blob([JSON.stringify(obj)],{type:'application/json'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href);},4000);
+}
+
+/* ── the manifest. Read from the live site so it reflects what is actually
+      deployed, then merged with whatever this run produced. You never hand-edit
+      it, which is the step that was always going to get forgotten. ── */
+var LIVE_BUILT=[];
+async function loadManifest(){
+  try{
+    var r=await fetch('mapdata/index.json',{cache:'no-store'});
+    if(!r.ok) throw new Error(r.status);
+    var j=await r.json();
+    LIVE_BUILT=(j&&j.built)||[];
+  }catch(e){ LIVE_BUILT=[]; }
+  paintDone();
+  return LIVE_BUILT;
+}
+function paintDone(){
+  Array.prototype.forEach.call(document.querySelectorAll('#st label'),function(l){
+    l.classList.toggle('done', LIVE_BUILT.indexOf(l.dataset.code)>-1);
+  });
+}
+
 /* ── wiring ── */
+var TOP10=['CA','TX','FL','NY','PA','IL','OH','GA','NC','MI'];
 var sel=$('st');
 Object.keys(REGIONS).sort(function(a,b){return REGIONS[a][0]<REGIONS[b][0]?-1:1;})
   .forEach(function(k){
-    var o=document.createElement('option');
-    o.value=k; o.textContent=REGIONS[k][0]+'  ('+k+')';
-    if(k==='CO') o.selected=true;
-    sel.appendChild(o);
+    var l=document.createElement('label');
+    l.dataset.code=k;
+    var c=document.createElement('input');
+    c.type='checkbox'; c.value=k; c.checked=(k==='CO');
+    l.appendChild(c);
+    l.appendChild(document.createTextNode(REGIONS[k][0]));
+    sel.appendChild(l);
   });
+function boxes(){return Array.prototype.slice.call(sel.querySelectorAll('input'));}
+function pick(fn){ boxes().forEach(function(c){ c.checked=fn(c.value); }); }
+$('pTop').onclick    =function(){ pick(function(k){return TOP10.indexOf(k)>-1;}); };
+$('pAll').onclick    =function(){ pick(function(){return true;}); };
+$('pMissing').onclick=function(){ pick(function(k){return LIVE_BUILT.indexOf(k)===-1;}); };
+$('pNone').onclick   =function(){ pick(function(){return false;}); };
+loadManifest();
 
 if(BAD_ORIGIN){
   $('originwarn').style.display='block';
@@ -409,31 +523,87 @@ if(BAD_ORIGIN){
   $('go').title='Serve this page over http(s) first';
 }
 
+var qstop=false;
+
+async function runQueue(codes){
+  var done=[], failed=[], t0=Date.now();
+  LOG.innerHTML='';
+  $('qbar').style.display='block';
+  log('Queue: '+codes.length+' state'+(codes.length===1?'':'s')+' — '+
+      codes.join(', '),'h');
+  log('Each one is written to your downloads folder the moment it finishes.','w');
+  log('Chrome will ask once whether to allow multiple downloads. Say yes.','w');
+  log('');
+
+  for(var i=0;i<codes.length;i++){
+    if(qstop){ log('Queue stopped, as asked. '+done.length+' state(s) saved.','w'); break; }
+    var code=codes[i];
+    $('qbar').textContent='state '+(i+1)+' of '+codes.length+'  ·  '+REGIONS[code][0]+
+      '  ·  '+done.length+' saved, '+failed.length+' failed';
+    try{
+      var res=await build(code);
+      saveFile(code+'.json', res);
+      done.push(code);
+      log('SAVED  '+code+'.json  ('+Math.round(JSON.stringify(res).length/1024/1024*10)/10+
+          ' MB)','g');
+      if(JSON.stringify(res).length > 25*1024*1024){
+        log('WARNING  '+code+'.json is over 25 MiB. Cloudflare Pages will refuse it.','e');
+        log('         That state needs R2 rather than the repo — tell Claude.','e');
+      }
+    }catch(err){
+      if(String(err.message)==='stopped'){
+        /* a mid-state stop still keeps whatever arrived */
+        if(RESULT){ saveFile(code+'.json',RESULT); done.push(code);
+                    log('SAVED  '+code+'.json (partial, as asked)','w'); }
+        log('Queue stopped during '+code+'.','w');
+        break;
+      }
+      failed.push(code);
+      log('FAILED '+code+' — '+err.message,'e');
+      log('       Moving on. Re-run this state on its own later.','e');
+    }
+    log('');
+    if(i<codes.length-1 && !qstop){ await sleep(5000); }
+  }
+
+  /* manifest, merged with what is already live */
+  var merged={}, all=LIVE_BUILT.concat(done);
+  all.forEach(function(c){ merged[c]=1; });
+  var built=Object.keys(merged).sort();
+  log('─────────────────────────────────────────────','h');
+  log('Finished in '+Math.round((Date.now()-t0)/60000)+' min.  '+
+      done.length+' saved, '+failed.length+' failed.', failed.length?'w':'g');
+  if(done.length){
+    saveFile('index.json',{built:built});
+    log('SAVED  index.json  — built: '+built.join(', '),'g');
+    log('');
+    log('Now drag these into the repo:','h');
+    done.forEach(function(c){ log('   mapdata/'+c+'.json'); });
+    log('   mapdata/index.json   (replace the existing one)');
+    LIVE_BUILT=built; paintDone();
+  }
+  if(failed.length) log('Not built: '+failed.join(', '),'e');
+  $('qbar').style.display='none';
+}
+
 $('go').onclick=function(){
   if(BAD_ORIGIN) return;
+  var codes=boxes().filter(function(c){return c.checked;}).map(function(c){return c.value;});
+  if(!codes.length){ log('Nothing selected.','e'); return; }
+  qstop=false;
   $('go').disabled=true; $('stop').disabled=false;
-  build(sel.value).catch(function(err){
-    if(String(err.message)!=='stopped'){
-      log('');
-      log('STOPPED: '+err.message,'e');
-      log('Nothing was silently skipped — this is the real reason it could not finish.','e');
-      log('Try again in a few minutes; Overpass load varies a lot through the day.','e');
-    }
+  runQueue(codes).catch(function(err){
+    log('');
+    log('QUEUE STOPPED: '+err.message,'e');
   }).finally(function(){
-    $('go').disabled=false; $('stop').disabled=true;
+    $('go').disabled=false; $('stop').disabled=true; $('qbar').style.display='none';
   });
 };
 $('stop').onclick=function(){
-  stopped=true;
-  log('Finishing after this request — your file will be built from what arrived.','w');
+  stopped=true; qstop=true;
+  log('Finishing this request, saving what arrived, then stopping the queue.','w');
 };
-$('dl').onclick=function(){
-  var blob=new Blob([JSON.stringify(RESULT)],{type:'application/json'});
-  var a=document.createElement('a');
-  a.href=URL.createObjectURL(blob); a.download=CODE+'.json';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(function(){URL.revokeObjectURL(a.href);},2000);
-};
+$('dl').onclick=function(){ if(RESULT) saveFile(CODE+'.json',RESULT); };
 </script>
 </body>
 </html>
