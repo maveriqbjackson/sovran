@@ -699,6 +699,10 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 var $=function(i){return document.getElementById(i);};
 var SEL=$('region'), PROG=$('prog'), ERR=$('err'), OUT=$('out');
 var rows=[], regionName='', blocked=false, diag=[], dataAge=null, ROADS=[], ROADNAMES=[], CITIES_DRAWN=0;
+/* Local streets live in separate tile files and are fetched only when someone
+   zooms into the part of the state they cover. A whole state's streets is tens
+   of megabytes; a tile is two, and most visitors never need more than one. */
+var TILES=[], TILEST={}, TILECODE='', DETAIL_K=2.4;
 
 // A blocked request throws a generic TypeError, which is indistinguishable from
 // a network failure. This event tells us which one actually happened.
@@ -794,7 +798,8 @@ $('go').addEventListener('click',function(){
   say('Loading '+regionName+' from this device\u2026');
   loadStatic(k).then(function(d){
     rows=expand(d);
-    ROADS=d.roads||[]; ROADNAMES=d.roadNames||[];
+    ROADS=(d.roads||[]).slice(); ROADNAMES=(d.roadNames||[]).slice();
+    TILES=d.tiles||[]; TILEST={}; TILECODE=SEL.value;
     buildRoadIndex();
     var f=$('kind').value;
     if(f!=='all') rows=rows.filter(function(x){ return x.kind===f; });
@@ -828,7 +833,8 @@ function render(s,w,n,e){
         rl3=document.getElementById('roadleg3');
     if(rl) rl.style.display = ROADS.some(function(r){return r[0]<=1;}) ? '' : 'none';
     if(rl3) rl3.style.display = ROADS.some(function(r){return r[0]===2||r[0]===3;}) ? '' : 'none';
-    if(rl2) rl2.style.display = ROADS.some(function(r){return r[0]>=4;}) ? '' : 'none';
+    if(rl2) rl2.style.display =
+      (TILES.length || ROADS.some(function(r){return r[0]>=4;})) ? '' : 'none';
     showLayers(layerNotes);
     fillPanels();
     initMap();
@@ -889,7 +895,10 @@ function showLayers(notes){
   if(view.outline) ok.push('state outline');
   if(view.cities.length) ok.push(view.cities.length+' towns');
   else notes.push(['towns','none in range \u2014 check that /cities.json is deployed']);
-  if(ROADS.length) ok.push(ROADS.length.toLocaleString()+' road segments');
+  /* Street tiles arrive later, so a fixed total here would be wrong the moment
+     someone zooms in. Report what the base holds and say the rest is coming. */
+  if(ROADS.length) ok.push(ROADS.length.toLocaleString()+' major roads'+
+    (TILES.length ? ' \u00b7 street detail loads as you zoom in' : ''));
   ok.push(rows.length.toLocaleString()+' devices');
 
   var h='<span class="lok">\u2713 drawn: '+ok.join(' \u00b7 ')+'</span>';
@@ -1173,14 +1182,21 @@ function fit(){
    segment now gets a lat/lon bounding box once, bucketed into a grid, so a
    frame touches only what can actually be visible. ── */
 var RIDX=null, RBOX=null, RSEEN=null, RGEN=0, RCELL=0.08;
-function buildRoadIndex(){
+function buildRoadIndex(from){
   /* One grid per road class. Zoomed out, residential streets are not drawn at
      all, and a per-class grid means the frame never even walks past them —
-     with a single grid we were iterating 102,000 entries to draw 24,000. */
-  RIDX=[{},{},{},{},{}];
-  RBOX=new Float64Array(ROADS.length*4);
-  RSEEN=new Int32Array(ROADS.length); RGEN=0;
-  for(var i=0;i<ROADS.length;i++){
+     with a single grid we were iterating 102,000 entries to draw 24,000.
+     Called with a start offset when a street tile arrives, so a new tile is
+     indexed without rebuilding what is already there. */
+  from = from || 0;
+  if(!from){ RIDX=[{},{},{},{},{}]; RGEN=0; }
+  var nb=new Float64Array(ROADS.length*4);
+  if(RBOX && from) nb.set(RBOX.subarray(0, from*4));
+  RBOX=nb;
+  var ns=new Int32Array(ROADS.length);
+  if(RSEEN && from) ns.set(RSEEN.subarray(0, from));
+  RSEEN=ns;
+  for(var i=from;i<ROADS.length;i++){
     var r=ROADS[i], s0=90,w0=180,n0=-90,e0=-180;
     for(var j=2;j<r.length;j++){
       var la=r[j][0], lo=r[j][1];
@@ -1221,6 +1237,38 @@ function roadsInView(cls,s0,w0,n0,e0,degPerPx){
     }
   }
   return out;
+}
+
+/* Ask for any street tile that overlaps what is on screen. Cheap enough to run
+   every frame — a few dozen bbox comparisons — and each tile is requested once. */
+function wantTiles(s0,w0,n0,e0){
+  if(T.k < DETAIL_K || !TILES.length) return;
+  for(var i=0;i<TILES.length;i++){
+    var t=TILES[i];
+    if(TILEST[t[0]]) continue;
+    if(t[1]>n0 || t[3]<s0 || t[2]>e0 || t[4]<w0) continue;
+    loadTile(t[0]);
+  }
+}
+function loadTile(ix){
+  TILEST[ix]=1;
+  fetch('/mapdata/'+TILECODE+'-t'+ix+'.json',{cache:'default'})
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(d){
+      var from=ROADS.length, off=ROADNAMES.length, rs=d.roads||[];
+      ROADNAMES=ROADNAMES.concat(d.roadNames||[]);
+      for(var i=0;i<rs.length;i++){
+        var r=rs[i];
+        if(r[1]>=0) r[1]+=off;    // names are tile-local; shift into the shared list
+        ROADS.push(r);
+      }
+      buildRoadIndex(from);
+      TILEST[ix]=2;
+      var rl2=document.getElementById('roadleg2');
+      if(rl2) rl2.style.display='';
+      drawMap();
+    })
+    .catch(function(){ TILEST[ix]=3; });   // a missing tile is detail, not a failure
 }
 
 function px(lon,lat){
@@ -1297,6 +1345,7 @@ function drawMap(){
     }
     var cand=[];
     for(ci2=0; ci2<CL.length; ci2++) cand=cand.concat(CL[ci2]);
+    wantTiles(vS,vW,vN,vE);
 
     /* px(), unrolled. The per-point cost is what decides whether panning holds
        60fps, so the constant part of the transform is lifted out of the loop. */

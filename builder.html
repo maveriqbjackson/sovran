@@ -151,10 +151,10 @@
   <div class="panel">
     <label>Already built a state that will not upload?</label>
     <p class="note" style="margin:0 0 14px">Drop the oversized <code>&lt;CODE&gt;.json</code>
-    files in here and they are trimmed to fit and handed straight back. Nothing is fetched
-    and nothing is uploaded — the file is read, shrunk and saved inside this page. Every
-    device is kept; only road detail is given up, and the log says exactly how much.
-    Pick several at once.</p>
+    files in here and each is split into a small base file plus street tiles, then handed
+    straight back. Nothing is fetched and nothing is uploaded — the file is read, split and
+    saved inside this page, and <strong>nothing is thrown away</strong>. Pick several at once.
+    Name them after the state (<code>CA.json</code>) so the tiles are named to match.</p>
     <input type="file" id="shrink" accept=".json,application/json" multiple
       style="font:inherit;font-size:.86rem;color:var(--ash);background:var(--void);
              border:1px solid var(--line);padding:12px 14px;width:100%;cursor:pointer">
@@ -198,7 +198,7 @@ var ENDPOINTS=[
   'https://overpass.kumi.systems/api/interpreter',
   'https://overpass.private.coffee/api/interpreter'
 ];
-var ep=0, requests=0, stopped=false, RESULT=null, CODE='';
+var ep=0, requests=0, stopped=false, RESULT=null, SPLIT=null, CODE='';
 
 var $=function(id){return document.getElementById(id);};
 
@@ -263,98 +263,200 @@ async function overpass(query,label){
   }
 }
 
-/* ── trim, then fit ────────────────────────────────────────────────────────
-   Step 3 asks for every residential street inside each cluster box, and those
-   boxes are about seventeen miles across, so a state arrives with ten times
-   the streets the map can draw. Colorado's first full run was 282,442 segments
-   and 66 MB. Neither GitHub's uploader nor Cloudflare Pages accepts a single
-   file over 25 MiB, so the data is trimmed, measured, and trimmed harder until
-   it fits — and every step says what it gave up.
+/* ── base + tiles ──────────────────────────────────────────────────────────
+   A finished state is too big for one file: Colorado is 66 MB, California more,
+   and nothing over 25 MiB can go in the repo or onto Cloudflare Pages. Trimming
+   it down works but costs exactly the states with the most cameras their street
+   detail, which is backwards.
 
-   This is a plain function over a finished payload, not part of the download,
-   so a file built before this existed can be dropped in and shrunk without
-   fetching anything again. ── */
-var FIT = 23 * 1024 * 1024;              // headroom under the 25 MiB ceiling
+   So a state is split instead:
 
-function fitPayload(d){
-  var pts=d.pts||[], roads0=d.roads||[], names0=d.roadNames||[];
+     XX.json       devices + every major road. Small, loads at once, and is all
+                   the map needs until someone zooms in.
+     XX-tN.json    local streets, cut into tiles by a quadtree so each file stays
+                   a few MB. The map fetches a tile only when you zoom into the
+                   part of the state it covers.
 
-  function trimTo(radius, thin){
-    /* radius: keep a residential street only when a device sits within this
-       many metres of it; 0 drops residential entirely.
-       thin:   keep every Nth coordinate of a road; 1 leaves geometry alone. */
-    var CELL=0.003, grid={};
-    pts.forEach(function(p){
-      var k=Math.floor(p[0]/CELL)+':'+Math.floor(p[1]/CELL);
-      (grid[k]||(grid[k]=[])).push(p);
-    });
-    function near(la,lo){
-      var gy=Math.floor(la/CELL), gx=Math.floor(lo/CELL);
-      var dla=radius/111000, dlo=radius/(111000*Math.max(0.2,Math.cos(la*Math.PI/180)));
-      for(var y=gy-1;y<=gy+1;y++){ for(var x=gx-1;x<=gx+1;x++){
-        var c=grid[y+':'+x]; if(!c) continue;
-        for(var i=0;i<c.length;i++){
-          if(Math.abs(c[i][0]-la)<=dla && Math.abs(c[i][1]-lo)<=dlo) return true;
-        }
-      }}
-      return false;
+   Nothing is thrown away, no file approaches the ceiling, and a phone downloads
+   two megabytes instead of twenty to look at its own town. ── */
+var BASE_MAX = 20 * 1024 * 1024;     // headroom under the 25 MiB ceiling
+var TILE_MAX =  3 * 1024 * 1024;     // a tile a phone can fetch without noticing
+
+function reindex(list, names){
+  /* A tile carries only the street names its own roads use. */
+  var used={}, nn=[], out=[];
+  for(var i=0;i<list.length;i++){
+    var r=list[i], ni=r[1];
+    if(ni>=0){ if(used[ni]==null){ used[ni]=nn.length; nn.push(names[ni]); } ni=used[ni]; }
+    out.push([r[0],ni].concat(r.slice(2)));
+  }
+  return {roads:out, roadNames:nn};
+}
+
+function thin(list, every){
+  if(every<=1) return list;
+  var out=[];
+  for(var i=0;i<list.length;i++){
+    var r=list[i], row=[r[0],r[1]], j;
+    for(j=2;j<r.length;j+=every) row.push(r[j]);
+    var lastp=r[r.length-1];
+    if(row[row.length-1]!==lastp) row.push(lastp);
+    if(row.length>3) out.push(row);
+  }
+  return out;
+}
+
+function extentOf(list){
+  var s=90,w=180,n=-90,e=-180;
+  for(var i=0;i<list.length;i++){
+    var r=list[i];
+    for(var j=2;j<r.length;j++){
+      var la=r[j][0], lo=r[j][1];
+      if(la<s)s=la; if(la>n)n=la; if(lo<w)w=lo; if(lo>e)e=lo;
     }
-    var keep=[];
-    for(var i=0;i<roads0.length;i++){
-      var r=roads0[i];
-      if(r[0]<=3){ keep.push(r); continue; }
-      if(radius<=0) continue;
-      for(var j=2;j<r.length;j++){ if(near(r[j][0],r[j][1])){ keep.push(r); break; } }
-    }
-    var used={}, nn=[], out=[];
-    keep.forEach(function(r){
-      var ni=r[1];
-      if(ni>=0){ if(used[ni]==null){ used[ni]=nn.length; nn.push(names0[ni]); } ni=used[ni]; }
-      var row=[r[0],ni], j;
-      if(thin>1){
-        for(j=2;j<r.length;j+=thin) row.push(r[j]);
-        var lastp=r[r.length-1];
-        if(row[row.length-1]!==lastp) row.push(lastp);
-      } else {
-        for(j=2;j<r.length;j++) row.push(r[j]);
-      }
-      if(row.length>3) out.push(row);
-    });
-    return {roads:out, roadNames:nn};
+  }
+  return [s,w,n,e];
+}
+
+function quad(list, names, depth, out){
+  /* Each road lands in exactly one tile, chosen by its midpoint, so nothing is
+     duplicated. The stored bbox is the real extent of the roads inside, not the
+     grid square — a road may reach past the line it was sorted by, and the map
+     decides what to fetch from that bbox. */
+  if(!list.length) return;
+  var payload=reindex(list,names);
+  if(JSON.stringify(payload).length<=TILE_MAX || depth>=6 || list.length<=2){
+    out.push({bbox:extentOf(list), data:payload});
+    return;
+  }
+  var ex=extentOf(list), my=(ex[0]+ex[2])/2, mx=(ex[1]+ex[3])/2;
+  var q=[[],[],[],[]];
+  for(var i=0;i<list.length;i++){
+    var r=list[i], m=r[Math.floor(r.length/2)];
+    q[(m[0]>=my?2:0)+(m[1]>=mx?1:0)].push(r);
+  }
+  var moved=0;
+  for(var k=0;k<4;k++) if(q[k].length && q[k].length<list.length) moved++;
+  if(moved<2){                    // refused to divide — take it as it is
+    out.push({bbox:ex, data:payload});
+    return;
+  }
+  for(k=0;k<4;k++) quad(q[k], names, depth+1, out);
+}
+
+function splitPayload(d){
+  var pts=d.pts||[], roads=d.roads||[], names=d.roadNames||[];
+  var major=[], minor=[];
+  for(var i=0;i<roads.length;i++) (roads[i][0]<=3?major:minor).push(roads[i]);
+
+  /* The base must always fit. Thinning a major road's geometry is invisible at
+     the zoom where the base is all you have, so that is what gives first — the
+     roads themselves are never dropped. */
+  var every=1, baseR=reindex(major,names), bytes=0;
+  for(;;){
+    bytes=JSON.stringify({built:d.built,pts:pts,ops:d.ops||[],types:d.types||[],
+                          roads:baseR.roads,roadNames:baseR.roadNames,tiles:[]}).length;
+    if(bytes<=BASE_MAX || every>=5) break;
+    every++;
+    baseR=reindex(thin(major,every),names);
+    log('     base still '+(bytes/1048576).toFixed(1)+' MB — thinning major roads '+every+'x','w');
   }
 
-  /* Order matters. Thinning a road's geometry 2x is invisible at the zooms this
-     map draws — the renderer already skips points when zoomed out. Losing a
-     whole street is real information. So thin first, drop later. */
-  var PLAN=[[150,1],[150,2],[90,2],[50,2],[0,2],[0,3],[0,4]];
-  var chosen=null, bytes=0, pi;
-  for(pi=0; pi<PLAN.length; pi++){
-    var t=trimTo(PLAN[pi][0], PLAN[pi][1]);
-    bytes=JSON.stringify({built:'x',pts:pts,ops:d.ops||[],types:d.types||[],
-                          roads:t.roads,roadNames:t.roadNames}).length;
-    chosen=t;
-    if(bytes<=FIT){
-      if(pi===0){
-        log('     trimmed '+(roads0.length-t.roads.length).toLocaleString()+
-            ' residential streets with no device on them','w');
-      } else {
-        log('     fitted by keeping '+
-            (PLAN[pi][0]?'streets within '+PLAN[pi][0]+'m of a device':'major roads only')+
-            (PLAN[pi][1]>1?' and thinning geometry '+PLAN[pi][1]+'x':''),'w');
-      }
-      break;
-    }
-    log('     '+(bytes/1048576).toFixed(1)+' MB — over the 23 MiB budget '+
-        '(25 MiB is the hard ceiling), tightening','w');
+  var tiles=[];
+  quad(minor, names, 0, tiles);
+
+  var manifest=tiles.map(function(t,ix){
+    return [ix, t.bbox[0], t.bbox[1], t.bbox[2], t.bbox[3]];
+  });
+  var base={built:d.built, pts:pts, ops:d.ops||[], types:d.types||[],
+            roads:baseR.roads, roadNames:baseR.roadNames, tiles:manifest};
+
+  var tileBytes=0, biggest=0;
+  tiles.forEach(function(t){
+    var b=JSON.stringify(t.data).length;
+    tileBytes+=b; if(b>biggest) biggest=b;
+  });
+  log('     base '+(JSON.stringify(base).length/1048576).toFixed(1)+' MB — '+
+      baseR.roads.length.toLocaleString()+' major roads, all '+
+      pts.length.toLocaleString()+' devices','g');
+  log('     '+tiles.length+' street tile'+(tiles.length===1?'':'s')+', '+
+      (tileBytes/1048576).toFixed(1)+' MB in total, biggest '+
+      (biggest/1048576).toFixed(1)+' MB — fetched only when zoomed in','g');
+  if(JSON.stringify(base).length>25*1024*1024)
+    log('     BASE IS STILL OVER THE CEILING — tell Claude','e');
+  return {base:base, tiles:tiles};
+}
+
+/* ── one zip per state ──────────────────────────────────────────────────────
+   A state is a base file plus a few dozen tiles, and a browser will not hand you
+   sixty downloads in a row — Chrome quietly drops most of them. So the files are
+   packed into a single zip, written here with no library: deflate comes from the
+   browser's own CompressionStream, and falls back to storing the bytes if that
+   is missing. Unzip it into mapdata/ and everything lands where it belongs. ── */
+var CRCT=(function(){
+  var t=new Uint32Array(256);
+  for(var i=0;i<256;i++){ var c=i;
+    for(var k=0;k<8;k++) c = (c&1) ? (0xEDB88320^(c>>>1)) : (c>>>1);
+    t[i]=c>>>0; }
+  return t;
+})();
+function crc32(u8){
+  var c=0xFFFFFFFF;
+  for(var i=0;i<u8.length;i++) c = CRCT[(c^u8[i])&0xFF] ^ (c>>>8);
+  return (c^0xFFFFFFFF)>>>0;
+}
+async function deflateRaw(u8){
+  if(typeof CompressionStream==='undefined') return null;
+  try{
+    var st=new Blob([u8]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+    return new Uint8Array(await new Response(st).arrayBuffer());
+  }catch(e){ return null; }
+}
+async function makeZip(entries){
+  var enc=new TextEncoder(), parts=[], central=[], offset=0, i;
+  for(i=0;i<entries.length;i++){
+    var name=enc.encode(entries[i].name), raw=entries[i].bytes;
+    var crc=crc32(raw), method=8;
+    var body=await deflateRaw(raw);
+    if(!body || body.length>=raw.length){ body=raw; method=0; }
+    var lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true); lh.setUint16(4,20,true);
+    lh.setUint16(8,method,true);
+    lh.setUint32(14,crc,true); lh.setUint32(18,body.length,true);
+    lh.setUint32(22,raw.length,true); lh.setUint16(26,name.length,true);
+    parts.push(new Uint8Array(lh.buffer), name, body);
+    var ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true); ch.setUint16(4,20,true); ch.setUint16(6,20,true);
+    ch.setUint16(10,method,true);
+    ch.setUint32(16,crc,true); ch.setUint32(20,body.length,true);
+    ch.setUint32(24,raw.length,true); ch.setUint16(28,name.length,true);
+    ch.setUint32(42,offset,true);
+    central.push(new Uint8Array(ch.buffer), name);
+    offset += 30 + name.length + body.length;
   }
-  log('     '+chosen.roads.length.toLocaleString()+' segments kept, '+
-      (bytes/1048576).toFixed(1)+' MB', bytes<=FIT?'g':'e');
-  if(bytes>FIT){
-    log('     STILL over the ceiling with major roads only and geometry thinned.','e');
-    log('     Devices are all intact — the roads are what will not fit.','e');
-  }
-  return {built:d.built, pts:pts, ops:d.ops||[], types:d.types||[],
-          roads:chosen.roads, roadNames:chosen.roadNames};
+  var cdLen=0; central.forEach(function(p){ cdLen+=p.length; });
+  var eo=new DataView(new ArrayBuffer(22));
+  eo.setUint32(0,0x06054b50,true);
+  eo.setUint16(8,entries.length,true); eo.setUint16(10,entries.length,true);
+  eo.setUint32(12,cdLen,true); eo.setUint32(16,offset,true);
+  return new Blob(parts.concat(central,[new Uint8Array(eo.buffer)]),{type:'application/zip'});
+}
+
+async function saveState(code, split){
+  var enc=new TextEncoder(), entries=[
+    {name:code+'.json', bytes:enc.encode(JSON.stringify(split.base))}
+  ];
+  split.tiles.forEach(function(t,ix){
+    entries.push({name:code+'-t'+ix+'.json', bytes:enc.encode(JSON.stringify(t.data))});
+  });
+  var zip=await makeZip(entries);
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(zip); a.download=code+'-mapdata.zip';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 8000);
+  log('     packed '+entries.length+' files into '+code+'-mapdata.zip  ('+
+      (zip.size/1048576).toFixed(1)+' MB)','g');
+  return entries.length;
 }
 
 /* ── classification, copied from map.html so the two agree ── */
@@ -386,7 +488,7 @@ function cluster(pts,deg){
 async function build(code){
   var r=REGIONS[code], s=r[1], w=r[2], n=r[3], e=r[4];
   var bbox=s+','+w+','+n+','+e;
-  stopped=false; requests=0; RESULT=null; CODE=code;
+  stopped=false; requests=0; RESULT=null; SPLIT=null; CODE=code;
   $('stat').style.display='grid';
   ['nDev','nAlpr','nRoad','nReq'].forEach(function(i){$(i).textContent='0';});
   $('dl').disabled=true;
@@ -511,24 +613,19 @@ async function build(code){
     log('');
   }
 
-  var fitted = fitPayload({pts:pts, ops:ops, types:types,
-                           roads:roads, roadNames:roadNames});
-  roads=fitted.roads; roadNames=fitted.roadNames;
-  $('nRoad').textContent=roads.length.toLocaleString();
-
   var months=['January','February','March','April','May','June','July',
               'August','September','October','November','December'];
   var now=new Date();
-  RESULT={
-    built: now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear(),
-    pts: pts, ops: ops, types: types, roads: roads, roadNames: roadNames
-  };
-  var kb=Math.round(JSON.stringify(RESULT).length/1024);
+  var stamp=now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
+
+  SPLIT = splitPayload({built:stamp, pts:pts, ops:ops, types:types,
+                        roads:roads, roadNames:roadNames});
+  RESULT = SPLIT.base;
+
   log('Done.  '+pts.length.toLocaleString()+' devices, '+roads.length.toLocaleString()+
-      ' road segments, '+requests+' requests, '+kb.toLocaleString()+' KB','g');
-  log('Press Download, then put '+code+'.json into mapdata/ in the repo.','g');
+      ' road segments, '+requests+' requests.','g');
   $('dl').disabled=false;
-  return RESULT;
+  return SPLIT;
 }
 
 /* ── saving ─────────────────────────────────────────────────────────────────
@@ -608,19 +705,15 @@ async function runQueue(codes){
       '  ·  '+done.length+' saved, '+failed.length+' failed';
     try{
       var res=await build(code);
-      saveFile(code+'.json', res);
+      var n=await saveState(code, res);
       done.push(code);
-      log('SAVED  '+code+'.json  ('+Math.round(JSON.stringify(res).length/1024/1024*10)/10+
-          ' MB)','g');
-      if(JSON.stringify(res).length > 25*1024*1024){
-        log('WARNING  '+code+'.json is still over 25 MiB after every trim.','e');
-        log('         Cloudflare Pages will refuse it — tell Claude.','e');
-      }
+      log('SAVED  '+n+' file'+(n===1?'':'s')+':  '+code+'.json'+
+          (n>1?' + '+(n-1)+' street tile'+(n===2?'':'s'):''),'g');
     }catch(err){
       if(String(err.message)==='stopped'){
         /* a mid-state stop still keeps whatever arrived */
-        if(RESULT){ saveFile(code+'.json',RESULT); done.push(code);
-                    log('SAVED  '+code+'.json (partial, as asked)','w'); }
+        if(SPLIT){ await saveState(code,SPLIT); done.push(code);
+                   log('SAVED  '+code+' (partial, as asked)','w'); }
         log('Queue stopped during '+code+'.','w');
         break;
       }
@@ -669,7 +762,8 @@ $('stop').onclick=function(){
   stopped=true; qstop=true;
   log('Finishing this request, saving what arrived, then stopping the queue.','w');
 };
-$('dl').onclick=function(){ if(RESULT) saveFile(CODE+'.json',RESULT); };
+$('dl').onclick=function(){ if(SPLIT) saveState(CODE,SPLIT); };
+
 
 /* ── shrink an existing file ────────────────────────────────────────────────
    The trim is just a function over a finished payload, so a state built before
@@ -697,9 +791,19 @@ $('shrink').onchange=function(){
         log(f.name+'   '+(f.size/1048576).toFixed(1)+' MB in — '+
             d.pts.length.toLocaleString()+' devices, '+
             d.roads.length.toLocaleString()+' segments','h');
-        var out=fitPayload(d);
-        saveFile(f.name, out);
-        log('SAVED  '+f.name,'g');
+        var stem=f.name.replace(/\.json$/i,'').toUpperCase();
+        var code=null;
+        if(/^[A-Z]{2}$/.test(stem) && REGIONS[stem]) code=stem;
+        else { for(var kk in REGIONS){ if(stem.indexOf(kk)>-1){ code=kk; break; } } }
+        if(!code){
+          log(f.name+': cannot tell which state this is. Rename it to its code, '+
+              'like CA.json, and drop it again.','e');
+          next(i+1); return;
+        }
+        if(code!==stem) log('     read as '+code+' ('+REGIONS[code][0]+')','w');
+        var sp=splitPayload(d);
+        saveState(code, sp).then(function(){ next(i+1); });
+        return;
       }catch(err){
         log(f.name+': could not use this file — '+err.message,'e');
       }
