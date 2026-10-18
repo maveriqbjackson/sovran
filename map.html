@@ -2,6 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<!-- ===========================================================
+     SOVRAN map  ·  v4  ·  18 October 2026  ·  base + street tiles
+
+     v1  single file per state
+     v2  spatial index, viewport culling, momentum panning
+     v3  town dropdown fixed (it was filled before cities.json arrived)
+     v4  loads mapdata/<CODE>.json, then fetches <CODE>-tN.json street
+         tiles only for the area on screen, once zoomed past DETAIL_K
+
+     Deliberately a comment and not something on the page — visitors do not
+     need a build number. View source, or check the console line below, to
+     confirm which copy is live.
+     =========================================================== -->
+<script>console.log("SOVRAN map v4 \u00b7 18 October 2026 \u00b7 base + street tiles");</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Map — SOVRAN</title>
 <meta name="description" content="Plate readers, cameras, and public surveillance mapped from a public database. No location permission, no address search, no map tiles.">

@@ -93,6 +93,10 @@
     letter-spacing:.12em;text-transform:uppercase;color:var(--clear)}
   .mini{background:none;border:1px solid var(--line);color:var(--ash);
     padding:8px 14px;font-size:.7rem;letter-spacing:.1em}
+  .ver{display:inline-block;vertical-align:middle;margin-left:12px;
+    font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.62rem;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--gold);
+    border:1px solid rgba(255,203,107,.42);padding:4px 9px;white-space:nowrap}
   .qbar{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.74rem;
     letter-spacing:.08em;text-transform:uppercase;color:var(--ice);
     border-left:2px solid var(--ice);padding:7px 0 7px 12px;margin-bottom:14px;display:none}
@@ -100,7 +104,7 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>SOVRAN map builder</h1>
+  <h1>SOVRAN map builder<span class="ver" id="ver"></span></h1>
   <p class="sub">Builds <code>mapdata/&lt;CODE&gt;.json</code> for every state you tick, one after another,
   by talking to OpenStreetMap directly from this browser. No server in the middle, so nothing
   can time it out, and the request comes from your own connection rather than a datacenter —
@@ -163,6 +167,21 @@
 </div>
 
 <script>
+/* ── version ───────────────────────────────────────────────────────────────
+   Shown beside the title, written into the tab name, and printed as the first
+   line of every run. If a log does not start with the version you expect, the
+   page you are looking at is a cached or older copy — hard-refresh before
+   trusting anything below it.
+
+   v1  one state at a time
+   v2  multi-state queue, writes index.json for you
+   v3  trimmed oversized states down to fit
+   v4  splits a state into a small base plus street tiles, packed as one zip
+   ── */
+var BUILDER_VERSION = 'v4';
+var BUILDER_DATE    = '18 October 2026';
+var BUILDER_NOTE    = 'base + street tiles';
+
 /* ── the same bounding boxes map.html uses, so the data lines up exactly ── */
 var REGIONS={"AL":["Alabama",30.14,-88.48,35.01,-84.86],"AK":["Alaska",51,-172,71.5,-129],
 "AZ":["Arizona",31.33,-114.82,37.01,-109.04],"AR":["Arkansas",33.0,-94.62,36.5,-89.64],
@@ -680,6 +699,10 @@ $('pMissing').onclick=function(){ pick(function(k){return LIVE_BUILT.indexOf(k)=
 $('pNone').onclick   =function(){ pick(function(){return false;}); };
 loadManifest();
 
+$('ver').textContent = BUILDER_VERSION+'  \u00b7  '+BUILDER_DATE;
+$('ver').title = BUILDER_NOTE;
+document.title = 'SOVRAN map builder '+BUILDER_VERSION;
+
 if(BAD_ORIGIN){
   $('originwarn').style.display='block';
   $('go').disabled=true;
@@ -691,6 +714,9 @@ var qstop=false;
 async function runQueue(codes){
   var done=[], failed=[], t0=Date.now();
   LOG.innerHTML='';
+  log('SOVRAN map builder '+BUILDER_VERSION+'  \u00b7  '+BUILDER_DATE+
+      '  \u00b7  '+BUILDER_NOTE,'h');
+  log('');
   $('qbar').style.display='block';
   log('Queue: '+codes.length+' state'+(codes.length===1?'':'s')+' — '+
       codes.join(', '),'h');
@@ -774,7 +800,10 @@ $('shrink').onchange=function(){
   this.value='';
   if(!files.length) return;
   LOG.innerHTML=''; $('stat').style.display='none'; $('qbar').style.display='none';
-  log('Shrinking '+files.length+' file'+(files.length===1?'':'s')+
+  log('SOVRAN map builder '+BUILDER_VERSION+'  \u00b7  '+BUILDER_DATE+
+      '  \u00b7  '+BUILDER_NOTE,'h');
+  log('');
+  log('Splitting '+files.length+' file'+(files.length===1?'':'s')+
       '. Nothing is fetched and nothing leaves this page.','h');
   (function next(i){
     if(i>=files.length){
