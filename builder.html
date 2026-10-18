@@ -147,6 +147,19 @@
     asks us to wait, we wait and try again rather than firing more requests at it — that
     is the thing the old version got wrong.</p>
   </div>
+
+  <div class="panel">
+    <label>Already built a state that will not upload?</label>
+    <p class="note" style="margin:0 0 14px">Drop the oversized <code>&lt;CODE&gt;.json</code>
+    files in here and they are trimmed to fit and handed straight back. Nothing is fetched
+    and nothing is uploaded — the file is read, shrunk and saved inside this page. Every
+    device is kept; only road detail is given up, and the log says exactly how much.
+    Pick several at once.</p>
+    <input type="file" id="shrink" accept=".json,application/json" multiple
+      style="font:inherit;font-size:.86rem;color:var(--ash);background:var(--void);
+             border:1px solid var(--line);padding:12px 14px;width:100%;cursor:pointer">
+    <div id="slog"></div>
+  </div>
 </div>
 
 <script>
@@ -248,6 +261,100 @@ async function overpass(query,label){
       await sleep(w2);
     }
   }
+}
+
+/* ── trim, then fit ────────────────────────────────────────────────────────
+   Step 3 asks for every residential street inside each cluster box, and those
+   boxes are about seventeen miles across, so a state arrives with ten times
+   the streets the map can draw. Colorado's first full run was 282,442 segments
+   and 66 MB. Neither GitHub's uploader nor Cloudflare Pages accepts a single
+   file over 25 MiB, so the data is trimmed, measured, and trimmed harder until
+   it fits — and every step says what it gave up.
+
+   This is a plain function over a finished payload, not part of the download,
+   so a file built before this existed can be dropped in and shrunk without
+   fetching anything again. ── */
+var FIT = 23 * 1024 * 1024;              // headroom under the 25 MiB ceiling
+
+function fitPayload(d){
+  var pts=d.pts||[], roads0=d.roads||[], names0=d.roadNames||[];
+
+  function trimTo(radius, thin){
+    /* radius: keep a residential street only when a device sits within this
+       many metres of it; 0 drops residential entirely.
+       thin:   keep every Nth coordinate of a road; 1 leaves geometry alone. */
+    var CELL=0.003, grid={};
+    pts.forEach(function(p){
+      var k=Math.floor(p[0]/CELL)+':'+Math.floor(p[1]/CELL);
+      (grid[k]||(grid[k]=[])).push(p);
+    });
+    function near(la,lo){
+      var gy=Math.floor(la/CELL), gx=Math.floor(lo/CELL);
+      var dla=radius/111000, dlo=radius/(111000*Math.max(0.2,Math.cos(la*Math.PI/180)));
+      for(var y=gy-1;y<=gy+1;y++){ for(var x=gx-1;x<=gx+1;x++){
+        var c=grid[y+':'+x]; if(!c) continue;
+        for(var i=0;i<c.length;i++){
+          if(Math.abs(c[i][0]-la)<=dla && Math.abs(c[i][1]-lo)<=dlo) return true;
+        }
+      }}
+      return false;
+    }
+    var keep=[];
+    for(var i=0;i<roads0.length;i++){
+      var r=roads0[i];
+      if(r[0]<=3){ keep.push(r); continue; }
+      if(radius<=0) continue;
+      for(var j=2;j<r.length;j++){ if(near(r[j][0],r[j][1])){ keep.push(r); break; } }
+    }
+    var used={}, nn=[], out=[];
+    keep.forEach(function(r){
+      var ni=r[1];
+      if(ni>=0){ if(used[ni]==null){ used[ni]=nn.length; nn.push(names0[ni]); } ni=used[ni]; }
+      var row=[r[0],ni], j;
+      if(thin>1){
+        for(j=2;j<r.length;j+=thin) row.push(r[j]);
+        var lastp=r[r.length-1];
+        if(row[row.length-1]!==lastp) row.push(lastp);
+      } else {
+        for(j=2;j<r.length;j++) row.push(r[j]);
+      }
+      if(row.length>3) out.push(row);
+    });
+    return {roads:out, roadNames:nn};
+  }
+
+  /* Order matters. Thinning a road's geometry 2x is invisible at the zooms this
+     map draws — the renderer already skips points when zoomed out. Losing a
+     whole street is real information. So thin first, drop later. */
+  var PLAN=[[150,1],[150,2],[90,2],[50,2],[0,2],[0,3],[0,4]];
+  var chosen=null, bytes=0, pi;
+  for(pi=0; pi<PLAN.length; pi++){
+    var t=trimTo(PLAN[pi][0], PLAN[pi][1]);
+    bytes=JSON.stringify({built:'x',pts:pts,ops:d.ops||[],types:d.types||[],
+                          roads:t.roads,roadNames:t.roadNames}).length;
+    chosen=t;
+    if(bytes<=FIT){
+      if(pi===0){
+        log('     trimmed '+(roads0.length-t.roads.length).toLocaleString()+
+            ' residential streets with no device on them','w');
+      } else {
+        log('     fitted by keeping '+
+            (PLAN[pi][0]?'streets within '+PLAN[pi][0]+'m of a device':'major roads only')+
+            (PLAN[pi][1]>1?' and thinning geometry '+PLAN[pi][1]+'x':''),'w');
+      }
+      break;
+    }
+    log('     '+(bytes/1048576).toFixed(1)+' MB — over the 23 MiB budget '+
+        '(25 MiB is the hard ceiling), tightening','w');
+  }
+  log('     '+chosen.roads.length.toLocaleString()+' segments kept, '+
+      (bytes/1048576).toFixed(1)+' MB', bytes<=FIT?'g':'e');
+  if(bytes>FIT){
+    log('     STILL over the ceiling with major roads only and geometry thinned.','e');
+    log('     Devices are all intact — the roads are what will not fit.','e');
+  }
+  return {built:d.built, pts:pts, ops:d.ops||[], types:d.types||[],
+          roads:chosen.roads, roadNames:chosen.roadNames};
 }
 
 /* ── classification, copied from map.html so the two agree ── */
@@ -404,51 +511,10 @@ async function build(code){
     log('');
   }
 
-  /* ── 4. trim. Step 3 asks for every residential street inside each cluster
-         box, and those boxes are roughly seventeen miles across — so a state
-         comes back with ten times the streets the map can draw. Colorado's first
-         full run was 282,442 segments and 66 MB, which neither GitHub nor
-         Cloudflare Pages will accept. Every major road is kept. A residential
-         street is kept only when a device actually sits on it, which is what
-         step 3 was for in the first place. ── */
-  (function(){
-    var CELL=0.003, R=150, grid={}, before=roads.length;
-    pts.forEach(function(p){
-      var k=Math.floor(p[0]/CELL)+':'+Math.floor(p[1]/CELL);
-      (grid[k]||(grid[k]=[])).push(p);
-    });
-    function near(la,lo){
-      var gy=Math.floor(la/CELL), gx=Math.floor(lo/CELL);
-      var dla=R/111000, dlo=R/(111000*Math.max(0.2,Math.cos(la*Math.PI/180)));
-      for(var y=gy-1;y<=gy+1;y++){ for(var x=gx-1;x<=gx+1;x++){
-        var c=grid[y+':'+x]; if(!c) continue;
-        for(var i=0;i<c.length;i++){
-          if(Math.abs(c[i][0]-la)<=dla && Math.abs(c[i][1]-lo)<=dlo) return true;
-        }
-      }}
-      return false;
-    }
-    var keep=[];
-    for(var i=0;i<roads.length;i++){
-      var r=roads[i];
-      if(r[0]<=3){ keep.push(r); continue; }
-      for(var j=2;j<r.length;j++){ if(near(r[j][0],r[j][1])){ keep.push(r); break; } }
-    }
-    var used={}, nn=[], out=[];
-    keep.forEach(function(r){
-      var ni=r[1];
-      if(ni>=0){ if(used[ni]==null){ used[ni]=nn.length; nn.push(roadNames[ni]); } ni=used[ni]; }
-      out.push([r[0],ni].concat(r.slice(2)));
-    });
-    roads=out; roadNames=nn;
-    if(before-out.length>0){
-      log('     trimmed '+(before-out.length).toLocaleString()+
-          ' residential streets with no device on them','w');
-      log('     '+out.length.toLocaleString()+' segments kept (every major road, plus '+
-          'the streets cameras actually sit on)','g');
-    }
-    $('nRoad').textContent=roads.length.toLocaleString();
-  })();
+  var fitted = fitPayload({pts:pts, ops:ops, types:types,
+                           roads:roads, roadNames:roadNames});
+  roads=fitted.roads; roadNames=fitted.roadNames;
+  $('nRoad').textContent=roads.length.toLocaleString();
 
   var months=['January','February','March','April','May','June','July',
               'August','September','October','November','December'];
@@ -547,8 +613,8 @@ async function runQueue(codes){
       log('SAVED  '+code+'.json  ('+Math.round(JSON.stringify(res).length/1024/1024*10)/10+
           ' MB)','g');
       if(JSON.stringify(res).length > 25*1024*1024){
-        log('WARNING  '+code+'.json is over 25 MiB. Cloudflare Pages will refuse it.','e');
-        log('         That state needs R2 rather than the repo — tell Claude.','e');
+        log('WARNING  '+code+'.json is still over 25 MiB after every trim.','e');
+        log('         Cloudflare Pages will refuse it — tell Claude.','e');
       }
     }catch(err){
       if(String(err.message)==='stopped'){
@@ -604,6 +670,45 @@ $('stop').onclick=function(){
   log('Finishing this request, saving what arrived, then stopping the queue.','w');
 };
 $('dl').onclick=function(){ if(RESULT) saveFile(CODE+'.json',RESULT); };
+
+/* ── shrink an existing file ────────────────────────────────────────────────
+   The trim is just a function over a finished payload, so a state built before
+   the fitting existed does not need rebuilding — twenty minutes of Overpass
+   for something that is a few seconds of arithmetic. ── */
+$('shrink').onchange=function(){
+  var files=Array.prototype.slice.call(this.files||[]);
+  this.value='';
+  if(!files.length) return;
+  LOG.innerHTML=''; $('stat').style.display='none'; $('qbar').style.display='none';
+  log('Shrinking '+files.length+' file'+(files.length===1?'':'s')+
+      '. Nothing is fetched and nothing leaves this page.','h');
+  (function next(i){
+    if(i>=files.length){
+      log('');
+      log('Done. Upload these in place of the originals.','g');
+      return;
+    }
+    var f=files[i], rd=new FileReader();
+    rd.onload=function(){
+      try{
+        var d=JSON.parse(rd.result);
+        if(!d || !d.pts || !d.roads) throw new Error('not a map data file');
+        log('');
+        log(f.name+'   '+(f.size/1048576).toFixed(1)+' MB in — '+
+            d.pts.length.toLocaleString()+' devices, '+
+            d.roads.length.toLocaleString()+' segments','h');
+        var out=fitPayload(d);
+        saveFile(f.name, out);
+        log('SAVED  '+f.name,'g');
+      }catch(err){
+        log(f.name+': could not use this file — '+err.message,'e');
+      }
+      next(i+1);
+    };
+    rd.onerror=function(){ log(f.name+': could not be read','e'); next(i+1); };
+    rd.readAsText(f);
+  })(0);
+};
 </script>
 </body>
 </html>
