@@ -1,4 +1,4 @@
-/* Who can sign SOVRAN's canary. The list lives in Mav HQ's People screen
+/* Who can sign SOVRAN's canary. The list lives in Ash HQ's People screen
    (aetherandash.digital/hq), so adding or removing a signer there updates it here
    within a minute. Mav's own emails can always sign.
    Needs TEAM_SYNC_KEY (the same secret on this site and aetherandash.digital). */

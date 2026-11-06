@@ -3,7 +3,7 @@ import { canaryRole } from "../_shared/team.js";
 // POST /api/canary          — signs a new one. Requires an email sign-in as a signer.
 //
 // Bindings : DB (D1 -> sovran-waitlist)
-// Env vars : ACCESS_TEAM_DOMAIN, ACCESS_AUD (email sign-in), TEAM_SYNC_KEY (signer list from Mav HQ).
+// Env vars : ACCESS_TEAM_DOMAIN, ACCESS_AUD (email sign-in), TEAM_SYNC_KEY (signer list from Ash HQ).
 //            Signers sign in with their email. Whoever signs is recorded by name, so
 //            you can always see who kept it alive and when.
 //
@@ -60,7 +60,7 @@ export async function onRequestPost({ request, env }) {
   }
 
   /* Signers sign in with their email (Cloudflare Access). Who counts as a signer
-     comes from the People screen in Mav HQ. No keys. */
+     comes from the People screen in Ash HQ. No keys. */
   const who = await canaryRole(request, env);
   if (!who.email) return json({ error: "Sign in with your email first.", signin: true }, 401);
   if (who.role !== "signer") return json({ error: "Signed in as " + who.email + ", which isn't a SOVRAN canary signer." }, 403);
