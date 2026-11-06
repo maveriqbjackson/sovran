@@ -259,12 +259,11 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 <main>
 <section class="intro">
   <div class="wrap">
-    <span class="eyebrow">Admin &middot; Not indexed &middot; Key required</span>
+    <span class="eyebrow">Admin &middot; Not indexed &middot; Mav only</span>
     <h1>The <span class="gilt">back room</span>.</h1>
 
     <div class="gate" id="gate">
-      <p class="body" style="margin-bottom:16px">Four locks, all required: Cloudflare Access at the edge, your key, a rotating code, and a lockout after five failures. Nothing is held beyond this tab.</p>
-      <input type="password" id="key" placeholder="admin key" autocomplete="off" spellcheck="false">
+      <p class="body" style="margin-bottom:16px">Three locks, all required: your email sign-in, a rotating code from your authenticator, and a lockout after five failures. Nothing is held beyond this tab.</p>
       <input type="text" id="code" placeholder="6-digit code from your authenticator" autocomplete="one-time-code"
              inputmode="numeric" pattern="[0-9]*" maxlength="6" spellcheck="false"
              style="width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:15px 16px;font-family:'IBM Plex Mono',monospace;font-size:1.05rem;letter-spacing:.3em;margin-bottom:12px">
@@ -288,8 +287,6 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
         <div id="cbox"></div>
         <input type="text" id="cfresh" placeholder="https://cnn.com/2026/… — a news link from today" autocomplete="off" spellcheck="false"
                style="width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:14px 15px;font-family:'IBM Plex Sans',sans-serif;font-size:.9rem;margin-top:14px">
-        <input type="password" id="ckey" placeholder="your canary signing key" autocomplete="off" spellcheck="false"
-               style="width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:14px 15px;font-family:'IBM Plex Mono',monospace;font-size:.86rem;margin-top:14px">
         <div class="acts">
           <button class="btn" id="sign">Sign it for another period</button>
         </div>
@@ -362,14 +359,14 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 </main>
 <footer>
   <div class="wrap">
-    <p style="margin-bottom:12px;max-width:62ch;line-height:1.55">Private admin for <a href="/">SOVRAN</a>. Your key lives in this tab only and is forgotten when you close it.</p>
+    <p style="margin-bottom:12px;max-width:62ch;line-height:1.55">Private admin for <a href="/">SOVRAN</a>. Your session lives in this tab only and is forgotten when you close it.</p>
     <p><!--email_off--><a href="mailto:maveriqbjackson@proton.me">maveriqbjackson@proton.me</a><!--/email_off--> &middot; No cookies. No trackers. No analytics.</p>
   </div>
 </footer>
 <script>
 (function(){
 'use strict';
-var KEYIN=document.getElementById('key'), MSG=document.getElementById('msg'),
+var KEYIN=document.getElementById('code'), MSG=document.getElementById('msg'),
     GATE=document.getElementById('gate'), PANEL=document.getElementById('panel');
 var key='', code='', session='', BUILDING=false;
 // Bumped in lockstep with BUILD_ID in functions/api/admin.js. If these disagree,
@@ -389,7 +386,7 @@ function call(action,extra){
 // the rotating code — a 30-second code cannot authorise a click made a minute later.
   var b = session
     ? Object.assign({session:session,action:action},extra||{})
-    : Object.assign({key:key,code:code,action:action},extra||{});
+    : Object.assign({code:code,action:action},extra||{});
   return fetch('/api/admin',{
     method:'POST',
     credentials:'same-origin',           // carry the Cloudflare Access cookie
@@ -435,9 +432,7 @@ var ACCESS_HELP =
   'your browser sends the Access cookie with the request, and the API refuses anything that arrives without it.';
 
 function unlock(){
-  key=KEYIN.value.trim();
   code=document.getElementById('code').value.replace(/\D/g,'');
-  if(!key){ say(MSG,'Enter your key.','err'); return; }
   if(code.length!==6){ say(MSG,'Enter the current 6-digit code from your authenticator app.','err'); return; }
   say(MSG,'Checking\u2026','ok');
   call('overview').then(function(res){
@@ -457,7 +452,7 @@ function relock(msg){
   document.getElementById('panel').classList.remove('show');
   GATE.style.display='';
   document.getElementById('code').value='';
-  say(MSG, msg || 'Session ended. Enter your key and a fresh code.', 'err');
+  say(MSG, msg || 'Session ended. Enter a fresh code.', 'err');
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -500,7 +495,7 @@ function render(d){
       'Session: <b style="color:#3DE8A5">'+(d.session_minutes||30)+' minutes</b><br>'+
       'Accounts: <b style="color:var(--bone)">'+(d.accounts||0)+'</b> \u00b7 '+
       'Failed admin attempts in 24h: <b style="color:'+((d.failed_24h||0)>0?'#FF9E5E':'var(--bone)')+'">'+(d.failed_24h||0)+'</b></p>'+
-      (d.access_verified?'':'<p style="color:var(--alarm);font-size:.85rem;line-height:1.55;margin-top:10px">Set up Cloudflare Access on /admin, then set REQUIRE_ACCESS to true. Until then this panel is protected by key and code only.</p>');
+      (d.access_verified?'':'<p style="color:var(--alarm);font-size:.85rem;line-height:1.55;margin-top:10px">Set up Cloudflare Access on /admin, then set REQUIRE_ACCESS to true. </p>');
   }
 
   // canary
@@ -540,17 +535,15 @@ document.getElementById('go').addEventListener('click',unlock);
 KEYIN.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); unlock(); } });
 
 document.getElementById('sign').addEventListener('click',function(){
-  var ck=document.getElementById('ckey').value.trim();
   var fr=document.getElementById('cfresh').value.trim();
   var m=document.getElementById('cmsg');
-  if(!ck){ say(m,'Enter your canary signing key.','err'); return; }
   if(!/^https?:\/\//i.test(fr)){ say(m,'Paste a full news link from today (CNN, NPR, Guardian, NYT, WaPo, Politico, Axios, Al Jazeera).','err'); return; }
   say(m,'Signing\u2026','ok');
-  call('sign',{canaryKey:ck,freshness:fr}).then(function(res){
+  call('sign',{freshness:fr}).then(function(res){
     if(!guard(res)) return;
     if(!res.ok){ say(m,res.d.error||'Failed.','err'); return; }
     say(m,'Signed as '+res.d.signed_by+'. The public page updates immediately.','ok');
-    document.getElementById('ckey').value=''; document.getElementById('cfresh').value='';
+    document.getElementById('cfresh').value='';
     call('overview').then(function(r){ if(r.ok) render(r.d); });
   });
 });

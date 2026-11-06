@@ -1,10 +1,10 @@
+import { canaryRole } from "../_shared/team.js";
 // GET  /api/canary          — public. Returns the latest signed statement.
-// POST /api/canary          — signs a new one. Requires a key.
+// POST /api/canary          — signs a new one. Requires an email sign-in as a signer.
 //
 // Bindings : DB (D1 -> sovran-waitlist)
-// Env vars : CANARY_KEYS — JSON object mapping signer name to secret, e.g.
-//              {"Mav":"long-random-1","Jordan":"long-random-2"}
-//            Any one of them can sign. Whoever signs is recorded by name, so
+// Env vars : ACCESS_TEAM_DOMAIN, ACCESS_AUD (email sign-in), TEAM_SYNC_KEY (signer list from Mav HQ).
+//            Signers sign in with their email. Whoever signs is recorded by name, so
 //            you can always see who kept it alive and when.
 //
 // There is no cron job and no server-side alarm. The page computes staleness
@@ -59,26 +59,12 @@ export async function onRequestPost({ request, env }) {
     return json({ error: "Malformed request." }, 400);
   }
 
-  let keys = {};
-  try {
-    keys = JSON.parse(env.CANARY_KEYS || "{}");
-  } catch {
-    return json({ error: "Signing is not configured." }, 500);
-  }
-
-  const supplied = String(body.key || "");
-  if (!supplied) return json({ error: "No key supplied." }, 401);
-
-  // constant-time-ish comparison across all configured signers
-  let signer = null;
-  for (const [name, secret] of Object.entries(keys)) {
-    if (secret && secret.length === supplied.length) {
-      let diff = 0;
-      for (let i = 0; i < secret.length; i++) diff |= secret.charCodeAt(i) ^ supplied.charCodeAt(i);
-      if (diff === 0) { signer = name; break; }
-    }
-  }
-  if (!signer) return json({ error: "That key was not recognised." }, 401);
+  /* Signers sign in with their email (Cloudflare Access). Who counts as a signer
+     comes from the People screen in Mav HQ. No keys. */
+  const who = await canaryRole(request, env);
+  if (!who.email) return json({ error: "Sign in with your email first.", signin: true }, 401);
+  if (who.role !== "signer") return json({ error: "Signed in as " + who.email + ", which isn't a SOVRAN canary signer." }, 403);
+  const signer = who.name || "Signer";
 
   // carry the previous statement forward unless a new one is given
   let statement = String(body.statement || "").trim();

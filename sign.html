@@ -386,7 +386,7 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   <div class="wrap">
     <span class="eyebrow">Canary signing &middot; For designated signers</span>
     <h1>Keep the <span class="gilt">canary</span> alive.</h1>
-    <p class="lede">If you hold a signing key, this is the only page you need. It does nothing else &mdash; no waitlist, no accounts, no settings. Just the statement and a way to renew it.</p>
+    <p class="lede">If you're a canary signer, this is the only page you need. It does nothing else &mdash; no waitlist, no accounts, no settings. Just the statement and a way to renew it.</p>
 
     <div class="status" id="status">
       <div class="sline"><span class="sdot"></span><span id="slabel">Reading&hellip;</span></div>
@@ -396,7 +396,7 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
 
     <div class="box">
       <h3 style="margin-bottom:8px">Sign it</h3>
-      <p style="color:var(--ash);font-size:.9rem;line-height:1.55;margin-bottom:16px">Paste your own signing key. Each signer has a different one. <b style="color:var(--bone)">Your identity is never published</b> &mdash; the public page shows only that it was signed, never by whom.</p>
+      <p style="color:var(--ash);font-size:.9rem;line-height:1.55;margin-bottom:16px">You're signed in with your own email, so each signing is yours alone. <b style="color:var(--bone)">Your identity is never published</b> &mdash; the public page shows only that it was signed, never by whom.</p>
       <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Step one &mdash; a news link from today</label>
       <input type="url" id="fresh" placeholder="https://..." autocomplete="off" spellcheck="false">
       <p style="font-size:.84rem;color:var(--ash);line-height:1.55;margin:-4px 0 10px">
@@ -418,8 +418,6 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
         The link should look like <code style="font-family:'IBM Plex Mono',monospace;color:var(--gold-hi)">cnn.com/2026/08/31/...</code>
         &mdash; if there is no date in it, you are on a section page rather than an article.
       </p>
-      <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:.64rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Step two &mdash; your key</label>
-      <input type="password" id="key" placeholder="your signing key" autocomplete="off" spellcheck="false">
 
       <label class="chk"><input type="checkbox" id="ack"><span>I have read the statement above and, as far as I know, all of it is still true today.</span></label>
 
@@ -442,10 +440,10 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
   <div class="wrap">
     <h2>What you are being asked to do</h2>
     <p class="body">Some legal orders arrive with a gag clause &mdash; the recipient is forbidden from saying they got one. A canary works around that. Nobody can be forced to keep repeating something untrue, so if the statement stops being renewed, readers know to treat it as a signal.</p>
-    <p class="body">You are one of several people who can renew it. That exists so no single person can be pressured into keeping it alive, and so illness, travel, or an ordinary bad week does not trigger a false alarm.</p><p class="body"><b>You are not named anywhere public.</b> The site shows that the statement was signed and when &mdash; never by whom. Please keep it that way: do not post about holding a key, and do not store it alongside anything that identifies who gave it to you.</p>
+    <p class="body">You are one of several people who can renew it. That exists so no single person can be pressured into keeping it alive, and so illness, travel, or an ordinary bad week does not trigger a false alarm.</p><p class="body"><b>You are not named anywhere public.</b> The site shows that the statement was signed and when &mdash; never by whom. Please keep it that way: do not post about being a signer.</p>
     <div class="key" style="background:linear-gradient(140deg,rgba(217,174,95,.09),transparent 70%);border:1px solid rgba(217,174,95,.22);border-left:3px solid var(--gold);border-radius:var(--r-sm);padding:16px 18px;font-size:.9rem;color:var(--ash);line-height:1.58">
       <b style="display:block;color:var(--gold);font-family:'IBM Plex Mono',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px">The rhythm</b>
-      Every 14 days, with a 7 day grace period. A calendar reminder every 12 days gives you slack. If you cannot sign, someone else with a key can &mdash; but check with them rather than assuming.
+      Every 14 days, with a 7 day grace period. A calendar reminder every 12 days gives you slack. If you cannot sign, another signer can &mdash; but check with them rather than assuming.
     </div>
   </div>
 </section>
@@ -521,18 +519,18 @@ function load(){
 load();
 
 $('sign').addEventListener('click',function(){
-  var k=$('key').value.trim(), fr=$('fresh').value.trim();
+  var fr=$('fresh').value.trim();
   if(!/^https?:\/\//i.test(fr)){ say('Paste a full news link from today, starting with https://','err'); return; }
-  if(!k){ say('Enter your signing key.','err'); return; }
   if(!$('ack').checked){ say('Please confirm you have read the statement and believe it is still true.','err'); return; }
   $('sign').disabled=true; say('Signing\u2026','busy');
-  fetch('/api/canary',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:k,freshness:fr})})
-    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+  fetch('/api/canary',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({freshness:fr})})
+    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,status:r.status,d:d}; }); })
     .then(function(res){
       $('sign').disabled=false;
-      if(!res.ok){ say(res.d.error||'That did not work.','err'); return; }
+      if(!res.ok){ say((res.d.error||'That did not work.')+(res.status===401||res.status===403?' ':''),'err');
+        if(res.d.signin){ setTimeout(function(){ location.reload(); },1500); } return; }
       say('Signed. The public page has already updated, and it does not name you.','ok');
-      $('key').value=''; $('fresh').value=''; $('ack').checked=false;
+      $('fresh').value=''; $('ack').checked=false;
       load();
     }).catch(function(){ $('sign').disabled=false; say('Could not reach the server. Try again in a moment.','err'); });
 });

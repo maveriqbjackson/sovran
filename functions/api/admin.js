@@ -1,20 +1,18 @@
+import { isOwner } from "../_shared/team.js";
 // POST /api/admin — the only endpoint that can read user data, so it is the
 // most locked-down thing here.
 //
-// FOUR INDEPENDENT LOCKS, all required:
-//   1. Cloudflare Access   — identity verified at the edge before the request
-//                            ever reaches this code. Enforced below: if
-//                            REQUIRE_ACCESS is on and no Access JWT is present,
-//                            the request is refused outright.
-//   2. ADMIN_KEY           — a long random secret you hold.
-//   3. ADMIN_TOTP_SECRET   — a rotating 6-digit code from your authenticator.
-//                            A stolen key alone is not enough.
-//   4. Lockout             — 5 failures in 15 minutes locks that client out
+// THREE INDEPENDENT LOCKS, all required:
+//   1. Email sign-in       — Cloudflare Access emails a one-time code. This code
+//                            checks Cloudflare's signature on the sign-in and
+//                            only accepts Mav's own emails. Always on.
+//   2. ADMIN_TOTP_SECRET   — a rotating 6-digit code from your authenticator.
+//                            Someone who gets into your email still can't get in.
+//   3. Lockout             — 5 failures in 15 minutes locks that client out
 //                            for an hour. Every attempt is recorded.
 //
 // Bindings : DB (D1 -> sovran-waitlist)
-// Env vars : ADMIN_KEY, ADMIN_TOTP_SECRET, CANARY_KEYS,
-//            REQUIRE_ACCESS ("true" once Cloudflare Access is configured)
+// Env vars : ACCESS_TEAM_DOMAIN, ACCESS_AUD, ADMIN_TOTP_SECRET, TEAM_SYNC_KEY
 
 const BUILD_ID = "2026-09-02-backoff";
 
@@ -131,29 +129,23 @@ async function record(env, fp, ok) {
 }
 
 export async function onRequestPost({ request, env }) {
-  /* ── LOCK 1: Cloudflare Access must have already vouched for this request ── */
-  const accessJwt =
-    request.headers.get("Cf-Access-Jwt-Assertion") ||
-    (request.headers.get("Cookie") || "").match(/CF_Authorization=([^;]+)/)?.[1];
-
-  const requireAccess = String(env.REQUIRE_ACCESS || "").toLowerCase() === "true";
-  if (requireAccess && !accessJwt) {
-    return json({
-      error: "Blocked. This panel requires Cloudflare Access and no verified identity was presented.",
-    }, 403);
+  /* ── LOCK 1: a verified email sign-in, Mav's emails only ── */
+  const owner = await isOwner(request, env);
+  if (!owner) {
+    return json({ error: "Sign in with your email first. This panel only opens for Mav." }, 403);
   }
+  const accessJwt = true;
 
   let body;
   try { body = await request.json(); } catch { return json({ error: "Malformed request." }, 400); }
 
-  if (!env.ADMIN_KEY) return json({ error: "Admin access is not configured." }, 500);
   if (!env.ADMIN_TOTP_SECRET)
     return json({ error: "Two-factor is not configured. Set ADMIN_TOTP_SECRET before using this panel." }, 500);
 
   const fp = await fingerprint(request);
   const action = String(body.action || "overview");
 
-  /* An existing session skips locks 2 and 3. Access and the lockout still apply. */
+  /* An existing session skips the rotating code. Email sign-in and the lockout still apply. */
   let sessionToken = null;
   const presented = String(body.session || "");
 
@@ -165,17 +157,16 @@ export async function onRequestPost({ request, env }) {
       return json({ error: "Too many failed attempts. This client is locked out for an hour." }, 429);
     }
 
-    /* ── LOCK 2: the key ──  ── LOCK 3: the rotating code ── */
-    const keyOk = sameSecret(String(body.key || ""), env.ADMIN_KEY);
-    const totpOk = keyOk ? await totpValid(env.ADMIN_TOTP_SECRET, body.code) : false;
+    /* ── LOCK 2: the rotating code ── */
+    const totpOk = await totpValid(env.ADMIN_TOTP_SECRET, body.code);
 
-    if (!keyOk || !totpOk) {
+    if (!totpOk) {
       await record(env, fp, false);
       await new Promise((r) => setTimeout(r, 500));
       // deliberately identical message either way
       return json({
         error: presented
-          ? "Your session expired. Enter your key and a fresh code."
+          ? "Your session expired. Enter a fresh code."
           : "Not authorised.",
         expired: !!presented,
       }, 401);
@@ -336,13 +327,7 @@ export async function onRequestPost({ request, env }) {
     }
 
     if (action === "sign") {
-      let keys = {};
-      try { keys = JSON.parse(env.CANARY_KEYS || "{}"); } catch { /* empty */ }
-      let signer = null;
-      for (const [name, secret] of Object.entries(keys)) {
-        if (sameSecret(secret, String(body.canaryKey || ""))) { signer = name; break; }
-      }
-      if (!signer) return json({ error: "That canary key was not recognised." }, 401);
+      const signer = "Mav";
 
       let statement = String(body.statement || "").trim();
       if (!statement) {
