@@ -429,3 +429,27 @@ export const onRequestGet    = () => json({ error: "Method not allowed." }, 405)
 export const onRequestPut    = () => json({ error: "Method not allowed." }, 405);
 export const onRequestPatch  = () => json({ error: "Method not allowed." }, 405);
 export const onRequestDelete = () => json({ error: "Method not allowed." }, 405);
+
+/* GET /api/admin?check=1 — Mav only (email sign-in). A safe health check of the
+   authenticator secret: it never shows the secret or a code. It shows its shape
+   (length, stray spaces or quotes) and an 8-character fingerprint, so Mav can
+   compare it with the fingerprint of the key in his password manager. */
+export async function onRequestGet({ request, env }) {
+  if (!(await isOwner(request, env))) return json({ error: "Sign in with your email first." }, 403);
+  const raw = String(env.ADMIN_TOTP_SECRET || "");
+  const bytes = base32Decode(raw);
+  const h = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+  const fp = Array.from(h.slice(0, 4)).map((x) => x.toString(16).padStart(2, "0")).join("").toUpperCase();
+  return json({
+    build: BUILD_ID,
+    server_time_utc: new Date().toISOString(),
+    secret_present: raw.length > 0,
+    characters: raw.length,
+    usable_characters: raw.toUpperCase().replace(/[^A-Z2-7]/g, "").length,
+    has_spaces_or_line_breaks: /\s/.test(raw),
+    has_quote_marks: /["'`]/.test(raw),
+    has_other_odd_characters: /[^A-Za-z2-7\s"'`=]/.test(raw),
+    fingerprint: raw ? fp : null,
+    expected: "32 characters, 32 usable, no spaces, no quotes. Fingerprint should match the maker page's check.",
+  });
+}
