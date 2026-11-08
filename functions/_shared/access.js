@@ -70,3 +70,30 @@ export async function accessEmail(request, env) {
 export const OWNERS = ['maveriqbjackson@proton.me', 'team@theqcollective.org'];
 export const SIGN_IN = '/cdn-cgi/access/login';
 export const SIGN_OUT = '/cdn-cgi/access/logout';
+
+/* Why isn't this request signed in? Plain reasons for the admin check page.
+   Shows nothing secret: the setting names, whether they match, and the email on
+   the visitor's own sign-in token. */
+export async function accessWhy(request, env) {
+  const team = String(env.ACCESS_TEAM_DOMAIN || '').trim().replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  const auds = String(env.ACCESS_AUD || '').split(',').map((s) => s.trim()).filter(Boolean);
+  const out = { team_setting: team || '(empty)', aud_setting_count: auds.length, token_found: false };
+  const t = token(request);
+  if (!t) { out.why = 'No sign-in token reached this address. The browser has no SOVRAN sign-in cookie here.'; return out; }
+  out.token_found = true;
+  let body = {};
+  try { body = part(t.split('.')[1]); } catch { out.why = 'The sign-in token is damaged.'; return out; }
+  out.email_on_token = body.email || '(none)';
+  out.token_issuer = body.iss || '(none)';
+  out.aud_matches = (Array.isArray(body.aud) ? body.aud : [body.aud]).some((a) => auds.includes(a));
+  out.expired = !body.exp || body.exp < Date.now() / 1000;
+  out.issuer_matches = !body.iss || body.iss === `https://${team}`;
+  out.email_is_owner = OWNERS.includes(String(body.email || '').toLowerCase());
+  out.why = !team || !auds.length ? 'ACCESS_TEAM_DOMAIN or ACCESS_AUD is empty on SOVRAN.'
+    : !out.issuer_matches ? 'Team name mismatch: the token comes from ' + out.token_issuer + ' but SOVRAN expects https://' + team + '.'
+    : !out.aud_matches ? 'The token is for a different Access app than the AUD tag SOVRAN has.'
+    : out.expired ? 'The sign-in has expired. Sign in again.'
+    : !out.email_is_owner ? 'Signed in, but with an email that is not one of Mav\'s two owner emails.'
+    : 'Looks right. If this still fails, the signature check failed.';
+  return out;
+}

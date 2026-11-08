@@ -1,4 +1,5 @@
 import { isOwner } from "../_shared/team.js";
+import { accessWhy } from "../_shared/access.js";
 // POST /api/admin — the only endpoint that can read user data, so it is the
 // most locked-down thing here.
 //
@@ -434,7 +435,7 @@ export const onRequestDelete = () => json({ error: "Method not allowed." }, 405)
    (length, stray spaces or quotes) and an 8-character fingerprint, so Mav can
    compare it with the fingerprint of the key in his password manager. */
 export async function onRequestGet({ request, env }) {
-  if (!(await isOwner(request, env))) return json({ error: "Sign in with your email first." }, 403);
+  if (!(await isOwner(request, env))) return json({ error: "Sign in with your email first.", sign_in_check: await accessWhy(request, env) }, 403);
   const raw = String(env.ADMIN_TOTP_SECRET || "");
   const bytes = base32Decode(raw);
   const h = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
