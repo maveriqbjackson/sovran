@@ -21,6 +21,10 @@ const json = (obj, status = 200) =>
     },
   });
 
+/* The public feed never names a signer. Only Mav's own name is ever shown; everyone else is "A signer". */
+const MAV_RX = /maveriq|proton\.me$/i;
+const publicName = (v) => (MAV_RX.test(String(v || '')) ? 'maveriQ B Jackson' : 'A signer');
+
 export async function onRequestGet({ env }) {
   try {
     const row = await env.DB.prepare(
@@ -36,12 +40,12 @@ export async function onRequestGet({ env }) {
 
     return json({
       statement: row.statement,
-      signed_by: row.signed_by,
+      signed_by: publicName(row.signed_by),
       signed_at: row.signed_at,
       freshness: row.freshness || null,
       anchor: row.anchor || null,
       note: row.note || null,
-      history: results || [],
+      history: (results || []).map((h) => ({ ...h, signed_by: publicName(h.signed_by) })),
       // how long before the page should call it overdue
       interval_days: Number(env.CANARY_INTERVAL_DAYS || 14),
       grace_days: Number(env.CANARY_GRACE_DAYS || 7),
