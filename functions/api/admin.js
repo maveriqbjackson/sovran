@@ -129,10 +129,22 @@ async function record(env, fp, ok) {
   await env.DB.prepare("DELETE FROM admin_attempts WHERE at < datetime('now','-2 hours')").run();
 }
 
+
+/* Report the attempt to Ash HQ → Security (aetherandash.digital). Best effort, never blocks sign-in. */
+async function reportSec(env, request, ok, detail, who) {
+  if (!env.TEAM_SYNC_KEY) return;
+  const cf = request.cf || {};
+  try {
+    await fetch('https://aetherandash.digital/api/team/secevent', { method: 'POST', headers: { 'content-type': 'application/json', 'x-team-key': env.TEAM_SYNC_KEY },
+      body: JSON.stringify({ place: 'SOVRAN admin', ok, detail, who: who || null, ip: request.headers.get('cf-connecting-ip') || '', country: cf.country || '', city: cf.city || '', ua: (request.headers.get('user-agent') || '').slice(0, 200) }) });
+  } catch {}
+}
+
 export async function onRequestPost({ request, env }) {
   /* ── LOCK 1: a verified email sign-in, Mav's emails only ── */
   const owner = await isOwner(request, env);
   if (!owner) {
+    await reportSec(env, request, false, 'Not signed in as an owner');
     return json({ error: "Sign in with your email first. This panel only opens for Mav." }, 403);
   }
   const accessJwt = true;
@@ -163,6 +175,7 @@ export async function onRequestPost({ request, env }) {
 
     if (!totpOk) {
       await record(env, fp, false);
+      await reportSec(env, request, false, 'Wrong authenticator code', owner);
       await new Promise((r) => setTimeout(r, 500));
       // deliberately identical message either way
       return json({
@@ -173,6 +186,7 @@ export async function onRequestPost({ request, env }) {
       }, 401);
     }
     await record(env, fp, true);
+    await reportSec(env, request, true, 'Signed in', owner);
     sessionToken = await newSession(env);
   }
 
