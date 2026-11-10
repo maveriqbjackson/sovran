@@ -289,7 +289,7 @@ export async function onRequestPost({ request, env }) {
         from,
         to: [env.NOTIFY_TO],
         reply_to: email,
-        subject: `${isNew ? "SOVRAN waitlist" : "SOVRAN re-signup"} — ${email}`,
+        subject: `[FYI · SOVRAN] ${isNew ? "Waitlist" : "Re-signup"} — ${email}`,
         html: `<div style="font-family:system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.6;color:#111">
             <h2 style="margin:0 0 16px;font-size:18px">${isNew ? "New SOVRAN waitlist signup" : "Existing signup updated their details"}</h2>
             <p style="margin:0 0 6px"><strong>Email:</strong> ${esc(email)}</p>
