@@ -494,6 +494,7 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
     <div class="key" style="border-left-color:var(--alarm);background:linear-gradient(140deg,rgba(255,158,94,.07),transparent 70%)"><b>Red &middot; Lapsed</b>The grace period has passed with no signature. Treat any assurance on this site as unverified until it is renewed, and act accordingly.</div>
 
     <p class="body">What makes this work is simple: <strong>an order can force silence, but it is far harder to compel someone to keep actively repeating something untrue.</strong> So we say it out loud, on a schedule, and you watch whether we keep saying it.</p>
+    <div class="key" id="signers"><b>Who signs, and why most are &ldquo;A signer&rdquo;</b>Our founder, maveriQ B Jackson, signs under his own name. He puts his name and his credibility behind every word of this statement. Everyone else who signs shows as &ldquo;A signer.&rdquo; They&rsquo;re private people who volunteered to help keep this honest, and naming them would make them a target for pressure. Protecting them is part of what keeps the canary trustworthy.</div>
     <p class="body">Two honest limits, because you should know them rather than discover them. Its legal standing has never been fully tested in court &mdash; canaries are widely used and broadly considered sound, but no ruling has settled the question. And it can lapse through ordinary human failure as easily as through a warrant, which is exactly why several people hold a key and why the schedule has a week of slack built into it.</p>
     <p class="body">Neither of those makes it worthless. A signal that is hard to fake and easy to check is worth having even when it is not a guarantee &mdash; and there is no version of this that is stronger. What we can do is keep it current, name the limits plainly, and let you judge.</p>
 
@@ -599,7 +600,7 @@ fetch('/api/canary',{cache:'no-store'}).then(function(r){ return r.json(); }).th
   var next=new Date(signed.getTime()+iv*86400000);
   META.innerHTML=
     '<div><span>Last signed</span><span>'+fmt(signed)+' \u00b7 '+(days===0?'today':days+(days===1?' day':' days')+' ago')+'</span></div>'+
-    '<div><span>Signed by</span><span>a designated signer</span></div>'+
+    '<div><span>Signed by</span><span>'+esc(d.signed_by||'A signer')+(d.signed_by==='maveriQ B Jackson'?'':' <a href="#signers">(why?)</a>')+'</span></div>'+
     '<div><span>Renewal schedule</span><span>every '+iv+' days</span></div>'+
     '<div><span>Next due</span><span>'+fmt(next)+'</span></div>'+
     (d.note?'<div><span>Note</span><span>'+esc(d.note)+'</span></div>':'');
