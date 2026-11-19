@@ -93,6 +93,13 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .msg.ok{background:rgba(61,232,165,.09);border:1px solid rgba(61,232,165,.34);color:var(--clear)}
 #panel{display:none}
 #panel.show{display:block}
+.srcs{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 4px}
+.srcs a{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--ash);text-decoration:none;
+  background:var(--void);border:1px solid var(--line-2);border-radius:99px;padding:7px 13px;transition:all .18s}
+.srcs a:hover{border-color:var(--gold);color:var(--gold)}
+.srchint{font-size:.84rem;color:var(--ash);line-height:1.55;margin-top:14px}
+.srchint b{color:var(--bone)}
+@media(max-width:640px){.srcs a{font-size:.68rem;padding:8px 12px}}
 .stats{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);margin-bottom:26px}
 @media(min-width:760px){.stats{grid-template-columns:repeat(4,1fr)}}
 .st{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:19px}
@@ -295,6 +302,17 @@ h2{background:none !important;-webkit-text-fill-color:var(--bone) !important;col
       <div class="blk">
         <h3>The canary</h3>
         <div id="cbox"></div>
+        <p class="srchint">Open one of these, click into <b>a story published today</b>, and paste its full address below. These outlets put the date in the link, so a story from last week gets refused.</p>
+        <div class="srcs">
+          <a href="https://www.cnn.com" target="_blank" rel="noopener">CNN</a>
+          <a href="https://www.npr.org" target="_blank" rel="noopener">NPR</a>
+          <a href="https://www.theguardian.com/us" target="_blank" rel="noopener">The Guardian</a>
+          <a href="https://www.nytimes.com" target="_blank" rel="noopener">NYT</a>
+          <a href="https://www.washingtonpost.com" target="_blank" rel="noopener">Washington Post</a>
+          <a href="https://www.politico.com" target="_blank" rel="noopener">Politico</a>
+          <a href="https://www.axios.com" target="_blank" rel="noopener">Axios</a>
+          <a href="https://www.aljazeera.com" target="_blank" rel="noopener">Al Jazeera</a>
+        </div>
         <input type="text" id="cfresh" placeholder="https://cnn.com/2026/… — a news link from today" autocomplete="off" spellcheck="false"
                style="width:100%;background:var(--void);color:var(--bone);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:14px 15px;font-family:'IBM Plex Sans',sans-serif;font-size:.9rem;margin-top:14px">
         <div class="acts">
