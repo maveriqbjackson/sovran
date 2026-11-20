@@ -38,7 +38,16 @@ function api(action,payload){
     method:'POST',credentials:'same-origin',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify(Object.assign({action:action},payload||{}))
-  }).then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); });
+  }).then(function(r){
+    // Read as text first so a non-JSON reply (an HTML error page, a proxy
+    // timeout, an empty body) gives a clear error instead of a crash.
+    return r.text().then(function(t){
+      var d;
+      try{ d=t?JSON.parse(t):{}; }catch(e){ d=null; }
+      if(!d||typeof d!=='object') return {ok:false,d:{error:'The server sent an unexpected reply ('+r.status+'). Please try again in a minute.'}};
+      return {ok:r.ok,d:d};
+    });
+  }).catch(function(){ return {ok:false,d:{error:'Could not reach the server. Check your connection and try again.'}}; });
 }
 
 window.SV = {authKey:authKey, dataKey:dataKey, encrypt:encrypt, decrypt:decrypt, api:api, ITER:ITER};
